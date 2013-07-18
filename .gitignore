@@ -30,6 +30,7 @@
 *.vrb
 *.xdy
 *.tdo
-slides/dbf_dit_pres.pdf
-Output/*.fls
-slides/Output/*.fls
+
+# custom
+*.pdf
+*.fls
