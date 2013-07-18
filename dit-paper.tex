@@ -107,6 +107,29 @@ For constrained deadline set, it is sufficient to consider intervals $[0, t_d]$ 
 
 Even so, this test requires to check a number of instant which is exponential in the number of tasks, making the general determination of feasibility a NP-hard problem.
 
+\section{C-space}
+When developing an application, it often happens that the platform is not known in advance, in which case the value of the $C_i$ are not known. Then, it can be useful to have a description of the possible values of the $C_i$ for which the system would be feasible.
+
+\subsection{Definition}
+
+The authors of \cite{george2009characterization} give the following definition of the C-space:
+\begin{definition}
+For a given task system $\tau$ in which the $C_i$ are not known, the \textbf{C-space} is a region of $n$ dimensions (where each dimension denotes the possible $C_i$ of a task of $\tau$) such that for any vector $C = \{ C_1, \cdots, C_n\}$ in the C-space, $\tau$ is feasible.
+\end{definition}
+
+Thus, with a good description of the C-space, it is easy to check if a given vector of $C_i$ value (given e.g. when deploying the application on a specific platform) allows the system to be scheduled or not.
+
+\subsection{Description using DBF}
+
+A region of $\mathbb{N}^n$ can be described by a list of parametric linear equations describing bounds of the convex hull of the admissible points. In other words, a list of conditions which can unequivocally decide if a point is included in the region or not.\\
+
+For the synchronous case, the DBF test gives us a list of equations which, taken together, are a necessary and sufficient condition of feasibility. Those are
+$$\dbf{t} = \sum_{i=1}^{n} h_i(t) C_i \leq t \; \forall t$$
+Note that for a given $t$, we have that the $h_i(t)$ are constant (w.r.t. the $C_i$). Those equations are thus effectively linear.\\
+
+While redundant equations are not a problem in theory, a short description is always preferred as it can greatly reduce computation times. As was shown previously, the equations corresponding to job deadlines are necessary and sufficient to test the feasibility, so only those can be considered. In \cite{lipariaverage}, the authors use the simplex algorithms to further reduce the number of equation to consider.\\
+
+
 \section{Definitive idle time approach}
 \label{sct:DIT}
 
