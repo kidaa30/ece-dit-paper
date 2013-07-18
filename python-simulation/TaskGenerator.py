@@ -16,16 +16,17 @@ def UUniSort(n, Utot):
 	v = sorted(v)
 	return [round(v[i + 1] - v[i], 3) for i in range(n)]
 
+
 def UUniFast(n, Utot):
-# 	Does the same thing as UUniSort, but better faster stronger
-    utils = []
-    curU = Utot
-    for i in range(1,n):
-        nextU = curU * math.pow(random.random(),(1.0/(n - i)))
-        utils.append(curU - nextU)
-        curU = nextU
-    utils.append(curU)
-    return [round(u,4) for u in utils]
+#	Does the same thing as UUniSort, but better faster stronger
+	utils = []
+	curU = Utot
+	for i in range(1, n):
+		nextU = curU * math.pow(random.random(), (1.0 / (n - i)))
+		utils.append(curU - nextU)
+		curU = nextU
+	utils.append(curU)
+	return [round(u, 4) for u in utils]
 
 
 def reduceSum(vec):
