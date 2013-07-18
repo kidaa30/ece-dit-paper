@@ -44,3 +44,4 @@ python-simulation/plots
 #eclipse
 .project
 .texlipse
+.pydevproject

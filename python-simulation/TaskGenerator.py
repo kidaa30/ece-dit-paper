@@ -8,13 +8,24 @@ def UUniSort(n, Utot):
 	# "Measuring the performance of schedulability tests", E. Bini, GC Buttazzo
 
 	# 1) generate n-1 uniform values in the interval [0, Utot]
-	v = [(random.randrange(1, int(Utot*1000), 1)*1.0)/1000 for i in range(n)]
+	v = [(random.randrange(1, int(Utot*1000), 1)*1.0)/1000 for i in range(n-1)]
 	# 2) Add 0 and Utot to the vector
 	v.append(0)
 	v.append(Utot)
 	# 3) Return the difference between adjacent values
 	v = sorted(v)
-	return [round(v[i + 1] - v[i], 3) for i in range(n+1)]
+	return [round(v[i + 1] - v[i], 3) for i in range(n)]
+
+def UUniFast(n, Utot):
+# 	Does the same thing as UUniSort, but better faster stronger
+    utils = []
+    curU = Utot
+    for i in range(1,n):
+        nextU = curU * math.pow(random.random(),(1.0/(n - i)))
+        utils.append(curU - nextU)
+        curU = nextU
+    utils.append(curU)
+    return [round(u,4) for u in utils]
 
 
 def reduceSum(vec):
@@ -26,7 +37,7 @@ def generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=True, constrDeadli
 	# constrDeadlineFactor: D will be in the interval [T-(T-C)/constrDeadlineFactor, T]
 
 	assert 0 < Utot <= 1, "Utot out of bounds " + str(Utot)
-	utilizations = UUniSort(n, Utot)
+	utilizations = UUniFast(n, Utot)
 	assert reduceSum(utilizations) - Utot <= 0.001, str(reduceSum(utilizations)) + ", \t" + str(Utot)
 	tasks = generateTasksFrom(utilizations, maxHyperT, Tmin, Tmax, synchronous, constrDeadlineFactor)
 	return tasks
@@ -66,6 +77,7 @@ if __name__ == '__main__':
 			print task
 
 	print "UUniSort", UUniSort(5, 1.0)
+	print "UUniFast", UUniFast(5, 1.0)
 
 	# check that the function does not generate values of Ci equals to 0
 	# and that the total utilization is relatively close to the desired one
@@ -87,7 +99,7 @@ if __name__ == '__main__':
 			print "Error: ", Utot - reduce(lambda x, y: x + y.utilization(), tasks, 0), "Tmin", Tmin
 		"""
 		for task in tasks:
-			assert task.C > 0, task
+			assert task.C > 0, str(task)
 
 
 ####################################
