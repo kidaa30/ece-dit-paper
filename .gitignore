@@ -40,3 +40,7 @@ python-simulation/plots
 # custom
 *.pdf
 *.fls
+
+#eclipse
+.project
+.texlipse
