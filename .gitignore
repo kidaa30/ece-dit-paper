@@ -1,3 +1,9 @@
+# Python
+*.pyo
+*.pyc
+python-simulation/plots
+
+# LaTeX
 *.acn
 *.acr
 *.alg
