@@ -13,7 +13,7 @@ def findFirstPeriodicDIT(tau):
 	# Requires to solve several system of modular equations
 
 	# Construction of the intervals
-	intervals = map(lambda task: list(range(task.D, task.T)), tau.tasks)
+	intervals = [list(range(task.D, task.T)) for task in tau.tasks]
 	for i, task in enumerate(tau.tasks):
 		# 0, corresponding to the last/first case is missing from each interval
 		intervals[i].append(0)
@@ -23,8 +23,8 @@ def findFirstPeriodicDIT(tau):
 			intervals[i][j] += task.O
 			intervals[i][j] %= task.T
 
-	T = map(lambda task: task.T, tau.tasks)
-	Omax = max(map(lambda task: task.O, tau.tasks))
+	T = [task.T for task in tau.tasks]
+	Omax = max([task.O for task in tau.tasks])
 
 	# Pre-processing for our congruence algorithm
 	primalSystem_T = myAlgebra.toPrimalPowerSystem(T)
@@ -42,6 +42,12 @@ def findFirstPeriodicDIT(tau):
 				currentMin = tIdle
 	return currentMin
 
+def findSynchronousInstant(tau):
+	T = [task.T for task in tau.tasks]
+	primalSystem_T = myAlgebra.toPrimalPowerSystem(T)
+	offsets = [task.O % task.T for task in tau.tasks]
+	tSync = myAlgebra.congruencePrimalPower(primalSystem_T, offsets)
+	return tSync
 
 def findBusyPeriod(tau):
 	# for synchronous arbitrary deadline:
@@ -108,6 +114,7 @@ if __name__ == '__main__':
 	tau = Task.TaskSystem(tasks)
 	assert findBusyPeriod(tau) == 2, "Unit Test FAIL : findBusyPeriod"
 	assert findFirstDIT(tau) == 3, "Unit Test FAIL : findFirstDIT, returned: " + str(findFirstDIT(tau))
+	assert findSynchronousInstant(tau) == 0, "Unit Test FAIL : findSynchronousInstant; returned: " + str(findSynchronousInstant(tau))
 	assert dbf_test(tau) is True
 
 	# UNIT TEST 2 -- Influence of deadline on the DIT
@@ -118,6 +125,7 @@ if __name__ == '__main__':
 	tau = Task.TaskSystem(tasks)
 	assert findBusyPeriod(tau) == 2, "Unit Test FAIL : findBusyPeriod (2); " + "returned: " + str(findBusyPeriod(tau))
 	assert findFirstDIT(tau) == 1, "Unit Test FAIL : findFirstDIT (2)"
+	assert findSynchronousInstant(tau) == 0, "Unit Test FAIL : findSynchronousInstant (2); returned: " + str(findSynchronousInstant(tau))
 	assert dbf_test(tau) is False
 
 	# UNIT TEST 3 -- Edge case of congruence (cannot return 0: we do not consider 0 to be a DIT)
@@ -128,6 +136,7 @@ if __name__ == '__main__':
 	tau = Task.TaskSystem(tasks)
 	assert findBusyPeriod(tau) == 2, "Unit Test FAIL : findBusyPeriod (3); " + "returned: " + str(findBusyPeriod(tau))
 	assert findFirstDIT(tau) == 6, "Unit Test FAIL : findFirstDIT (3); " + "returned: " + str(findFirstDIT(tau))
+	assert findSynchronousInstant(tau) == 0, "Unit Test FAIL : findSynchronousInstant (3); returned: " + str(findSynchronousInstant(tau))
 	assert dbf_test(tau) is True
 
 	# UNIT TEST 4 -- Asynchronous system
@@ -138,6 +147,7 @@ if __name__ == '__main__':
 	tau = Task.TaskSystem(tasks)
 	# No busy period test as it does not make sense in asynchronous system
 	assert findFirstPeriodicDIT(tau) == 6, "Unit Test FAIL : findFirstDIT (4a); " + "returned: " + str(findFirstDIT(tau))
+	assert findSynchronousInstant(tau) == 8, "Unit Test FAIL : findSynchronousInstant (4a); " + "returned: " + str(findSynchronousInstant(tau))
 	#assert dbf_test(tau) is True
 
 	tasks = []
@@ -147,6 +157,7 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(10, 1, 1, 2))
 	tau = Task.TaskSystem(tasks)
 	assert findFirstPeriodicDIT(tau) == 11, "Unit Test FAIL : findFirstDIT (4b); " + "returned: " + str(findFirstDIT(tau))
+	assert findSynchronousInstant(tau) is None, "Unit Test FAIL : findSynchronousInstant (4b); " + "returned: " + str(findSynchronousInstant(tau))
 
 	tasks = []
 	#                      0, C, D, T
@@ -154,11 +165,12 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(0, 4, 47, 48))
 	tau = Task.TaskSystem(tasks)
 	assert findFirstPeriodicDIT(tau) == 720, "Unit Test FAIL : findFirstDIT (4c); " + "returned: " + str(findFirstDIT(tau))
+	assert findSynchronousInstant(tau) == 720, "Unit Test FAIL : findSynchronousInstant (4c); " + "returned: " + str(findSynchronousInstant(tau))
 
-	print "LONG UNIT TEST (about 5 minutes)....."
+	print "LONG UNIT TEST (should be less than 2 minutes)....."
 
 	tasks = []
-	#                 0, C, D, T
+	#                      0, C,  D,  T
 	tasks.append(Task.Task(0, 38, 73, 154))
 	tasks.append(Task.Task(0, 156, 381, 825))
 	tasks.append(Task.Task(0, 120, 381, 400))
@@ -166,9 +178,10 @@ if __name__ == '__main__':
 	# I haven't checked these results so this test only check that the values do not change.
 	assert findBusyPeriod(tau) == 390
 	assert findFirstDIT(tau) == 381, "returned: " + str(findFirstDIT(tau))
+	assert findSynchronousInstant(tau) == 0, "returned: " + str(findSynchronousInstant(tau))
 	assert dbf_test(tau) is False
 
-	print "(halway there...)"
+	print "(1/3 OK)"
 	# random test
 
 	import TaskGenerator
@@ -176,9 +189,27 @@ if __name__ == '__main__':
 	n = 5
 	maxHyperT = 554400
 	Tmin = 50
-	Tmax = 1000
-	tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=True)
+	Tmax = 100
+	tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=True, constrDeadlineFactor=8)
+	tau = Task.TaskSystem(tasks)
 	# oracle?
 	assert 0 < findBusyPeriod(tau)
 	assert 0 < findFirstDIT(tau) <= tau.hyperPeriod()
-	assert dbf_test(tau) is True or dbf_test(tau) is False
+	assert findSynchronousInstant(tau) == 0, "returned: " + str(findSynchronousInstant(tau))
+	assert dbf_test(tau) or True
+
+	print "(2/3 OK)"
+	# random test - asynchr (and other parameters)
+
+	import TaskGenerator
+	Utot = 1
+	n = 4
+	maxHyperT = 100
+	Tmin = 5
+	Tmax = 20
+	tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False)
+	# oracle?
+	tau = Task.TaskSystem(tasks)
+	assert 0 < tau.hyperPeriod()
+	assert findSynchronousInstant(tau) or True, "returned: " + str(findSynchronousInstant(tau)) + "\n" + str(tau)
+	assert findFirstPeriodicDIT(tau) or True
