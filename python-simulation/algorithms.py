@@ -82,8 +82,8 @@ def dbf(tau, t1, t2):
 
 
 def completedJobCount(task, t1, t2):
-	jobBeforeT2 = math.floor(1.0 * (t2 - task.O - task.D) / task.T)
-	jobBeforeT1 = math.ceil(1.0 * (t1 - task.O) / task.T)
+	jobBeforeT2 = int(math.floor(1.0 * (t2 - task.O - task.D) / task.T))
+	jobBeforeT1 = int(math.ceil(1.0 * (t1 - task.O) / task.T))
 	return max(0, jobBeforeT2 - jobBeforeT1 + 1)
 
 
