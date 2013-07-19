@@ -30,6 +30,7 @@ breaklines=true
 %opening
 \sloppy
 
+\renewcommand{\arraystretch}{1.4}
 \newcommand{\dbf}[1]{\operatorname{dbf}(#1)}
 
 \newtheorem{definition}{Definition}
@@ -69,14 +70,17 @@ $H = LCM(T_i)$
 \subsection{Definition of the demand-bound function}
 
 \begin{definition}
- The \textbf{demand-bound function (DBF)}
- \cite{baruah1999generalized, baruah1990algorithms} defined for a task set
- $\tau$ and noted $\dbf{t}$, is equal to the maximal cumulated execution time of jobs of $\tau$ contained in any interval of length $t$.\\
-
- Mathematically,
- $$\dbf{t} = \max_{\{\forall \: t_1, t_2 \mid t_2 - t_1 = t \: \wedge \: 0
- \leqslant t_1 \leqslant t_2\}} \sum_{i=1}^n C_i \cdot h_i(t_1, t_2)$$ where
- $h_i(t_1, t_2)$ is the number of jobs of task $i$ whose arrival and deadline are in (non-strict) the interval $[t_1, t_2]$.
+	The \textbf{demand-bound function (DBF)}
+	\cite{baruah1999generalized, baruah1990algorithms} defined for a task set
+	$\tau$ and noted $\dbf{t}$, is equal to the maximal cumulated execution time of jobs of $\tau$ contained in any interval of length $t$.\\
+	
+	Mathematically,
+	\[ 
+		\dbf{t} = \max_{\{\forall \: t_1, t_2 \mid t_2 - t_1 = t \: \wedge \: 0
+		\leqslant t_1 \leqslant t_2\}} \sum_{i=1}^n C_i \cdot h_i(t_1, t_2) 
+	\] 
+	where $h_i(t_1, t_2)$ is the number of jobs of task $i$ whose arrival and
+	deadline are in (non-strict) the interval $[t_1, t_2]$.
 \end{definition}
 
 As the synchronous arrival pattern is known to be the worst case
@@ -91,20 +95,34 @@ occur at every job deadline, with the increase being equal to the execution time
 
 Starting from the definition, it remains to find a method to compute the values
 of $h_i(0, t)$ (noted $h_i(t)$ from now on). In the synchronous case, these
-values can be obtained as $$h_i(t) = \operatorname{max} \; \{ k \in \mathbb{N} :
-k T_i  + D_i \leq t \} + 1 $$ Indeed, $k = 0$ correspond to the first task, $k =
-1$ to the second task, etc. The maximal value of $k$ can be explicitly stated by rearranging the condition:
-$$k T_i + D_i \leq t$$
-$$\iff 0 \leq k \leq \lfloor \frac{t - D_i}{T_i} \rfloor$$
-The highest value is $k = \lfloor \frac{t - D_i}{T_i} \rfloor$. If this value is negative, it means that no job of task $\tau_i$ respects the condition, i.e. $h_i(t) = 0$. Else, we can inject it directly and obtain $h_i(t) = \lfloor \frac{t - D_i}{T_i} \rfloor + 1$\\
+values can be obtained as 
+\[
+	h_i(t) = \operatorname{max} \; \{ k \in \mathbb{N} :
+	k T_i  + D_i \leq t \} + 1
+\]
+Indeed, $k = 0$ correspond to the first task, $k = 1$ to the second task, etc.
+The maximal value of $k$ can be explicitly stated by rearranging the condition:
+\[
+	\begin{array}{c}
+		k T_i + D_i \leq t \\
+		\iff 0 \leq k \leq \lfloor \frac{t - D_i}{T_i} \rfloor
+	\end{array}
+\]
+The highest value is $k = \lfloor \frac{t - D_i}{T_i} \rfloor$. If this value is
+negative, it means that no job of task $\tau_i$ respects the condition, i.e.
+$h_i(t) = 0$. Else, we can inject it directly and obtain $h_i(t) = \lfloor \frac{t - D_i}{T_i} \rfloor + 1$\\
 
 This is generalized by the final definition of $h_i(t)$: $$h_i(t) = \operatorname{max} \{ 0, \lfloor \frac{t - D_i}{T_i} \rfloor + 1 \}$$
 
-With this result, a closed form of the DBF function in the synchronous case is obtained $$\dbf{t} = \sum_{i=1}^{n} \operatorname{max} \{ 0, \lfloor \frac{t - D_i}{T_i} \rfloor + 1 \} \, C_i$$
+With this result, a closed form of the DBF function in the synchronous case is
+obtained $$\dbf{t} = \sum_{i=1}^{n} \operatorname{max} \{ 0, \lfloor \frac{t - D_i}{T_i} \rfloor + 1 \} \, C_i$$
 
 \subsection{Feasibility test for EDF}
 
-In \cite{baruah1990algorithms}, the authors show that the DBF can be used to derive the following feasibility condition for EDF\footnote{And thus, EDF being optimal, for all optimal schedulers} on sporadic task sets. An adapted proof is given here.
+In \cite{baruah1990algorithms} it is shown that the DBF can be used to
+derive the following feasibility condition for EDF (and thus, EDF being
+optimal, for all other optimal schedulers) on sporadic task sets. An adapted
+proof is given here.
 
 \begin{theorem}
 $$\text{$(\tau_1, ..., \tau_n)$ is feasible} \iff \dbf{t} \leq t \; \forall t$$
