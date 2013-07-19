@@ -73,12 +73,12 @@ $H = LCM(T_i)$
 	The \textbf{demand-bound function (DBF)}
 	\cite{baruah1999generalized, baruah1990algorithms} defined for a task set
 	$\tau$ and noted $\dbf{t}$, is equal to the maximal cumulated execution time of jobs of $\tau$ contained in any interval of length $t$.\\
-	
+
 	Mathematically,
-	\[ 
+	\[
 		\dbf{t} = \max_{\{\forall \: t_1, t_2 \mid t_2 - t_1 = t \: \wedge \: 0
-		\leqslant t_1 \leqslant t_2\}} \sum_{i=1}^n C_i \cdot h_i(t_1, t_2) 
-	\] 
+		\leqslant t_1 \leqslant t_2\}} \sum_{i=1}^n C_i \cdot h_i(t_1, t_2)
+	\]
 	where $h_i(t_1, t_2)$ is the number of jobs of task $i$ whose arrival and
 	deadline are in (non-strict) the interval $[t_1, t_2]$.
 \end{definition}
@@ -95,7 +95,7 @@ occur at every job deadline, with the increase being equal to the execution time
 
 Starting from the definition, it remains to find a method to compute the values
 of $h_i(0, t)$ (noted $h_i(t)$ from now on). In the synchronous case, these
-values can be obtained as 
+values can be obtained as
 \[
 	h_i(t) = \operatorname{max} \; \{ k \in \mathbb{N} :
 	k T_i  + D_i \leq t \} + 1
@@ -113,14 +113,14 @@ this value is negative, it means that no job of task $\tau_i$ respects the condi
 that $h_i(t) = 0$. Else, we can inject it directly and obtain $h_i(t) =
 \left\lfloor \frac{t - D_i}{T_i} \right\rfloor + 1$\\
 
-This is generalized by the final definition of $h_i(t)$: 
+This is generalized by the final definition of $h_i(t)$:
 \[
 	h_i(t) = \operatorname{max} \{ 0, \left\lfloor \frac{t - D_i}{T_i}
 	\right\rfloor + 1\}
 \]
 
 With this result, a closed form of the DBF function in the synchronous case is
-obtained 
+obtained
 \[
 	\dbf{t} = \sum_{i=1}^{n} \operatorname{max} \{ 0, \left\lfloor \frac{t -
 	D_i}{T_i} \right\rfloor + 1 \} \cdot C_i
@@ -156,77 +156,37 @@ proof is given here.
 
 \end{proof}
 
-Furthermore, it is shown in \cite{baruah1990algorithms} that in the synchronous case, it is
-sufficient to consider intervals of the form $[0, t_d]$, where values of
-$t_d$ correspond to job deadlines (i.e. instants at which the demand-bound
-function increases) in the interval $\left[ D_{min}, H \right]$.\\
+Furthermore, the authors show that in the synchronous case, it is sufficient to consider intervals of the form $[0, t_d]$, where the $t_d$ correspond to job deadlines (i.e. the increases the demand-bound function) in the interval $\left[ D_{min}, H \right]$.\\
 
-For constrained deadline task sets, it is sufficient to consider intervals $[0,
-t_d]$ with $t_d \leq L$, where $L$ is the length of the first busy period and is
-the solution to the following recursive equation
-\[
-	L = \sum_{i=1}^{n} \left\lceil \frac{L}{T_i} \right\rceil C_i
-\]
-which can be computed through the following fixed-point iteration
-\[
-	\begin{array}{rl}
-		w_0 = 		& \sum\limits_{i=1}^{n} C_i \\
-		w_{k+1} = 	& \sum\limits_{i=1}^{n} \left\lceil \frac{w_k}{T_i} \right\rceil
-		C_i
-		\\
-	\end{array}
-\]
-Even so, this test requires to check a number of time instants in $[0,
-t_d]$ which is exponential in the number of tasks, making the general
-determination of feasibility an NP problem.
+For constrained deadline set, it is sufficient to consider intervals $[0, t_d]$ with $t_d \leq L$, where $L$ is the first busy period and is the solution to the following recursive equation $$L = \sum_{i=1}^{n} \lceil \frac{L}{T_i} \rceil C_i$$ which can be computed through fixed-point iteration $$w_0 = \sum_{i=1}^{n} C_i$$ $$w_{k+1} = \sum_{i=1}^{n} \lceil \frac{w_k}{T_i} \rceil C_i$$
+
+Even so, this test requires to check a number of instant which is exponential in the number of tasks, making the general determination of feasibility a NP-hard problem.
 
 \section{C-space}
-When developing an application, it often happens that the platform is not known
-in advance, in which case the value of the $C_i$ are not known. It can be
-useful in those situations to have a description of the possible values of
-the $C_i$ for which the system would be feasible.
+When developing an application, it often happens that the platform is not known in advance, in which case the value of the $C_i$ are not known. Then, it can be useful to have a description of the possible values of the $C_i$ for which the system would be feasible.
 
 \subsection{Definition}
 
-A definition is given in \cite{george2009characterization} :
-
+The authors of \cite{george2009characterization} give the following definition of the C-space:
 \begin{definition}
-	For a given task system $\tau$ in which the $C_i$ are not known, the
-\textbf{C-space} is a region of $n = |\tau|$ dimensions (where each dimension
-denotes the range of possible values of $C_i$ for a task $\tau_i$) such that
-for any vector $C = \{ C_0, \cdots, C_{n-1}\}$ in the C-space, $\tau$ is
-feasible.
+For a given task system $\tau$ in which the $C_i$ are not known, the \textbf{C-space} is a region of $n$ dimensions (where each dimension denotes the possible $C_i$ of a task of $\tau$) such that for any vector $C = \{ C_1, \cdots, C_n\}$ in the C-space, $\tau$ is feasible.
 \end{definition}
 
-Thus, with a good description of the C-space, it is easy to check if a given
-vector of $C_i$ values (given e.g. when deploying the application on a specific platform) allows the system to be scheduled or not.
+Thus, with a good description of the C-space, it is easy to check if a given vector of $C_i$ value (given e.g. when deploying the application on a specific platform) allows the system to be scheduled or not.
 
 \subsection{Description using DBF}
 
-A region of $\mathbb{N}^n$ can be described by a list of parametric linear
-inequations describing the convex hull of the admissible points. In
-other words, a list of conditions which can unequivocally decide if a point is included in the region or not.\\
+A region of $\mathbb{N}^n$ can be described by a list of parametric linear equations describing bounds of the convex hull of the admissible points. In other words, a list of conditions which can unequivocally decide if a point is included in the region or not.\\
 
 For the synchronous case, the DBF test gives us a list of equations which, taken together, are a necessary and sufficient condition of feasibility. Those are
-\[
-	\dbf{t} = \sum_{i=1}^{n} C_i \cdot h_i(t) \leq t \; \forall t
-\]
-Note that for a given $t$, we have that the $h_i(t)$ are constants (w.r.t. the
-$C_i$). Those equations are thus effectively linear.\\
+$$\dbf{t} = \sum_{i=1}^{n} h_i(t) C_i \leq t \; \forall t$$
+Note that for a given $t$, we have that the $h_i(t)$ are constant (w.r.t. the $C_i$). Those equations are thus effectively linear.\\
 
 \subsection{Removing redundancy}
 
-While redundant constraints are not a problem in theory, a short description is
-always preferred as it can greatly reduce the complexity of calculating
-whether a given vector of $C_i$ values is feasible.\\
+While redundant equations are not a problem in theory, a short description is always preferred as it can greatly reduce computation times.\\
 
-As was shown previously, the equations corresponding to job deadlines happening
-before $H$ are necessary and sufficient to test the feasibility of the system
-and are therefore the only ones which have to be considered. For
-constrained deadline systems, the end of the first busy period has been proven
-to be an acceptable upper bound for the DBF test as well, but this value depends
-on the $C_i$ and therefore cannot be used. In section \ref{sct:DIT}, a similar
-concept which does not depend on the value of $C_i$ is presented.\\
+As was shown previously, the equations corresponding to job deadlines happening before $H$ are necessary and sufficient to test the feasibility, so only those can be considered. For constrained deadline systems, the end of the first busy period has been proven to be an acceptable upper limit for the DBF test as well, but this value depends on the $C_i$ and therefore cannot be used. In section \ref{sct:DIT}, a similar concept which does not depend on the value of $C_i$ is presented.\\
 
 In \cite{lipariaverage}, the authors use the simplex algorithm to further reduce the number of equation to consider.
 

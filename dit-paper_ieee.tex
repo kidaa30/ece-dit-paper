@@ -31,7 +31,11 @@
 \def\QED{\mbox{\rule[0pt]{1.5ex}{1.5ex}}}
 \def\proof{\noindent{{\textbf{Proof}: }}}
 \def\endproof{\hspace*{\fill}~\QED\par\endtrivlist\unskip \vspace{1\baselineskip}}
-\newenvironment{accolade}{\begin{centering} $$ \left\{ \begin{array}{l}}{\end{array} \right. $$ \end{centering}}
+
+\newcommand{\dbf}[1]{\operatorname{dbf}(#1)}
+
+%\newenvironment{accolade}{\begin{centering} $$ \left\{ \begin{array}{l}}{\end{array} \right. $$ \end{centering}}
+
 
 %-------------------------------------------------------------------------
 % take the % away on next line to produce the final camera-ready version
@@ -67,19 +71,89 @@ lgeorge@ece.fr\\
 
   \subsection{Model}
 
-  \subsection{The DBF feasibility test for EDF}
+  We consider systems of periodic tasks with constrained deadline, where each task $\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value, $C_i$ the execution time, $D_i$ the relative deadline and $T_i$ the period. The constrained deadline property implies that $D_i \leq T_i$.\\
 
-  In general, ...\\
+  For those type of systems, the \emph{Earliest Deadline First} (EDF) algorithm has been shown to be optimal on uniprocessor platform [citation needed], i.e. this scheduling algorithm is able to schedule any feasible system.
+
+  \subsection{The DBF feasibility test}
+
+  We recall the necessary and sufficient condition explained in \cite{baruah1999generalized, baruah1990algorithms}, based on the demand-bound function.
+
+  \begin{definition}
+  The \textbf{demand-bound function (DBF)}
+  \cite{baruah1999generalized, baruah1990algorithms} defined for a task set
+  $\tau$ and noted $\dbf{t}$, is equal to the maximal cumulated execution time of jobs of $\tau$ contained in any interval of length $t$.\\
+
+  Mathematically,
+  \[
+    \dbf{t} = \max_{\{\forall \: t_1, t_2 \mid t_2 - t_1 = t \: \wedge \: 0
+    \leqslant t_1 \leqslant t_2\}} \sum_{i=1}^n C_i \cdot n_i(t_1, t_2)
+  \]
+  where $n_i(t_1, t_2)$ is the number of jobs of task $i$ whose arrival and
+  deadline are in (non-strict) the interval $[t_1, t_2]$.
+\end{definition}
+
+A closed form of the DBF function is given in \cite{baruah1990algorithms}
+\[
+  \dbf{t_1, t_2} = \sum_{i=1}^{n} \operatorname{max} \{ 0, \left\lfloor \frac{t_2 - O_i -
+  D_i}{T_i} \right\rfloor - \left\lceil \frac{t_1 - O_i}{T_i} \right\rceil + 1 \} \cdot C_i
+\]
+
+Furthermore, a feasibility test for EDF is given
+
+\begin{theorem}
+\[
+  (\tau_1, ..., \tau_n) \: \text{is feasible} \iff \dbf{t_1, t_2} \leq t_2 - t_1 \; \forall 0 \leq t_1 \leq t_2
+\]
+\end{theorem}
+
 
   In the synchronous case, this can be simplified to...
 
   \subsection{Using DIT to describe the C-space}
 
+When developing an application, it often happens that the platform is not known in advance, in which case the value of the $C_i$ are not known. Then, it can be useful to have a description of the possible values of the $C_i$ for which the system would be feasible.
+
+    \subsubsection{Definition}
+
+The authors of \cite{george2009characterization} give the following definition of the C-space:
+\begin{definition}
+For a given task system $\tau$ in which the $C_i$ are not known, the \textbf{C-space} is a region of $n$ dimensions (where each dimension denotes the possible $C_i$ of a task of $\tau$) such that for any vector $C = \{ C_1, \cdots, C_n\}$ in the C-space, $\tau$ is feasible.
+\end{definition}
+
+Thus, with a good description of the C-space, it is easy to check if a given vector of $C_i$ value (given e.g. when deploying the application on a specific platform) allows the system to be scheduled or not.
+
+  \subsubsection{Description using DBF}
+
+A region of $\mathbb{N}^n$ can be described by a list of parametric linear equations describing the convex hull of the admissible points. In other words, a list of conditions which can unequivocally decide if a point is included in the region or not.\\
+
+For the synchronous case, the DBF test gives us a list of equations which, taken together, are a necessary and sufficient condition of feasibility. Those are
+$$\dbf{t} = \sum_{i=1}^{n} n_i(t) C_i \leq t \; \forall t$$
+Note that for a given $t$, we have that the $n_i(t)$ are constant (w.r.t. the $C_i$). Those equations are thus effectively linear.\\
+
+\subsection{Removing redundancy using DIT}
+
+While redundant equations are not a problem in theory, a short description is always preferred as it can greatly reduce computation times.\\
+
+As was shown previously, the equations corresponding to job deadlines happening before $H$ are necessary and sufficient to test the feasibility, so only those can be considered. For constrained deadline systems, the end of the first busy period has been proven to be an acceptable upper limit for the DBF test as well, but this value depends on the $C_i$ and therefore cannot be used.
+
+\begin{definition}
+A \textbf{definitive idle time} (DIT) is a time $t$ such that every job released strictly before instant $t$ has its absolute deadline before or at instant $t$.\\
+\end{definition}
+
   \subsection{Our work}
 
+  In this paper, we extend the work of \cite{george2009characterization} to the asynchronous case. In section \ref{sct:asyncDIT}, we present an extension of the concept of DIT adapted to the asynchronous case called first periodic DIT, along with an algorithm to find its value and an EDF feasibility condition based on it. In Section \ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous system based on the DBF test, and we show why the interval $[O_{max}, O_{max} + 2 H]$ is sufficient to consider.
+
 \section{DIT in asynchronous systems}
+  \label{sct:asyncDIT}
 
   \subsection{Definition}
+
+  \begin{definition}
+  The \textbf{first periodic DIT} is the earliest DIT to occur strictly after the arrival of at least one job of each task.
+  \end{definition}
+
 
   \subsection{Existence condition}
 
@@ -90,6 +164,7 @@ lgeorge@ece.fr\\
   `e' factor...
 
 \section{Description of the C-space of asynchronous system}
+  \label{sct:asyncCspace}
 
 \section{Example}
 
