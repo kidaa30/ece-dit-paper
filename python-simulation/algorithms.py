@@ -122,6 +122,9 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(0, 1, 3, 6))
 	tasks.append(Task.Task(0, 1, 3, 3))
 	tau = Task.TaskSystem(tasks)
+	assert completedJobCount(tau.tasks[0], 15, 25) == 1
+	assert completedJobCount(tau.tasks[0], 0, 33) == 6
+	assert completedJobCount(tau.tasks[1], 0, 33) == 11, "returned: " + str(completedJobCount(tau.tasks[1], 0, 33))
 	assert findBusyPeriod(tau) == 2, "Unit Test FAIL : findBusyPeriod"
 	assert findFirstDIT(tau) == 3, "Unit Test FAIL : findFirstDIT, returned: " + str(findFirstDIT(tau))
 	assert findSynchronousInstant(tau) == 0, "Unit Test FAIL : findSynchronousInstant; returned: " + str(findSynchronousInstant(tau))
