@@ -170,12 +170,12 @@ def congruencePrimalPower(primalSystem, aList):
 	for p in ps.keys():
 		# Check that all values are consistent modulo p^b
 		# For that we check that ai = aj mod p^(b_min(i,j)) for all pairs
-		for bi in ps[p]:
+ 		for bi in ps[p]: #TODO : verify should we only check for the smallest bi
 			for bj in filter(lambda x: x > bi, primalSystem[p]):
 				ai = ps[p][bi]
 				aj = ps[p][bj]
 				# by construction we know that bi < bj
-				if int(ai % math.pow(p, bi)) != int(aj % math.pow(p, bi)):
+				if ai % int(math.pow(p, bi)) != aj % int(math.pow(p, bi)):
 					return None
 		# if the equations are coherent, we can only keep the one of biggest b
 		maxB[p] = max(ps[p].keys())
