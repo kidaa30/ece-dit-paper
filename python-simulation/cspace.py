@@ -48,7 +48,6 @@ if __name__ == '__main__':
 	tau_Cspace = Cspace(tau)
 	print "found ", len(tau_Cspace), "equations"
 
-
 	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is False
 
 	print "TEST2"
