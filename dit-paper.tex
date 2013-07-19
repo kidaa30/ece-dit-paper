@@ -64,11 +64,14 @@ $H = LCM(T_i)$
 \subsection{Definition of the demand-bound function}
 
 \begin{definition}
- The \textbf{demand-bound function (DBF)} (\cite{baruah1999generalized} and \cite{baruah1990algorithms}), defined for a task set $\tau$ and noted $\dbf{t}$, is equal to the maximal cumulated execution time of jobs of $\tau$ contained in any interval of length $t$.\\
+ The \textbf{demand-bound function (DBF)}
+ \cite{baruah1999generalized, baruah1990algorithms} defined for a task set
+ $\tau$ and noted $\dbf{t}$, is equal to the maximal cumulated execution time of jobs of $\tau$ contained in any interval of length $t$.\\
 
  Mathematically,
- $$\dbf{t} = \max_{\{t_1, t_2 \; : \; t_2 - t_1 = t\}} \sum_{i=1}^n C_i \; h_i(t_1, t_2)$$
- where $h_i(t_1, t_2)$ is the number of jobs of task $i$ whose arrival and deadline are in (non-strict) the interval $[t_1, t_2]$.
+ $$\dbf{t} = \max_{\{\forall \: t_1, t_2 \mid t_2 - t_1 = t \: \wedge \: 0
+ \leqslant t_1 \leqslant t_2\}} \sum_{i=1}^n C_i \cdot h_i(t_1, t_2)$$ where
+ $h_i(t_1, t_2)$ is the number of jobs of task $i$ whose arrival and deadline are in (non-strict) the interval $[t_1, t_2]$.
 \end{definition}
 
 As the synchronous arrival pattern is known to be the worst case, in that particular case we can only consider the interval $[0, t]$. In an asynchronous arrival pattern, it is sufficient to check only intervals where $t_1 < O_{max} + H$, as the values will be periodic after it.\\
