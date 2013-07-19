@@ -58,6 +58,11 @@ $\tau_i = (O_i, C_i, D_i, T_i)$
 
 $H = LCM(T_i)$
 
+\begin{definition}
+	A system is \textbf{synchronous} if all its tasks have no offset, and
+	\textbf{asynchronous} otherwise.
+\end{definition}
+
 \section{The DBF feasibility test}
 \label{sct:DBF}
 
@@ -74,11 +79,21 @@ $H = LCM(T_i)$
  $h_i(t_1, t_2)$ is the number of jobs of task $i$ whose arrival and deadline are in (non-strict) the interval $[t_1, t_2]$.
 \end{definition}
 
-As the synchronous arrival pattern is known to be the worst case, in that particular case we can only consider the interval $[0, t]$. In an asynchronous arrival pattern, it is sufficient to check only intervals where $t_1 < O_{max} + H$, as the values will be periodic after it.\\
+As the synchronous arrival pattern is known to be the worst case
+\cite{liu1973scheduling}, in that particular case we can only consider the
+interval $[0, t]$. In an asynchronous arrival pattern, it is sufficient to check
+only intervals where $t_2 < O_{max} + 2H$, as the system will be
+periodic starting from $O_{max} + H$ or sooner \cite{leung1982complexity}.\\
 
-In the sequel a closed form expression of the DBF is given in the synchronous case. Intuitively, in that case, it will be a step-function whose increase will occur at every job deadline, with the increase being equal to the execution time of the corresponding job.\\
+In the sequel a closed form expression of the DBF is given in the synchronous
+case. Intuitively, in this case it will be a step-function whose increases will
+occur at every job deadline, with the increase being equal to the execution time of the corresponding job.\\
 
-Starting from the definition, it remains to find a method to compute the values of $h_i(0, t)$ (noted $h_i(t)$ from now on). In the synchronous case, these values can be obtained as $$h_i(t) = \operatorname{max} \; \{ k \in \mathbb{N} : k T_i  + D_i \leq t \} + 1 $$ Indeed, $k = 0$ correspond to the first task, $k = 1$ to the second task, etc. The maximal value of $k$ can be explicitly stated by rearranging the condition:
+Starting from the definition, it remains to find a method to compute the values
+of $h_i(0, t)$ (noted $h_i(t)$ from now on). In the synchronous case, these
+values can be obtained as $$h_i(t) = \operatorname{max} \; \{ k \in \mathbb{N} :
+k T_i  + D_i \leq t \} + 1 $$ Indeed, $k = 0$ correspond to the first task, $k =
+1$ to the second task, etc. The maximal value of $k$ can be explicitly stated by rearranging the condition:
 $$k T_i + D_i \leq t$$
 $$\iff 0 \leq k \leq \lfloor \frac{t - D_i}{T_i} \rfloor$$
 The highest value is $k = \lfloor \frac{t - D_i}{T_i} \rfloor$. If this value is negative, it means that no job of task $\tau_i$ respects the condition, i.e. $h_i(t) = 0$. Else, we can inject it directly and obtain $h_i(t) = \lfloor \frac{t - D_i}{T_i} \rfloor + 1$\\
