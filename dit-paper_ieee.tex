@@ -1,0 +1,101 @@
+
+%
+%  $Description: Author guidelines and sample document in LaTeX 2.09$
+%
+%  $Author: ienne, modified by Laurent George $
+%  $Date: 2012/02/02 15:20:59 $
+%  $Revision: 1.5 $
+
+
+\documentclass[times, 10pt,twocolumn, a4paper]{article}
+\usepackage{latex8}
+\usepackage{epsfig, hhline}
+\usepackage{amssymb}
+\usepackage{vmargin,array,multirow,float,shadow,times, euscript}
+\usepackage{amsmath}
+\usepackage{algorithmic}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{pdftricks}
+
+
+\newtheorem{property}{Property}
+\newtheorem{assumption}{Assumption}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{constraint}{Constraint}
+\newtheorem{corollary}{Corollary}
+\newtheorem{condition}{Condition}
+
+\def\QED{\mbox{\rule[0pt]{1.5ex}{1.5ex}}}
+\def\proof{\noindent{{\textbf{Proof}: }}}
+\def\endproof{\hspace*{\fill}~\QED\par\endtrivlist\unskip \vspace{1\baselineskip}}
+\newenvironment{accolade}{\begin{centering} $$ \left\{ \begin{array}{l}}{\end{array} \right. $$ \end{centering}}
+
+%-------------------------------------------------------------------------
+% take the % away on next line to produce the final camera-ready version
+\pagestyle{empty}
+
+%-------------------------------------------------------------------------
+\begin{document}
+
+\title{Describing the C-space of asynchronous periodic task using DIT}
+
+\author{Thomas Chapeaux, Paul Rodriguez\\
+Universit\'e Libre de Bruxelles\\ tchapeau@ulb.ac.be, paurodri@ulb.ac.be \\
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+\and
+Laurent George\\
+ECE Paris\\
+First line of institution2 address\\ Second line of institution2 address\\
+lgeorge@ece.fr\\
+}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lobortis mi vel turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed malesuada ut, mollis sit amet mauris. Integer dapibus in risus et porttitor. In hac habitasse platea dictumst. Maecenas dolor libero, suscipit porta consequat eu, consequat non orci. Sed tortor neque, tincidunt congue cursus sit amet, luctus id ipsum. Aenean tempor est nisl, at dictum metus elementum iaculis. Sed iaculis magna erat, sit amet congue dolor dignissim accumsan. Duis sit amet luctus sem, non interdum purus. Vestibulum at eros sit amet magna malesuada faucibus nec in nisi. Sed et varius nibh. Suspendisse auctor mattis ultricies.
+\end{abstract}
+
+
+\section{Introduction}
+
+  \subsection{Model}
+
+  \subsection{The DBF feasibility test for EDF}
+
+  In general, ...\\
+
+  In the synchronous case, this can be simplified to...
+
+  \subsection{Using DIT to describe the C-space}
+
+  \subsection{Our work}
+
+\section{DIT in asynchronous systems}
+
+  \subsection{Definition}
+
+  \subsection{Existence condition}
+
+  \subsection{EDF Feasibility test}
+
+  \subsection{Simulation}
+
+  `e' factor...
+
+\section{Description of the C-space of asynchronous system}
+
+\section{Example}
+
+\section{Conclusion}
+
+\bibliographystyle{latex8}
+\bibliography{dit-paper}
+
+\end{document}
