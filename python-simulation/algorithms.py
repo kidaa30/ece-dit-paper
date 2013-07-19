@@ -69,12 +69,22 @@ def findBusyPeriod(tau):
 
 	return wNew
 
-def dbf(tau, t):
+
+def dbf_synchr(tau, t):
+	return dbf(tau, 0, t)
+
+
+def dbf(tau, t1, t2):
 	dbfSum = 0
 	for task in tau.tasks:
-		completedJobCnt = max(0, math.ceil((t - task.D - task.O) / task.T)) + 1
-		dbfSum += completedJobCnt * task.C
+		dbfSum += completedJobCount(task, t1, t2) * task.C
 	return dbfSum
+
+
+def completedJobCount(task, t1, t2):
+	jobBeforeT2 = math.floor(1.0 * (t2 - task.O - task.D) / task.T)
+	jobBeforeT1 = math.ceil(1.0 * (t1 - task.O) / task.T)
+	return max(0, jobBeforeT2 - jobBeforeT1 + 1)
 
 
 def dbf_test(tau, upperLimit="def"):
@@ -95,7 +105,7 @@ def dbf_test(tau, upperLimit="def"):
 		tup = heapq.heappop(deadlineHeap)
 		deadline = tup[0]
 		task = tup[1]
-		testResult = dbf(tau, deadline) <= deadline
+		testResult = dbf_synchr(tau, deadline) <= deadline
 		if testResult is False:
 			return False
 		# add next deadline of this task to the heap
