@@ -94,7 +94,7 @@ def test(numberOfSystems, constrDeadlineFactor):
 	return bpStop - bpMedium, bpMedium - bpStart, ditStop - ditMedium, ditMedium - ditStart, hyperTStop - hyperTMedium, hyperTMedium - hyperTStart
 
 if __name__ == '__main__':
-	NUMBER_OF_SYSTEMS = 2000
+	NUMBER_OF_SYSTEMS = 5000
 	bpValue = []
 	bpTest = []
 	bpAll = []
@@ -129,6 +129,6 @@ if __name__ == '__main__':
 	pylab.xlabel("e")
 	pylab.title("Computation time for some values of e (" + str(NUMBER_OF_SYSTEMS) + " systems)")
 	pylab.legend(loc=0)
-	pylab.axis([cdfRange[0], cdfRange[-1], 0, 5])
+	pylab.axis([cdfRange[0], cdfRange[-1], -0.5, 6])
 	pylab.savefig("./plots/001_" + str(time.time()).replace(".", "") + ".png")
 	pylab.show()

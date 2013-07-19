@@ -85,19 +85,19 @@ def primesBelow(n):
 	return [2] + [i for i in range(3, n, 2) if sieve[i]]
 
 
-def primeFactors(n):
-	# return an array containing all prime factors, with explicit doubles
+def primeFactors(n, listOfPrimes=None):
+	# return an array containing all prime factors of n, with explicit doubles
 	# e.g. primeFactors(48) = (2,2,2,2,3)
 	# order is not guaranteed
+	# listOfPrimes can be provided to speed up the process
 	factors = []
-	primes = primesBelow(n + 1)
-	i = 0
-	while i < len(primes):
-		if n % primes[i] == 0:
-			factors.append(primes[i])
-			n /= primes[i]
-		else:
-			i += 1
+	primes = listOfPrimes
+	if primes is None:
+		primes = primesBelow(n + 1)
+	for p in filter(lambda x: x <= n, primes):
+		while n % p == 0:
+			factors.append(p)
+			n /= p
 	return factors
 
 
@@ -122,6 +122,10 @@ def toPrimalPowerSystem(nList):
 	# Later, the list of values of a must be checked to be consistent
 	n = len(nList)
 	primalSystem = {}
+
+	# preprocess the primes below max(n)
+	nMax = max(nList)
+	primes = primesBelow(nMax)
 
 	for i in range(n):
 		nFactors = primeFactors(nList[i])
