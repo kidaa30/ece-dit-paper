@@ -8,25 +8,29 @@ def Cspace(tau, upperLimit="def"):
 	# encoded as a list
 	# [cst_1, cst_2, ..., cst_n, CST]
 
-	isSynchronous = max([task.O for task in tau.tasks]) == 0
+	Omax = max([task.O for task in tau.tasks])
+	isSynchronous = (Omax == 0)
 
 	if upperLimit == "def":
+		firstDIT = algorithms.findFirstDIT(tau)
 		if isSynchronous:
-			upperLimit = algorithms.findFirstDIT(tau)
+			upperLimit = firstDIT
 		else:
-			upperLimit = max([task.O for task in tau.tasks]) + 2 * tau.hyperPeriod()
+			if firstDit is not None:
+				upperLimit = firstDIT + tau.hyperPeriod()
+			else:
+				upperLimit = Omax + 2 * tau.hyperPeriod()
 
 	# for each arrival and each deadline, create an equation
 	equations = []
 	for task in tau.tasks:
-		# print task
 		for a in [0] if isSynchronous else range(task.O, upperLimit + 1, task.T):
 			for task2 in tau.tasks:
-				# print "\t", task2
 				for d in filter(lambda x: x > a, range(task2.O + task2.D, upperLimit + 1, task2.T)):
 					equations.append([algorithms.completedJobCount(t, a, d) for t in tau.tasks] + [d - a])
 
 	return equations
+
 
 def testCVector(cspace, cvector):
 	for i, equation in enumerate(cspace):
@@ -34,7 +38,7 @@ def testCVector(cspace, cvector):
 		for j in range(len(cvector)):
 			res += equation[j]*cvector[j]
 		if res > equation[-1]:
-			print "testCVector: error at equation ", i, equation, "with vector", cvector, "res:" , res
+			print "testCVector: error at equation ", i, equation, "with vector", cvector, "res:", res
 			return False
 	return True
 
@@ -58,7 +62,7 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(0, 1, 381, 400))
 	tau = Task.TaskSystem(tasks)
 	print "computing Cspace..."
-	tau_Cspace = Cspace(tau, 381)  # 381 = DIT of the system ;)
+	tau_Cspace = Cspace(tau, 381)  # 381 = DIT of the system (obviously ;D)
 	print "found ", len(tau_Cspace), "equations"
 
 	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
