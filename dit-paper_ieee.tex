@@ -229,6 +229,8 @@ To summarize, we reduced the description of the C-space from an infinite number 
 
   \subsection{Existence condition}
 
+  \label{sct:FPDITexist}
+
 As in the synchronous case, the problem of existence of the first periodic DIT can be written as a system of modular equation:
 $$
 \begin{array}{l}
@@ -246,6 +248,8 @@ $$
 This system is guaranteed to have at least one solution modulo $H$ for given values of $a_i$ if the following condition is respected $$a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i, T_j)) \; \forall i, j$$
 
   \subsection{Simulation}
+
+  (Work in Progress...)
 
   `e' factor...
 
@@ -291,9 +295,11 @@ For this reason, as explained in \cite{leung1982complexity}, it is sufficient to
 
 \subsubsection{Using the first periodic DIT}
 
-The first periodic DIT, if it exists, must occur in the transitive period. Indeed, it cannot occur in the incomplete period by definition ($t_d > O_{max}$) and if it occurred in a stationary period, another DIT should have occurred in the transitive period (a contradiction).\\
+The first periodic DIT, if it exists, must occur in the transitive period. Indeed, it cannot occur in the incomplete period by definition ($t_d > O_{max}$) and if it occurred in the $k^{th}$ stationary period, another DIT should have occurred in the transitive period at instant $t_d - k H$ (a contradiction).\\
 
+We show (...) that we can restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the first periodic DIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.\\
 
+To summarize, we reduced the number of equation from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise.
 
 \section{Example}
 
