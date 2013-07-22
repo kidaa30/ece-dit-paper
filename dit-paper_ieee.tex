@@ -63,17 +63,32 @@ lgeorge@ece.fr\\
 \thispagestyle{empty}
 
 \begin{abstract}
-   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lobortis mi vel turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed malesuada ut, mollis sit amet mauris. Integer dapibus in risus et porttitor. In hac habitasse platea dictumst. Maecenas dolor libero, suscipit porta consequat eu, consequat non orci. Sed tortor neque, tincidunt congue cursus sit amet, luctus id ipsum. Aenean tempor est nisl, at dictum metus elementum iaculis. Sed iaculis magna erat, sit amet congue dolor dignissim accumsan. Duis sit amet luctus sem, non interdum purus. Vestibulum at eros sit amet magna malesuada faucibus nec in nisi. Sed et varius nibh. Suspendisse auctor mattis ultricies.
+   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lobortis mi vel turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed malesuada ut, mollis sit amet mauris. Integer dapibus in risus et porttitor. In hac habitasse platea dictumst. Maecenas dolor libero, suscipit porta consequat eu, consequat non orci. Sed tortor neque, tincidunt congue cursus sit amet, luctus id ipsum. Aenean tempor est nisl, at dictum metus elementum iaculis.
 \end{abstract}
 
 
 \section{Introduction}
 
+Abstract models for real-time systems often require the determination of the (worst-case) computation time of a job, a value highly dependent on the platform on which the application will be deployed.\\
+
+The \emph{C-space} of a real-time system is, intuitively, the set of execution times value for which this system would be feasible. A precise and efficient description of its C-space would allow to quickly decide if a system is feasible on a given platform.\\
+
+This section review the current description of the C-space of synchronous constrained systems, mostly studied by \cite{george2009characterization}.
+
   \subsection{Model}
 
-  We consider systems of periodic tasks with constrained deadline, where each task $\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value, $C_i$ the execution time, $D_i$ the relative deadline and $T_i$ the period. The constrained deadline property implies that $D_i \leq T_i$.\\
+  We consider systems of periodic concrete tasks with constrained deadline on uniprocessor platform, where each task $\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value, $C_i$ the execution time, $D_i$ the relative deadline and $T_i$ the period. The constrained deadline property implies that $D_i \leq T_i \; \forall i$. In the following, we differentiate between \emph{synchronous systems} (where $O_i = 0 \; \forall i$) and \emph{asynchronous systems} (which are not synchronous).\\
 
-  For those type of systems, the \emph{Earliest Deadline First} (EDF) algorithm has been shown to be optimal on uniprocessor platform [citation needed], i.e. this scheduling algorithm is able to schedule any feasible system.
+  For those systems, the \emph{Earliest Deadline First} (EDF) algorithm, in which jobs are prioritized according to their absolute deadline, has been shown to be optimal [citation needed], that is it schedules any feasible system.\\
+
+  Furthermore, the following notations are used:
+  \begin{itemize}
+    \item $\tau = (\tau_0, \cdots, \tau_{n-1})$
+    \item $H = \operatorname{lcm}(T_0, \cdots, t_{n-1})$
+    \item $O_{max} = \max (O_0, \cdots, O_{n-1})$
+    \item idle time...
+    \item busy period...
+  \end{itemize}
 
   \subsection{The DBF feasibility test}
 
@@ -82,60 +97,60 @@ lgeorge@ece.fr\\
   \begin{definition}
   The \textbf{demand-bound function (DBF)}
   \cite{baruah1999generalized, baruah1990algorithms} defined for a task set
-  $\tau$ and noted $\dbf{t}$, is equal to the maximal cumulated execution time of jobs of $\tau$ contained in any interval of length $t$.\\
+  $\tau$ and noted $\dbf{t_1, t_2}$, is equal to the maximal cumulated execution time of jobs of $\tau$ contained in the interval $[t_1, t_2]$.
+  \end{definition}
 
   Mathematically,
   \[
-    \dbf{t} = \max_{\{\forall \: t_1, t_2 \mid t_2 - t_1 = t \: \wedge \: 0
-    \leqslant t_1 \leqslant t_2\}} \sum_{i=1}^n C_i \cdot n_i(t_1, t_2)
+    \dbf{t_1, t_2} = \sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i
   \]
   where $n_i(t_1, t_2)$ is the number of jobs of task $i$ whose arrival and
-  deadline are in (non-strict) the interval $[t_1, t_2]$.
-\end{definition}
+  deadline both are in the interval $[t_1, t_2]$.\\
 
-A closed form of the DBF function is given in \cite{baruah1990algorithms}
+The values of the $n_i$ are given by
 \[
-  \dbf{t_1, t_2} = \sum_{i=1}^{n} \operatorname{max} \{ 0, \left\lfloor \frac{t_2 - O_i -
-  D_i}{T_i} \right\rfloor - \left\lceil \frac{t_1 - O_i}{T_i} \right\rceil + 1 \} \cdot C_i
+  n_i(t_1, t_2) = \left( \left\lfloor \frac{t_2 - O_i -
+  D_i}{T_i} \right\rfloor - \left\lceil \frac{t_1 - O_i}{T_i} \right\rceil + 1 \right)^{+}
 \]
+where $(x)^+$ stands for $\max \{ 0, x \}$.\\
 
-Furthermore, a feasibility test for EDF is given
+The DBF allows to give a necessary and sufficient condition of feasibility:
 
 \begin{theorem}
 \[
-  (\tau_1, ..., \tau_n) \: \text{is feasible} \iff \dbf{t_1, t_2} \leq t_2 - t_1 \; \forall 0 \leq t_1 \leq t_2
+  \begin{array}{c}
+    (\tau_1, ..., \tau_n) \: \text{is feasible}  \iff \\
+    \dbf{t_1, t_2} \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
+  \end{array}
 \]
 \end{theorem}
 
-
-  In the synchronous case, this can be simplified to...
-
-  \subsection{Using DIT to describe the C-space}
-
-When developing an application, it often happens that the platform is not known in advance, in which case the value of the $C_i$ are not known. Then, it can be useful to have a description of the possible values of the $C_i$ for which the system would be feasible.
+  \subsection{C-space of synchronous systems}
 
     \subsubsection{Definition}
 
 The authors of \cite{george2009characterization} give the following definition of the C-space:
 \begin{definition}
-For a given task system $\tau$ in which the $C_i$ are not known, the \textbf{C-space} is a region of $n$ dimensions (where each dimension denotes the possible $C_i$ of a task of $\tau$) such that for any vector $C = \{ C_1, \cdots, C_n\}$ in the C-space, $\tau$ is feasible.
+For a given task system $\tau$ in which the $C_i$ are not known, the \textbf{C-space} is a region of $n$ dimensions (where each dimension denotes the possible $C_i$ of a task of $\tau$) such that for any vector $C = \{ C_0, \cdots, C_{n-1}\}$ in the C-space, $\tau$ is feasible.
 \end{definition}
 
-Thus, with a good description of the C-space, it is easy to check if a given vector of $C_i$ value (given e.g. when deploying the application on a specific platform) allows the system to be scheduled or not.
+%Thus, with a good description of the C-space, it is easy to check if a given vector of $C_i$ value (given e.g. when deploying the application on a specific platform) allows the system to be scheduled or not.
 
   \subsubsection{Description using DBF}
 
 A region of $\mathbb{N}^n$ can be described by a list of parametric linear equations describing the convex hull of the admissible points. In other words, a list of conditions which can unequivocally decide if a point is included in the region or not.\\
 
-For the synchronous case, the DBF test gives us a list of equations which, taken together, are a necessary and sufficient condition of feasibility. Those are
-$$\dbf{t} = \sum_{i=1}^{n} n_i(t) C_i \leq t \; \forall t$$
-Note that for a given $t$, we have that the $n_i(t)$ are constant (w.r.t. the $C_i$). Those equations are thus effectively linear.\\
+For the synchronous case, the DBF test gives us a list of equations which, taken together, are a necessary and sufficient condition of feasibility. Those are:
+$$\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2$$
+Note that for a given $t$, we have that the $n_i(t)$ are constant (w.r.t. the $C_i$). Those equations are thus indeed linear.\\
 
-\subsection{Removing redundancy using DIT}
+However, this description contains an infinite number of equations, most of which are redundant. While this does not harm the precision of the description, an more efficient description is preferred as it can greatly reduce computation times. The next section gives a method to reduce the size of the description.
 
-While redundant equations are not a problem in theory, a short description is always preferred as it can greatly reduce computation times.\\
+\subsection{Removing redundancy}
 
-As was shown previously, the equations corresponding to job deadlines happening before $H$ are necessary and sufficient to test the feasibility, so only those can be considered. For constrained deadline systems, the end of the first busy period has been proven to be an acceptable upper limit for the DBF test as well, but this value depends on the $C_i$ and therefore cannot be used.
+In the synchronous case, is has been shown that the equations corresponding to every interval $[0, t]$ (with $t$ a job deadline happening before $H$) are necessary and sufficient to test the feasibility.\\
+
+Even then, the number of equations to consider is exponential in the number of tasks. While it has been shown that intervals ending after the end of the busy period are also redundant, this value depends on the $C_i$ and is therefore not usable. The following concept is thus introduced, which is similar to the end of the busy period but which does not depend on the execution times.
 
 \begin{definition}
 A \textbf{definitive idle time} (DIT) is a time $t$ such that every job released strictly before instant $t$ has its absolute deadline before or at instant $t$.\\
@@ -154,10 +169,23 @@ A \textbf{definitive idle time} (DIT) is a time $t$ such that every job released
   The \textbf{first periodic DIT} is the earliest DIT to occur strictly after the arrival of at least one job of each task.
   \end{definition}
 
-
   \subsection{Existence condition}
 
-  \subsection{EDF Feasibility test}
+As in the synchronous case, the problem of existence of the first periodic DIT can be written as a system of modular equation:
+$$
+\begin{array}{l}
+  \exists ? \; t_d \; s.t. \; \forall i \; :\\
+  \left\{
+    \begin{array}{l}
+    t_d > O_i \\
+    t_d - O_i \equiv a_i \; (mod \; T_i) \\
+    a_i \in [D_i, T_i]
+  \end{array}
+\right.
+\end{array}
+$$
+
+This system is guaranteed to have at least one solution modulo $H$ if the following condition is respected $$a_i + O_i \equiv a_j + O_j \; (mod \; \operatorname{gcd}(T_i, T_j))$$
 
   \subsection{Simulation}
 
