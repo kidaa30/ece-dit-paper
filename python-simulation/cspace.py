@@ -16,7 +16,7 @@ def Cspace(tau, upperLimit="def"):
 		if isSynchronous:
 			upperLimit = firstDIT
 		else:
-			if firstDit is not None:
+			if firstDIT is not None:
 				upperLimit = firstDIT + tau.hyperPeriod()
 			else:
 				upperLimit = Omax + 2 * tau.hyperPeriod()
