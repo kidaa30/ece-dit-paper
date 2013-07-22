@@ -26,11 +26,14 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 
 if __name__ == '__main__':
 	NUMBER_OF_SYSTEMS = 1000
-	for constrDeadlineFactor in range(5, 15):
+	for constrDeadlineFactor in range(1, 10):
 		print "CONSTR DEAD FACTOR", constrDeadlineFactor
 		systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor)
+		successCount = 0
 		start = time.clock()
-		for tau in systemArray:
-			algorithms.findFirstDIT(tau)
+		for i, tau in enumerate(systemArray):
+			if constrDeadlineFactor == 1 and i % 100 == 0:
+				print i, "/", NUMBER_OF_SYSTEMS, "..."
+			successCount += 1 if algorithms.findFirstDIT(tau) else 0
 		stop = time.clock()
-		print "Found", NUMBER_OF_SYSTEMS, "DITs in ", stop - start, "seconds."
+		print "Found", successCount, "/", NUMBER_OF_SYSTEMS, "DITs in ", stop - start, "seconds."
