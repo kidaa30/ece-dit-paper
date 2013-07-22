@@ -69,25 +69,47 @@ lgeorge@ece.fr\\
 
 \section{Introduction}
 
-Abstract models for real-time systems often require the determination of the (worst-case) computation time of a job, a value highly dependent on the platform on which the application will be deployed.\\
+Abstract models for real-time systems often require the determination of the
+(worst-case) computation time of a job (WCET), a value highly dependent on the
+platform on which the application will be deployed.\\
 
-The \emph{C-space} of a real-time system is, intuitively, the set of execution times value for which this system would be feasible. A precise and efficient description of its C-space would allow to quickly decide if a system is feasible on a given platform.\\
+The \emph{C-space} of a real-time system is, intuitively,
+the set of WCET values for which this system would be feasible. A
+precise and efficient description of its C-space would allow to quickly decide
+if a system is feasible on a given platform.\\
 
-This section review the current description of the C-space of synchronous constrained systems, mostly studied by \cite{george2009characterization}.
+In this section the current description of the C-space of synchronous
+constrained systems is reviewed, mostly through
+\cite{george2009characterization}.
 
-  \subsection{Model}
+\subsection{Model}
 
-  We consider a discrete time and systems of periodic concrete tasks with constrained deadline on uniprocessor platform, where each task $\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value, $C_i$ the execution time, $D_i$ the relative deadline and $T_i$ the period. The constrained deadline property implies that $D_i \leq T_i \; \forall i$. In the following, we differentiate between \emph{synchronous systems} (where $O_i = 0 \; \forall i$) and \emph{asynchronous systems} (which are not synchronous).\\
+We consider a discrete timeline and systems comprised of periodic concrete
+tasks with constrained deadlines on uniprocessor platforms, where each task
+  $\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value,
+  $C_i$ the WCET, $D_i$ the relative deadline and $T_i$ the period.
+  The constrained deadline property implies that $D_i \leq T_i \; \forall i$. In
+  the following, we differentiate between \emph{synchronous systems} (where $O_i
+  = 0 \; \forall i$) and \emph{asynchronous systems} (which are not synchronous).\\
 
-  For those systems, the \emph{Earliest Deadline First} (EDF) algorithm, in which jobs are prioritized according to their absolute deadline, has been shown to be optimal [citation needed], that is it schedules any feasible system.\\
+  For those systems, the \emph{Earliest Deadline First} (EDF) algorithm, in
+  which jobs are prioritized according to their absolute deadline, has been
+  shown to be optimal \cite{liu1973scheduling}, which means it
+  correctly schedules any feasible system within that group.\\
 
   Furthermore, the following notations are used:
   \begin{itemize}
-    \item $\tau = (\tau_0, \cdots, \tau_{n-1})$
+    \item $\tau = \{\tau_0, \cdots, \tau_{n-1}\}$
     \item $H = \operatorname{lcm}(T_0, \cdots, t_{n-1})$
     \item $O_{max} = \max (O_0, \cdots, O_{n-1})$
-    \item An \emph{idle time} is an instant $t$ at which each job that arrived strictly before $t$ has finished its execution.
-    \item The interval between the initial time and the first idle time is called the \emph{busy period}.
+    \item An \emph{idle time} is an instant $t$ at which each job that arrived
+    \emph{strictly} before $t$ has finished its execution.
+    \item A \emph{busy period} is a time interval during which there is always
+    at least one job available and not finished in the system and maximal
+    (in interval length) with this property. Any busy period starts and ends
+    with an idle time.
+    \item The interval between the initial time and the first
+    idle time is called the \emph{first busy period}.
   \end{itemize}
 
   \subsection{The DBF feasibility test}
@@ -97,7 +119,8 @@ This section review the current description of the C-space of synchronous constr
   \begin{definition}
   The \textbf{demand-bound function (DBF)}
   \cite{baruah1999generalized, baruah1990algorithms} defined for a task set
-  $\tau$ and noted $\dbf{t_1, t_2}$, is equal to the maximal cumulated execution time of jobs of $\tau$ contained in the interval $[t_1, t_2]$.
+  $\tau$ and noted $\dbf{t_1, t_2}$, is equal to the maximal cumulated execution
+  time of jobs of $\tau$ contained in the closed interval $[t_1, t_2]$.
   \end{definition}
 
   Mathematically,
@@ -270,7 +293,7 @@ The first periodic DIT happen...
 
 \section{Conclusion}
 
-\nocite{*}
+% \nocite{*}
 \bibliographystyle{latex8}
 \bibliography{dit-paper}
 
