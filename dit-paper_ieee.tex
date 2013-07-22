@@ -219,9 +219,13 @@ To summarize, we reduced the description of the C-space from an infinite number 
 
   \subsection{Definition}
 
+  In an asynchronous system, the first DIT could happen before the arrival of at least one job of each task. We thus introduce the following notion:
+
   \begin{definition}
-  The \textbf{first periodic DIT} is the earliest DIT to occur strictly after the arrival of at least one job of each task.
+  The \textbf{first periodic DIT} of a system is the earliest DIT occurring strictly after the arrival of at least one job of each task.
   \end{definition}
+
+  By a slight abuse of notation, it will also be noted $t_d$. Note that in the synchronous case the first periodic DIT is also the first DIT.
 
   \subsection{Existence condition}
 
@@ -287,7 +291,9 @@ For this reason, as explained in \cite{leung1982complexity}, it is sufficient to
 
 \subsubsection{Using the first periodic DIT}
 
-The first periodic DIT happen...
+The first periodic DIT, if it exists, must occur in the transitive period. Indeed, it cannot occur in the incomplete period by definition ($t_d > O_{max}$) and if it occurred in a stationary period, another DIT should have occurred in the transitive period (a contradiction).\\
+
+
 
 \section{Example}
 
