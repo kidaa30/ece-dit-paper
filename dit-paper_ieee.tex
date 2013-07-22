@@ -77,7 +77,7 @@ This section review the current description of the C-space of synchronous constr
 
   \subsection{Model}
 
-  We consider systems of periodic concrete tasks with constrained deadline on uniprocessor platform, where each task $\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value, $C_i$ the execution time, $D_i$ the relative deadline and $T_i$ the period. The constrained deadline property implies that $D_i \leq T_i \; \forall i$. In the following, we differentiate between \emph{synchronous systems} (where $O_i = 0 \; \forall i$) and \emph{asynchronous systems} (which are not synchronous).\\
+  We consider a discrete time and systems of periodic concrete tasks with constrained deadline on uniprocessor platform, where each task $\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value, $C_i$ the execution time, $D_i$ the relative deadline and $T_i$ the period. The constrained deadline property implies that $D_i \leq T_i \; \forall i$. In the following, we differentiate between \emph{synchronous systems} (where $O_i = 0 \; \forall i$) and \emph{asynchronous systems} (which are not synchronous).\\
 
   For those systems, the \emph{Earliest Deadline First} (EDF) algorithm, in which jobs are prioritized according to their absolute deadline, has been shown to be optimal [citation needed], that is it schedules any feasible system.\\
 
@@ -86,8 +86,8 @@ This section review the current description of the C-space of synchronous constr
     \item $\tau = (\tau_0, \cdots, \tau_{n-1})$
     \item $H = \operatorname{lcm}(T_0, \cdots, t_{n-1})$
     \item $O_{max} = \max (O_0, \cdots, O_{n-1})$
-    \item idle time...
-    \item busy period...
+    \item An \emph{idle time} is an instant $t$ at which each job that arrived strictly before $t$ has finished its execution.
+    \item The interval between the initial time and the first idle time is called the \emph{busy period}.
   \end{itemize}
 
   \subsection{The DBF feasibility test}
@@ -153,12 +153,41 @@ In the synchronous case, is has been shown that the equations corresponding to e
 Even then, the number of equations to consider is exponential in the number of tasks. While it has been shown that intervals ending after the end of the busy period are also redundant, this value depends on the $C_i$ and is therefore not usable. The following concept is thus introduced, which is similar to the end of the busy period but which does not depend on the execution times.
 
 \begin{definition}
-A \textbf{definitive idle time} (DIT) is a time $t$ such that every job released strictly before instant $t$ has its absolute deadline before or at instant $t$.\\
+A \textbf{definitive idle time} (DIT) is a time $t$ such that every job released strictly before instant $t$ has its absolute deadline before or at instant $t$.
 \end{definition}
+
+\begin{definition}
+The earliest DIT occurring in the system strictly after $t=0$ is called the \textbf{first DIT} and is noted $t_d$.
+\end{definition}
+
+The value of the first DIT can be found by solving the following equation:
+\[
+  t_d = \min \left( t \; s.t. \; \forall i:
+  \left\{
+  \begin{array}{c}
+    t \equiv a_i \; (mod \; T_i) \\
+    a_i \in [D_i, T_i]
+  \end{array}
+  \right.
+  \right)
+\]
+
+\begin{remark} (from the definition):
+ \begin{itemize}
+  \item Contrary to the idle times, the DITs are independent of the scheduling or the execution times of the jobs.
+  \item In feasible system, every DIT is an idle time.
+  \item In feasible system, the first DIT happens after the end of the busy period.
+  \item As $H$ is always a DIT, we have $t_d \leq H$.
+ \end{itemize}
+\end{remark}
+
+Every DIT being an idle instant, the execution of the system after it does not depend on what happened previously. Because the synchronous arrival pattern is the worst case [citation needed], it is sufficient for the DBF test to only consider intervals $[0, t]$ with $t$ being a deadline before the first DIT.\\
+
+To summarize, we reduced the description of the C-space from an infinite number of equations to only the equations where $t_1 = 0$, $t_2 \leq t_d$ and $t_2$ correspond to a deadline job. Note that this is still exponential in the number of tasks.
 
   \subsection{Our work}
 
-  In this paper, we extend the work of \cite{george2009characterization} to the asynchronous case. In section \ref{sct:asyncDIT}, we present an extension of the concept of DIT adapted to the asynchronous case called first periodic DIT, along with an algorithm to find its value and an EDF feasibility condition based on it. In Section \ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous system based on the DBF test, and we show why the interval $[O_{max}, O_{max} + 2 H]$ is sufficient to consider.
+  In this paper, we extend the work of \cite{george2009characterization} to the asynchronous case. In section \ref{sct:asyncDIT}, we present an extension of the concept of DIT adapted to the asynchronous case called first periodic DIT ($t_d$), along with an algorithm to find its value. In Section \ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous system based on the DBF test, and we show why the interval $[t_d, t_d + H]$ is sufficient to consider.
 
 \section{DIT in asynchronous systems}
   \label{sct:asyncDIT}
@@ -185,7 +214,7 @@ $$
 \end{array}
 $$
 
-This system is guaranteed to have at least one solution modulo $H$ if the following condition is respected $$a_i + O_i \equiv a_j + O_j \; (mod \; \operatorname{gcd}(T_i, T_j))$$
+This system is guaranteed to have at least one solution modulo $H$ for given values of $a_i$ if the following condition is respected $$a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i, T_j)) \; \forall i, j$$
 
   \subsection{Simulation}
 
@@ -198,6 +227,7 @@ This system is guaranteed to have at least one solution modulo $H$ if the follow
 
 \section{Conclusion}
 
+\nocite{*}
 \bibliographystyle{latex8}
 \bibliography{dit-paper}
 
