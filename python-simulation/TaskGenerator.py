@@ -63,6 +63,11 @@ def generateTasksFrom(utilizations, T_LCM, Tmin, Tmax, synchronous, constrDeadli
 		C = max(1, int(round(math.floor(u*T))))
 		D = random.randint(T-(T-C)/constrDeadlineFactor, T)
 		tasks.append(Task.Task(O, C, D, T))
+
+	# translate offset so that Omin=0
+	Omin = min([task.O for task in tasks])
+	for task in tasks:
+		task.O -= Omin
 	return tasks
 
 
