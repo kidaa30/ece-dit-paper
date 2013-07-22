@@ -162,6 +162,8 @@ For a given task system $\tau$ in which the $C_i$ are not known, the \textbf{C-s
 
   \subsubsection{Description using DBF}
 
+  \label{sct:cspaceDescr}
+
 A region of $\mathbb{N}^n$ can be described by a list of parametric linear equations describing the convex hull of the admissible points. In other words, a list of conditions which can unequivocally decide if a point is included in the region or not.\\
 
 For the synchronous case, the DBF test gives us a list of equations which, taken together, are a necessary and sufficient condition of feasibility. Those are:
@@ -246,8 +248,49 @@ To summarize, we reduced the description of the C-space from an infinite number 
 
   `e' factor...
 
-\section{Description of the C-space of asynchronous system}
+\section{C-space of asynchronous systems}
   \label{sct:asyncCspace}
+
+  \subsection{Description using DBF}
+
+  The description we presented in Section \ref{sct:cspaceDescr} was general, and is thus still relevant: $$\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2$$
+
+  The method used to remove redundancy, however, assumed the synchronous case. A more general approach is presented in the following section.
+
+  \subsection{Removing redundancy}
+
+\subsubsection{Job arrival and deadline}
+
+Consider an interval $[t_1, t_2]$. If $t_2$ is an instant without any job deadline, then by definition the value of $\dbf{t_1, t_2}$ will be equal to $\dbf{t_1, t_2^*}$, where $t_2^*$ is the latest deadline before $t_2$.\\
+
+A similar argument can be made if $t_1$ is an instant without any job arrival (and $t_1^*$ is the earliest arrival after $t_1$). We can thus restricts ourselves to intervals where $t_1$ is an instant with at least one job arrival, and $t_2$ is an instant with at least one job deadline.
+
+  \subsubsection{Feasibility interval}
+
+  First let us recall how an asynchronous system behaves under, for example, EDF.\\
+
+\begin{figure}[h]
+$$
+\begin{array}{|c|c|c|c|l}
+   \text{Incomplete} & \text{Transitive} & \text{Stationary} & \text{$2^{nd}$ Stationary} & \cdots \\
+   \text{period} & \text{period} & \text{period} & \text{period} & \\
+  \hline
+  t > 0 & O_{max} & O_{max} + H & O_{max} + 2H & \cdots
+\end{array}
+$$
+\begin{center}
+\caption{Behavior of an asynchronous system under EDF.}
+\label{fig:asyncBehavior}
+\end{center}
+\end{figure}
+
+As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the \emph{incomplete period}, where all tasks are not in the system. Then, after $O_{max}$ time units, every tasks is in the system and the \emph{transitive period} begins. Then, after $O_{max} + H$ time units, the system is faced with the same pattern of arrival as in $O_{max}$. However, because in $O_{max} + H$ every task is in the system and in $O_{max}$ some were missing, the state of the system will be different. The \emph{stationary period} then begins. It is only after $O_{max} + 2H$ time units that the system comes back into a state in which it was before.\\
+
+For this reason, as explained in \cite{leung1982complexity}, it is sufficient to check for intervals included in the interval $[O_{max}, O_{max} + 2H]$, which has an exponential length in the number of tasks.
+
+\subsubsection{Using the first periodic DIT}
+
+The first periodic DIT happen...
 
 \section{Example}
 
