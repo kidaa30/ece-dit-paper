@@ -1,9 +1,10 @@
 import random
 import time
 
+import algorithms
+import cspace
 import Task
 import TaskGenerator
-import algorithms
 
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 	systemArray = []
@@ -25,15 +26,19 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 	return systemArray
 
 if __name__ == '__main__':
-	NUMBER_OF_SYSTEMS = 1000
-	for constrDeadlineFactor in range(1, 10):
+	NUMBER_OF_SYSTEMS = 10
+	for constrDeadlineFactor in range(5, 10):
 		print "CONSTR DEAD FACTOR", constrDeadlineFactor
 		systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor)
-		successCount = 0
 		start = time.clock()
 		for i, tau in enumerate(systemArray):
-			if constrDeadlineFactor == 1 and i % 100 == 0:
-				print i, "/", NUMBER_OF_SYSTEMS, "..."
-			successCount += 1 if algorithms.findFirstDIT(tau) else 0
+			firstDIT = algorithms.findFirstPeriodicDIT(tau)
+			sizeWithDIT = len(cspace.Cspace(tau, upperLimit="def"))  # will use first DIT if it exists
+			upL = max([task.O for task in tau.tasks]) + 2 * tau.hyperPeriod()
+			sizeWithoutDIT = len(cspace.Cspace(tau, upperLimit=upL))
+
+			print "\tLimit :", firstDIT, "/", upL
+			print "\tsize with DIT", sizeWithDIT
+			print "\tsize without DIT", sizeWithoutDIT
+			print "\t"
 		stop = time.clock()
-		print "Found", successCount, "/", NUMBER_OF_SYSTEMS, "DITs in ", stop - start, "seconds."
