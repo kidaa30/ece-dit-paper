@@ -63,7 +63,8 @@ lgeorge@ece.fr\\
 \thispagestyle{empty}
 
 \begin{abstract}
-   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lobortis mi vel turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed malesuada ut, mollis sit amet mauris. Integer dapibus in risus et porttitor. In hac habitasse platea dictumst. Maecenas dolor libero, suscipit porta consequat eu, consequat non orci. Sed tortor neque, tincidunt congue cursus sit amet, luctus id ipsum. Aenean tempor est nisl, at dictum metus elementum iaculis.
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lobortis mi vel
+turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed malesuada ut, mollis sit amet mauris. Integer dapibus in risus et porttitor. In hac habitasse platea dictumst. Maecenas dolor libero, suscipit porta consequat eu, consequat non orci. Sed tortor neque, tincidunt congue cursus sit amet, luctus id ipsum. Aenean tempor est nisl, at dictum metus elementum iaculis.
 \end{abstract}
 
 
@@ -213,31 +214,33 @@ To summarize, we reduced the description of the C-space from an infinite number 
   In this paper, we extend the work of \cite{george2009characterization} to the asynchronous case. In section \ref{sct:asyncDIT}, we present an extension of the concept of DIT adapted to the asynchronous case called first periodic DIT ($t_d$), along with an algorithm to find its value. In Section \ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous system based on the DBF test, and we show why the interval $[t_d, t_d + H]$ is sufficient to consider.
 
 \section{DIT in asynchronous systems}
-  \label{sct:asyncDIT}
+	\label{sct:asyncDIT}
 
-  \subsection{Definition}
+	\subsection{Definition}
 
-  \begin{definition}
-  The \textbf{first periodic DIT} is the earliest DIT to occur strictly after the arrival of at least one job of each task.
-  \end{definition}
+\begin{definition}
+	The \textbf{first periodic DIT} is the earliest DIT to occur strictly after the
+	arrival of at least one job of each task.
+\end{definition}
 
-  \subsection{Existence condition}
-
-As in the synchronous case, the problem of existence of the first periodic DIT can be written as a system of modular equation:
-$$
-\begin{array}{l}
-  \exists ? \; t_d \; s.t. \; \forall i \; :\\
-  \left\{
-    \begin{array}{l}
-    t_d > O_i \\
-    t_d - O_i \equiv a_i \; (mod \; T_i) \\
-    a_i \in [D_i, T_i]
-  \end{array}
-\right.
-\end{array}
-$$
-
-This system is guaranteed to have at least one solution modulo $H$ for given values of $a_i$ if the following condition is respected $$a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i, T_j)) \; \forall i, j$$
+\subsection{Existence condition}
+	As in the synchronous case, the problem of existence of the first periodic DIT can be written as a system of modular equation:
+	\[
+		\begin{array}{l}
+			\exists ? \; t_d \; s.t. \; \forall i \; :\\
+			\left\{
+				\begin{array}{l}
+					t_d > O_i \\
+					t_d - O_i \equiv a_i \; (mod \; T_i) \\
+					a_i \in [D_i, T_i]
+				\end{array}
+			\right.
+		\end{array}
+	\]
+	
+	This system is guaranteed to have at least one solution modulo $H$ for given
+	values of $a_i$ if the following condition is respected $$a_i + O_i \equiv a_j +
+	O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i, T_j)) \; \forall i, j$$
 
   \subsection{Simulation}
 
