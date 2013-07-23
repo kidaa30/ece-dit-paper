@@ -64,8 +64,13 @@ lgeorge@ece.fr\\
 
 \begin{abstract}
 	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lobortis mi vel
-turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed malesuada ut, mollis sit amet mauris. Integer dapibus in risus et porttitor. In hac habitasse platea dictumst. Maecenas dolor libero, suscipit porta consequat eu, consequat non orci. Sed tortor neque, tincidunt congue cursus sit amet, luctus id ipsum. Aenean tempor est nisl, at dictum metus elementum iaculis.
+turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed malesuada ut, mollis sit amet mauris. Integer dapibus in risus et porttitor. In hac habitasse platea dictumst. Maecenas dolor libero, suscipit porta consequat eu, consequat non orci. Sed tortor neque, tincidunt congue cursus sit amet, luctus id ipsum. Aenean tempor est nisl, at dictum metus elementum iaculis.\\
+
+Keywords: Real-time systems, C-space, WCET
+
+Buzzword: sensitivity analysis
 \end{abstract}
+
 
 
 \section{Introduction}
@@ -265,9 +270,9 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 
   \subsection{Description using DBF}
 
-  The description we presented in Section \ref{sct:cspaceDescr} was general, and is thus still relevant: $$\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2$$
+  The description we presented in Section \ref{sct:cspaceDescr} was general, and is thus still relevant. Therefore the C-space is still described by the following infinite number of constraints:$$\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2$$
 
-  The method used to remove redundancy, however, assumed the synchronous case. A more general approach is presented in the following section.
+  However, the method used in the synchronous case to remove redundancy does not apply here. A more general approach is presented in the following section.
 
   \subsection{Removing redundancy}
 
@@ -279,7 +284,7 @@ A similar argument can be made if $t_1$ is an instant without any job arrival (a
 
   \subsubsection{Feasibility interval}
 
-  First let us recall how an asynchronous system behaves under, for example, EDF.\\
+  First let us recall how an asynchronous system behaves under an optimal scheduler, for example EDF.\\
 
 \begin{figure}[h]
 $$
@@ -298,7 +303,7 @@ $$
 \end{center}
 \end{figure}
 
-As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the \emph{incomplete period}, where all tasks are not in the system. Then, after $O_{max}$ time units, every tasks is in the system and the \emph{transitive period} begins. Then, after $O_{max} + H$ time units, the system is faced with the same pattern of arrival as in $O_{max}$. However, because in $O_{max} + H$ every task is in the system and in $O_{max}$ some were missing, the state of the system will be different. The \emph{stationary period} then begins. It is only after $O_{max} + 2H$ time units that the system comes back into a state in which it was before.\\
+As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the \emph{incomplete period}, where all tasks are not in the system. Then, after $O_{max}$ time units, every tasks is in the system and the \emph{transitive period} begins. Then, after $O_{max} + H$ time units, the system is faced with the same pattern of arrival as in $O_{max}$. However, because in $O_{max} + H$ every task is in the system and in $O_{max}$ some were missing, the state of the system will be different. The \emph{stationary period} then begins. It is only after $O_{max} + 2H$ time units that the system comes back into a state in which we can be sure it has been before.\\
 
 For this reason, as explained in \cite{leung1982complexity}, it is sufficient to check for intervals included in the interval $[O_{max}, O_{max} + 2H]$, which has an exponential length in the number of tasks.
 
