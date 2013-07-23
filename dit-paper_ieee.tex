@@ -138,14 +138,14 @@ Buzzword: sensitivity analysis
 
 	The values of the $n_i$ are given by
 	\[
-		n_i(t_1, t_2) = 
+		n_i(t_1, t_2) =
 		\left\llbracket
 			\left\lfloor
 				\frac{t_2 - O_i - D_i}{T_i}
-			\right\rfloor - 
-			\left\lceil 
-				\frac{t_1 - O_i}{T_i} 
-			\right\rceil + 1 
+			\right\rfloor -
+			\left\lceil
+				\frac{t_1 - O_i}{T_i}
+			\right\rceil + 1
 		\right\rrbracket_0
 	\]
 	where $\llbracket x \rrbracket_0$ stands for $\max \{ 0, x \}$.\\
@@ -197,25 +197,25 @@ Buzzword: sensitivity analysis
 			test, the smallest description is preferred as it can greatly
 			reduce the computation time of practical feasibility tests using this system
 			of inequations. In Section~\ref{sct:removeRedundancy} a method to reduce the size of this set of constraints is given.
-	
+
 	\subsection{Removing redundancy}
 		\label{sct:removeRedundancy}
 
 	In the synchronous case, is has been shown that the inequations corresponding
 	to every interval $[0, t]$ (with $t$ a job deadline happening before $H$) are
 	necessary and sufficient to test the feasibility of a system.\\
-	
+
 	Even then, the number of inequations to consider is exponential in the number
 	of tasks. While it has been shown that constraints that cover intervals ending
 	after the end of the first busy period are also redundant, this value depends on the $C_i$ and is
 	therefore not usable, or at least not for the purposes of this paper. The
 	following concept is thus introduced, which is similar to the end of the busy period but which does not depend on the execution times.
-	
+
 	\begin{definition}
 		A \textbf{definitive idle time} (DIT) is a time $t$ such that every job
 		released strictly before instant $t$ has its absolute deadline before or at instant $t$.
 	\end{definition}
-	
+
 	\begin{definition}
 		The earliest DIT occurring in the system strictly after $t=0$ is called the
 		\textbf{first DIT} and is noted $t_d$.
@@ -223,7 +223,7 @@ Buzzword: sensitivity analysis
 
 	The value of the first DIT can be found by solving the following equation:
 	\[
-		t_d = \min 
+		t_d = \min
 		\left( t \; s.t. \; \forall i:
 			\left\{
 				\begin{array}{c}
@@ -250,7 +250,7 @@ Buzzword: sensitivity analysis
 	not depend on what happened before. Because the synchronous arrival pattern is
 	the worst case [citation needed], it is sufficient for the DBF test to only
 	consider intervals $[0, t]$ with $t$ being a deadline before the first DIT.\\
-	
+
 	To summarize, we reduced the description of the C-space from an infinite number
 	of constraints to only the inequations where $t_1 = 0$, $t_2 \leqslant t_d$ and
 	values of $t_2$ correspond to job deadlines. Note that the number of
@@ -298,17 +298,70 @@ Buzzword: sensitivity analysis
 		\]
 
 		This system is guaranteed to have at least one solution modulo $H$ for given
-		values of $a_i$ if the following condition is respected :
+		values of $a_i$ if the following condition is respected:
 		\[
 			a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i,
 			T_j)) \; \forall i,j
 		\]
+		which means that there could be systems with no first periodic DIT.
+		We now present an example of such a system.\\
 
-  \subsection{Simulation}
+		\begin{center}
+		\begin{tabular}{|r|c|c|c|c|}
+		 \hline
+		  & $O_i$ & $C_i$ & $D_i$ & $T_i$ \\
+		 \hline
+		 $\tau_1$ & 0 & $C_1$ & 3 & 4\\
+		 \hline
+		 $\tau_2$ & 2 & $C_2$ & 7 & 8\\
+		 \hline
+		\end{tabular}
+		\end{center}
+		~\\
 
-  (Work in Progress...)
+		Here, the possible values of $a_1$ are 3 and 4, and the possible values
+		of $a_2$ are 7 and 8. For a first periodic DIT to exist, one of those
+		condition must be fulfilled:
+		\[
+		\left[
+		\begin{array}{c}
+			3 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
+			3 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
+			4 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
+			4 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
+		\end{array}
+		\right.
+		\]
+		However those four conditions are false, so the system has no first
+		periodic DIT (and no other DIT than $t=0$).
 
-  `e' factor...
+	\subsection{Simulation}
+
+	We wanted to quantify how much systems has a first periodic DIT........
+
+	We generated task systems by
+	\begin{itemize}
+		\item Generating utilization values with the \texttt{UUniSort} algorithm described in \cite{bini2005measuring}, with parameters
+		\begin{itemize}
+			\item $U_{tot}$ (system utilization) chosen uniformly between 0.25 and 0.75
+			\item $n$ (number of tasks) equal to 3
+		\end{itemize}
+		\item Choosing the $T_i$ uniformly between 5 and 20, which also gives us the $C_i = \lfloor U_i \, T_i \rfloor$
+		\item Choosing the $O_i$ with a normal distribution of mean $T_{min}$ and standard deviation $\frac{T_{max} - T_{min}}{2}$
+		\item Choosing the $D_i$ uniformly in the interval $[T_i - \frac{T_i - C_i}{CDF}, T_i]$, where the $CDF$ is called \emph{Constrained Deadline Factor}.
+	\end{itemize}
+	and then computed the value of the first periodic DIT.\\
+
+	We use the CDF because........
+
+	The result are represented in Fig. \ref{fig:noFPDIT}
+
+	\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{python-simulation/plots/nofpdit.png}
+	\end{center}
+	\label{fig:noFPDIT}
+	\end{figure}
 
 \section{C-space of asynchronous systems}
   \label{sct:asyncCspace}

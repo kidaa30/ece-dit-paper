@@ -29,8 +29,10 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 
 if __name__ == '__main__':
 	NUMBER_OF_SYSTEMS = 10000
+	noFPDITpcts = []
+	CDFvalues = []
 	for constrDeadlineFactor in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-		print "CONSTR DEAD FACTOR", constrDeadlineFactor
+		#print "CONSTR DEAD FACTOR", constrDeadlineFactor
 		systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor)
 		firstDITs = []
 		upLs = []
@@ -41,16 +43,29 @@ if __name__ == '__main__':
 			if firstDITs[-1] is not None:
 				firstDITs[-1] += tau.hyperPeriod()
 			upLs.append(max([task.O for task in tau.tasks]) + 2 * tau.hyperPeriod())
-			print "\t", i, "Limit :", firstDITs[-1] if firstDITs[-1] is None else firstDITs[-1], "/", upLs[-1]
+			# print "\t", i, "Limit :", firstDITs[-1] if firstDITs[-1] is None else firstDITs[-1], "/", upLs[-1]
 
-			sizeWithDIT = len(cspace.Cspace(tau, upperLimit="def"))  # will use first DIT if it exists
-			if firstDITs[-1] is None:
-				sizeWithoutDIT = sizeWithDIT
-			else:
-				sizeWithoutDIT = len(cspace.Cspace(tau, upperLimit=upLs[-1]))
-			print "\tsize with DIT\t", sizeWithDIT
-			print "\tsize no DIT\t", sizeWithoutDIT
-			stop = time.clock()
-			print "\ttime: ", stop - start, "s"
-			print "\t"
+			# sizeWithDIT = len(cspace.Cspace(tau, upperLimit="def"))  # will use first DIT if it exists
+			# if firstDIT is None:
+			# 	sizeWithoutDIT = sizeWithDIT
+			# else:
+			# 	sizeWithoutDIT = len(cspace.Cspace(tau, upperLimit=upL))
+			# print "\tsize with DIT\t", sizeWithDIT
+			# print "\tsize no DIT\t", sizeWithoutDIT
+			# stop = time.clock()
+			# print "\ttime: ", stop - start, "s"
+			# print "\t"
+		print "CDF", constrDeadlineFactor
+		noFPDITpcts.append((100.0*len(filter(lambda x: x is None, firstDITs)))/len(firstDITs))
+		print "Percentage of system with no FPDIT:", noFPDITpcts[-1], "%"
+		CDFvalues.append(constrDeadlineFactor)
 
+	pylab.figure()
+	pylab.plot(CDFvalues, noFPDITpcts, "r-o", label="No FPDIT %")
+	pylab.ylabel("%")
+	pylab.xlabel("CDF")
+	pylab.title("Number of systems with no FPDIT")
+	pylab.legend(loc=0)
+	# pylab.axis()
+	# pylab.savefig("./plots/001_" + str(time.time()).replace(".", "") + ".png")
+	pylab.show()

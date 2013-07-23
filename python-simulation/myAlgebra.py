@@ -150,9 +150,9 @@ def congruencePrimalPower(primalSystem, aList):
 	# x = ak (mod pk^bk)
 	# Returns None if no such x exists
 
-	# Check that the values of aList are coherent in the primalSystem
-	# and replace them by their value modulo p^b
-	ps = {}
+	# Check that the values of aList for the same p^b are coherent
+	# and replace them by their value (modulo p^b)
+	ps = {}  # we need a new dictionary to keep the original const
 	for p in primalSystem:
 		ps[p] = {}
 		for b in primalSystem[p]:
@@ -170,7 +170,7 @@ def congruencePrimalPower(primalSystem, aList):
 	for p in ps.keys():
 		# Check that all values are consistent modulo p^b
 		# For that we check that ai = aj mod p^(b_min(i,j)) for all pairs
- 		for bi in ps[p]: #TODO : verify should we only check for the smallest bi
+		for bi in ps[p]:  # TODO : verify should we only check for the smallest bi
 			for bj in filter(lambda x: x > bi, primalSystem[p]):
 				ai = ps[p][bi]
 				aj = ps[p][bj]
