@@ -16,6 +16,7 @@
 \usepackage{algorithmic}
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage{pdftricks}
+\usepackage{stmaryrd}
 
 
 \newtheorem{property}{Property}
@@ -132,10 +133,17 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 
 	The values of the $n_i$ are given by
 	\[
-		n_i(t_1, t_2) = \left( \left\lfloor \frac{t_2 - O_i -
-		D_i}{T_i} \right\rfloor - \left\lceil \frac{t_1 - O_i}{T_i} \right\rceil + 1 \right)^{+}
+		n_i(t_1, t_2) = 
+		\left\llbracket
+			\left\lfloor
+				\frac{t_2 - O_i - D_i}{T_i}
+			\right\rfloor - 
+			\left\lceil 
+				\frac{t_1 - O_i}{T_i} 
+			\right\rceil + 1 
+		\right\rrbracket_0
 	\]
-	where $(x)^+$ stands for $\max \{ 0, x \}$.\\
+	where $\llbracket x \rrbracket_0$ stands for $\max \{ 0, x \}$.\\
 
 	The DBF allows to give a necessary and sufficient condition of feasibility:
 
