@@ -58,7 +58,7 @@ def generateTasksFrom(utilizations, T_LCM, Tmin, Tmax, synchronous, constrDeadli
 
 	tasks = []
 	for u in utilizations:
-		O = 0 if synchronous else max(0, int(random.normalvariate(Tmin, Tmax)))
+		O = 0 if synchronous else max(0, int(random.normalvariate(Tmin, (Tmax-Tmin)/2)))
 		T = random.randrange(Tmin, Tmax) if T_LCM == -1 else random.choice(divisors)
 		C = max(1, int(round(math.floor(u*T))))
 		D = random.randint(T-(T-C)/constrDeadlineFactor, T)
