@@ -6,6 +6,7 @@ import cspace
 import Task
 import TaskGenerator
 
+
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 	systemArray = []
 	for i in range(numberOfSystems):
@@ -48,4 +49,3 @@ if __name__ == '__main__':
 			stop = time.clock()
 			print "\ttime: ", stop - start, "s"
 			print "\t"
-
