@@ -1,5 +1,6 @@
 import random
 import time
+import pylab
 
 import algorithms
 import cspace
@@ -14,8 +15,8 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 		Umax = 0.75
 		Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
 		n = 3
-		maxHyperT = 554400  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
-		# maxHyperT = -1
+		# maxHyperT = 554400  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
+		maxHyperT = -1
 		Tmin = 5
 		Tmax = 20
 		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
@@ -27,21 +28,22 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 	return systemArray
 
 if __name__ == '__main__':
-	NUMBER_OF_SYSTEMS = 100
-	for constrDeadlineFactor in range(1,3):
+	NUMBER_OF_SYSTEMS = 10000
+	noFPDITpcts = []
+	CDFvalues = []
+	for constrDeadlineFactor in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
 		#print "CONSTR DEAD FACTOR", constrDeadlineFactor
 		systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor)
 		firstDITs = []
 		upLs = []
 		for i, tau in enumerate(systemArray):
 			start = time.clock()
-			print "\t", tau
 
 			firstDITs.append(algorithms.findFirstPeriodicDIT(tau))
 			if firstDITs[-1] is not None:
 				firstDITs[-1] += tau.hyperPeriod()
 			upLs.append(max([task.O for task in tau.tasks]) + 2 * tau.hyperPeriod())
-			print "\t", i, "Limit :", firstDITs[-1] if firstDITs[-1] is None else firstDITs[-1], "/", upLs[-1]
+			# print "\t", i, "Limit :", firstDITs[-1] if firstDITs[-1] is None else firstDITs[-1], "/", upLs[-1]
 
 			# sizeWithDIT = len(cspace.Cspace(tau, upperLimit="def"))  # will use first DIT if it exists
 			# if firstDIT is None:
@@ -53,12 +55,17 @@ if __name__ == '__main__':
 			# stop = time.clock()
 			# print "\ttime: ", stop - start, "s"
 			# print "\t"
-		noFPDITpct = (100.0*len(filter(lambda x: x is None, firstDITs)))/len(firstDITs)
-		print "Percentage of system with no FPDIT:", noFPDITpct, "%"
-		if noFPDITpct < 100.0:
-			print "Avg ratio gained for systems with FPDIT: (...)"
-			ratios = []
-			for upL, firstDIT in zip(upLs, firstDITs):
-				if firstDIT is not None:
-					ratios.append(1.0*upL/firstDIT)
-			print 1.0*sum(ratios)/len(ratios)
+		print "CDF", constrDeadlineFactor
+		noFPDITpcts.append((100.0*len(filter(lambda x: x is None, firstDITs)))/len(firstDITs))
+		print "Percentage of system with no FPDIT:", noFPDITpcts[-1], "%"
+		CDFvalues.append(constrDeadlineFactor)
+
+	pylab.figure()
+	pylab.plot(CDFvalues, noFPDITpcts, "r-o", label="No FPDIT %")
+	pylab.ylabel("%")
+	pylab.xlabel("CDF")
+	pylab.title("Number of systems with no FPDIT")
+	pylab.legend(loc=0)
+	# pylab.axis()
+	# pylab.savefig("./plots/001_" + str(time.time()).replace(".", "") + ".png")
+	pylab.show()
