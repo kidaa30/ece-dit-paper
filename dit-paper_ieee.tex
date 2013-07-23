@@ -164,19 +164,19 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 		\subsubsection{Description using DBF}
 			\label{sct:cspaceDescr}
 
-			A region of $\mathbb{N}^n$ can be described by a list of parametric linear equations describing the convex hull of the admissible points. In other words, a list of conditions which can unequivocally decide if a point is included in the region or not.\\
+			A region of $\mathbb{N}^n$ can be described by a list of parametric linear constraints describing the convex hull of the admissible points. In other words, a list of conditions which can unequivocally decide if a point is included in the region or not.\\
 
-			For the synchronous case, the DBF test gives us a list of equations which, taken together, are a necessary and sufficient condition of feasibility. Those are:
+			For the synchronous case, the DBF test gives us a list of constraints which, taken together, are a necessary and sufficient condition of feasibility. Those are:
 			$$\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2$$
-			Note that for a given $t$, we have that the $n_i(t)$ are constant (w.r.t. the $C_i$). The equations are thus indeed linear.\\
+			Note that for a given $t$, we have that the $n_i(t)$ are constant (w.r.t. the $C_i$). The constraints are thus indeed linear.\\
 
-			However, this description contains an infinite number of equations, most of which are redundant. While this does not harm the precision of the description, an more efficient description is preferred as it can greatly reduce computation times. The next section gives a method to reduce the size of the description.
+			However, this description contains an infinite number of constraints, most of which are redundant. While this does not harm the precision of the description, an more efficient description is preferred as it can greatly reduce computation times. The next section gives a method to reduce the size of the description.
 
 			\subsubsection{Removing redundancy}
 
-			In the synchronous case, is has been shown that the equations corresponding to every interval $[0, t]$ (with $t$ a job deadline happening before $H$) are necessary and sufficient to test the feasibility.\\
+			In the synchronous case, is has been shown that the constraints corresponding to every interval $[0, t]$ (with $t$ a job deadline happening before $H$) are necessary and sufficient to test the feasibility.\\
 
-			Even then, the number of equations to consider is exponential in the number of tasks. While it has been shown that intervals ending after the end of the busy period are also redundant, this value depends on the $C_i$ and is therefore not usable. The following concept is thus introduced, which is similar to the end of the busy period but which does not depend on the execution times.
+			Even then, the number of constraints to consider is exponential in the number of tasks. While it has been shown that intervals ending after the end of the busy period are also redundant, this value depends on the $C_i$ and is therefore not usable. The following concept is thus introduced, which is similar to the end of the busy period but which does not depend on the execution times.
 
 			\begin{definition}
 			A \textbf{definitive idle time} (DIT) is a time $t$ such that every job released strictly before instant $t$			 has its absolute deadline before or at instant $t$.
@@ -209,7 +209,7 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 
 			Every DIT being an idle instant, the execution of the system after it does not depend on what happened previously. Because the synchronous arrival pattern is the worst case [citation needed], it is sufficient for the DBF test to consider every interval $[0, t]$ with $t$ being a deadline before the first DIT.\\
 
-			To summarize, we reduced the description of the C-space from an infinite number of equations to only the 			equations where $t_1 = 0$, $t_2 \leq t_d$ and $t_2$ correspond to a deadline job. Note that this is still 			exponential in the number of tasks.
+			To summarize, we reduced the description of the C-space from an infinite number of constraints to only the 			constraints where $t_1 = 0$, $t_2 \leq t_d$ and $t_2$ correspond to a deadline job. Note that this is still 			exponential in the number of tasks.
 
   \subsection{Our work}
 
@@ -308,7 +308,7 @@ The first periodic DIT, if it exists, must occur in the transitive period. Indee
 
 We show (...) that we can restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the first periodic DIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.\\
 
-To summarize, we reduced the number of equation from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise.
+To summarize, we reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise.
 
 \section{Example}
 
