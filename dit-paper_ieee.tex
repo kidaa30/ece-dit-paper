@@ -67,9 +67,7 @@ lgeorge@ece.fr\\
 	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lobortis mi vel
 turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed malesuada ut, mollis sit amet mauris. Integer dapibus in risus et porttitor. In hac habitasse platea dictumst. Maecenas dolor libero, suscipit porta consequat eu, consequat non orci. Sed tortor neque, tincidunt congue cursus sit amet, luctus id ipsum. Aenean tempor est nisl, at dictum metus elementum iaculis.\\
 
-Keywords: Real-time systems, C-space, WCET
-
-Buzzword: sensitivity analysis
+Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 \end{abstract}
 
 
@@ -273,7 +271,7 @@ Buzzword: sensitivity analysis
 		In an asynchronous system, the first DIT may happen before $O_{max}$, i.e. before all tasks are in the system. We thus introduce the following notion:
 
 		\begin{definition}
-			The \textbf{first periodic DIT} of a system is the earliest DIT occurring
+			The \textbf{first periodic DIT} (FPDIT) of a system is the earliest DIT occurring
 			strictly after $O_{max}$.
 		\end{definition}
 
@@ -282,7 +280,7 @@ Buzzword: sensitivity analysis
 
 	\subsection{Existence condition}
   \label{sct:FPDITexist}
-		As in the synchronous case, the problem of existence of the first periodic DIT
+		As in the synchronous case, the problem of existence of the FPDIT
 		can be written as a system of modular equations:
 		\[
 			\begin{array}{l}
@@ -303,7 +301,7 @@ Buzzword: sensitivity analysis
 			a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i,
 			T_j)) \; \forall i,j
 		\]
-		which means that there could be systems with no first periodic DIT.
+		which means that there could be systems with no FPDIT.
 		We now present an example of such a system.\\
 
 		\begin{center}
@@ -320,7 +318,7 @@ Buzzword: sensitivity analysis
 		~\\
 
 		Here, the possible values of $a_1$ are 3 and 4, and the possible values
-		of $a_2$ are 7 and 8. For a first periodic DIT to exist, one of those
+		of $a_2$ are 7 and 8. For a FPDIT to exist, one of those
 		condition must be fulfilled:
 		\[
 		\left[
@@ -332,12 +330,12 @@ Buzzword: sensitivity analysis
 		\end{array}
 		\right.
 		\]
-		However those four conditions are false, so the system has no first
-		periodic DIT (and no other DIT than $t=0$).
+		However those four conditions are false, so the system has no FPDIT
+		(and no other DIT than $t=0$).
 
 	\subsection{Simulation}
 
-	We wanted to quantify how much systems has a first periodic DIT........
+	We wanted to quantify how much systems have a FPDIT........
 
 	We generated task systems by
 	\begin{itemize}
@@ -350,18 +348,19 @@ Buzzword: sensitivity analysis
 		\item Choosing the $O_i$ with a normal distribution of mean $T_{min}$ and standard deviation $\frac{T_{max} - T_{min}}{2}$
 		\item Choosing the $D_i$ uniformly in the interval $[T_i - \frac{T_i - C_i}{CDF}, T_i]$, where the $CDF$ is called \emph{Constrained Deadline Factor}.
 	\end{itemize}
-	and then computed the value of the first periodic DIT.\\
+	and then computed the value of the FPDIT.\\
 
-	We use the CDF because........
-
-	The result are represented in Fig. \ref{fig:noFPDIT}
+	We use the CDF because........\\
 
 	\begin{figure}[h]
 	\begin{center}
 		\includegraphics[width=0.5\textwidth]{python-simulation/plots/nofpdit.png}
 	\end{center}
+	\caption{Evolution of the existence of FPDIT with the CDF}
 	\label{fig:noFPDIT}
 	\end{figure}
+
+	The result are represented in Fig. \ref{fig:noFPDIT}. We observe that the more we are close to the implicit deadline case, the less systems have FPDIT.
 
 \section{C-space of asynchronous systems}
   \label{sct:asyncCspace}
@@ -414,6 +413,8 @@ We show (...) that we can restrict the DBF test to intervals included in the int
 To summarize, we reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise.
 
 \section{Example}
+
+!!! (Sans appliquer le simplexe ou un truc comme ça, si un DIT existe on divisera toujours par 4 le nombre de contraintes)
 
 \section{Conclusion}
 
