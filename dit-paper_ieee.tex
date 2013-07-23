@@ -165,56 +165,86 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 		\subsubsection{Description using DBF}
 			\label{sct:cspaceDescr}
 
-			A region of $\mathbb{N}^n$ can be described by a list of parametric linear equations describing the convex hull of the admissible points. In other words, a list of conditions which can unequivocally decide if a point is included in the region or not.\\
+			A region of $\mathbb{N}^n$ can be described by a list of parametric linear
+			constraints describing the convex hull of that region. In other words, a
+			list of conditions which can unequivocally decide if a point is included in the region or not.\\
 
-			For the synchronous case, the DBF test gives us a list of equations which, taken together, are a necessary and sufficient condition of feasibility. Those are:
-			$$\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2$$
-			Note that for a given $t$, we have that the $n_i(t)$ are constant (w.r.t. the $C_i$). Those equations are thus indeed linear.\\
+			For the synchronous case, the DBF test gives us a list of inequations
+			on the WCET values of the task set which together are a necessary and
+			sufficient condition of feasibility. They can all be written in the
+			following way:
+			\[
+				\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq
+				t_1 \leq t_2
+			\]
+			Note that for a given $t$, we have that the $n_i(t)$ are
+			constant (w.r.t. the $C_i$). Those equations are thus indeed linear.\\
 
-			However, this description contains an infinite number of equations, most of which are redundant. While this does not harm the precision of the description, an more efficient description is preferred as it can greatly reduce computation times. The next section gives a method to reduce the size of the description.
+			However, this description contains an infinite number of equations, most of
+			which are redundant. While this does not harm the precision of the
+			test, the smallest description is preferred as it can greatly
+			reduce the computation time of practical feasibility tests using this system
+			of constraints. In Section~\ref{sct:removeRedundancy} a method to reduce the size of this set of inequations is given.
+	
+	\subsection{Removing redundancy}
+		\label{sct:removeRedundancy}
 
-\subsection{Removing redundancy}
 
-In the synchronous case, is has been shown that the equations corresponding to every interval $[0, t]$ (with $t$ a job deadline happening before $H$) are necessary and sufficient to test the feasibility.\\
+	In the synchronous case, is has been shown that the equations corresponding to every interval $[0, t]$ (with $t$ a job deadline happening before $H$) are necessary and sufficient to test the feasibility.\\
+	
+	Even then, the number of equations to consider is exponential in the number of tasks. While it has been shown that intervals ending after the end of the busy period are also redundant, this value depends on the $C_i$ and is therefore not usable. The following concept is thus introduced, which is similar to the end of the busy period but which does not depend on the execution times.
+	
+	\begin{definition}
+		A \textbf{definitive idle time} (DIT) is a time $t$ such that every job released strictly before instant $t$ has its absolute deadline before or at instant $t$.
+	\end{definition}
+	
+	\begin{definition}
+		The earliest DIT occurring in the system strictly after $t=0$ is called the \textbf{first DIT} and is noted $t_d$.
+	\end{definition}
+	
+	The value of the first DIT can be found by solving the following equation:
+	\[
+		t_d = \min 
+		\left( t \; s.t. \; \forall i:
+			\left\{
+				\begin{array}{c}
+					t \equiv a_i \; (mod \; T_i) \\
+					a_i \in [D_i, T_i]
+				\end{array}
+			\right.
+		\right)
+	\]
+	
+	\begin{remark} (from the definition):
+		\begin{itemize}
+			\item Contrary to other idle times, DITs are independent of the
+			scheduling or the execution times of the jobs.
+			\item In a feasible system, every DIT is an idle time.
+			\item In a feasible system, the first DIT happens after the end of the
+			first busy period.
+			\item As $H$ is always a DIT in synchronous systems, we have $t_d \leq H$ in
+			this case.
+		\end{itemize}
+	\end{remark}
+	
+	Every DIT being an idle instant, the execution of the system after a DIT does
+	not depend on what happened before. Because the synchronous arrival pattern is
+	the worst case [citation needed], it is sufficient for the DBF test to only consider intervals $[0, t]$ with $t$ being a deadline before the first DIT.\\
+	
+	To summarize, we reduced the description of the C-space from an infinite number
+	of constraints to only the inequations where $t_1 = 0$, $t_2 \leqslant t_d$ and
+	values of $t_2$ correspond to job deadlines. Note that the number of
+	constraints is still exponential in the number of tasks.
 
-Even then, the number of equations to consider is exponential in the number of tasks. While it has been shown that intervals ending after the end of the busy period are also redundant, this value depends on the $C_i$ and is therefore not usable. The following concept is thus introduced, which is similar to the end of the busy period but which does not depend on the execution times.
-
-\begin{definition}
-A \textbf{definitive idle time} (DIT) is a time $t$ such that every job released strictly before instant $t$ has its absolute deadline before or at instant $t$.
-\end{definition}
-
-\begin{definition}
-The earliest DIT occurring in the system strictly after $t=0$ is called the \textbf{first DIT} and is noted $t_d$.
-\end{definition}
-
-The value of the first DIT can be found by solving the following equation:
-\[
-  t_d = \min \left( t \; s.t. \; \forall i:
-  \left\{
-  \begin{array}{c}
-    t \equiv a_i \; (mod \; T_i) \\
-    a_i \in [D_i, T_i]
-  \end{array}
-  \right.
-  \right)
-\]
-
-\begin{remark} (from the definition):
-	\begin{itemize}
-		\item Contrary to the idle times, the DITs are independent of the scheduling or the execution times of the jobs.
-		\item In feasible system, every DIT is an idle time.
-		\item In feasible system, the first DIT happens after the end of the busy period.
-		\item As $H$ is always a DIT, we have $t_d \leq H$.
-	\end{itemize}
-\end{remark}
-
-Every DIT being an idle instant, the execution of the system after it does not depend on what happened previously. Because the synchronous arrival pattern is the worst case [citation needed], it is sufficient for the DBF test to only consider intervals $[0, t]$ with $t$ being a deadline before the first DIT.\\
-
-To summarize, we reduced the description of the C-space from an infinite number of equations to only the equations where $t_1 = 0$, $t_2 \leq t_d$ and $t_2$ correspond to a deadline job. Note that this is still exponential in the number of tasks.
-
-  \subsection{Our work}
-
-  In this paper, we extend the work of \cite{george2009characterization} to the asynchronous case. In section \ref{sct:asyncDIT}, we present an extension of the concept of DIT adapted to the asynchronous case called first periodic DIT ($t_d$), along with an algorithm to find its value. In Section \ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous system based on the DBF test, and we show why the interval $[t_d, t_d + H]$ is sufficient to consider.
+	\subsection{Our work}
+	
+		In this paper, we extend the work of \cite{george2009characterization} to the
+		asynchronous case. In section \ref{sct:asyncDIT}, we present an extension of
+		the concept of DIT adapted to the asynchronous case called first periodic DIT
+		($t_d$), along with an algorithm to find its value. In Section
+		\ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous
+		system based on the DBF test, and we show why the interval $[t_d, t_d + H]$ is
+		sufficient to consider.
 
 \section{DIT in asynchronous systems}
 	\label{sct:asyncDIT}
@@ -284,14 +314,15 @@ A similar argument can be made if $t_1$ is an instant without any job arrival (a
   First let us recall how an asynchronous system behaves under, for example, EDF.\\
 
 \begin{figure}[h]
-$$
-\begin{array}{|c|c|c|c|l}
-   \text{Incomplete} & \text{Transitive} & \text{Stationary} & \text{$2^{nd}$ Stationary} & \cdots \\
-   \text{period} & \text{period} & \text{period} & \text{period} & \\
-  \hline
-  t > 0 & O_{max} & O_{max} + H & O_{max} + 2H & \cdots
-\end{array}
-$$
+\[
+	\begin{array}{|c|c|c|c|l}
+		\text{Incomplete} & \text{Transitive} & \text{Stationary} & 2^{nd}
+		\text{Stationary} & \cdots \\
+		\text{period} & \text{period} & \text{period} & \text{period} & \\
+		\hline
+		t > 0 & O_{max} & O_{max} + H & O_{max} + 2H & \cdots
+	\end{array}
+\]
 \begin{center}
 \caption{Behavior of an asynchronous system under EDF.}
 \label{fig:asyncBehavior}
