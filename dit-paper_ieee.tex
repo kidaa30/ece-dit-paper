@@ -80,13 +80,12 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 	if a system is feasible on a given platform.\\
 
 	In this section the current description of the C-space of synchronous
-	constrained systems is reviewed, mostly through
-	\cite{george2009characterization}.
+	constrained systems, which has been mostly covered by \cite{george2009characterization}, is reviewed.
 
 	\subsection{Model}
 
-		We consider a discrete timeline and systems comprised of periodic concrete
-		tasks with constrained deadlines on uniprocessor platforms, where each task
+		We consider a discrete timeline and tasks systems $\tau$ comprised of periodic concrete
+		tasks with constrained deadlines on uniprocessor platforms. Each task
 		$\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value,
 		$C_i$ the WCET, $D_i$ the relative deadline and $T_i$ the period.
 		The constrained deadline property implies that $D_i \leq T_i \; \forall i$. In
@@ -101,13 +100,13 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 		Furthermore, the following notations are used:
 		\begin{itemize}
 			\item $\tau = \{\tau_0, \cdots, \tau_{n-1}\}$
-			\item $H = \operatorname{lcm}(T_0, \cdots, t_{n-1})$
+			\item $H = \operatorname{lcm}(T_0, \cdots, T_{n-1})$
 			\item $O_{max} = \max (O_0, \cdots, O_{n-1})$
 			\item An \emph{idle time} is an instant $t$ at which each job that arrived
 			\emph{strictly} before $t$ has finished its execution.
 			\item A \emph{busy period} is a time interval during which there is always
-			at least one job available and not finished in the system and maximal
-			(in interval length) with this property. Any busy period starts and ends
+			at least one unfinished job available in the system and maximal
+			with this property. Any busy period starts and ends
 			with an idle time.
 			\item The interval between the initial time and the first
 			idle time is called the \emph{first busy period}.
@@ -119,9 +118,9 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 
 	\begin{definition}
 		The \textbf{demand-bound function (DBF)}
-		\cite{baruah1999generalized, baruah1990algorithms} defined for a task set
-		$\tau$ and noted $\dbf{t_1, t_2}$, is equal to the maximal cumulated execution
-		time of jobs of $\tau$ contained in the closed interval $[t_1, t_2]$.
+		defined for a task set $\tau$ and noted $\dbf{t_1, t_2}$, is equal to
+		the maximal cumulated execution time of jobs of $\tau$ contained in the
+		closed interval $[t_1, t_2]$.
 	\end{definition}
 
 	Mathematically,
@@ -178,30 +177,37 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 				t_1 \leq t_2
 			\]
 			Note that for a given $t$, we have that the $n_i(t)$ are
-			constant (w.r.t. the $C_i$). Those equations are thus indeed linear.\\
+			constant (w.r.t. the $C_i$). Those inequations are thus indeed linear.\\
 
-			However, this description contains an infinite number of equations, most of
+			However, this description contains an infinite number of constraints, most of
 			which are redundant. While this does not harm the precision of the
 			test, the smallest description is preferred as it can greatly
 			reduce the computation time of practical feasibility tests using this system
-			of constraints. In Section~\ref{sct:removeRedundancy} a method to reduce the size of this set of inequations is given.
+			of inequations. In Section~\ref{sct:removeRedundancy} a method to reduce the size of this set of constraints is given.
 	
 	\subsection{Removing redundancy}
 		\label{sct:removeRedundancy}
 
+	In the synchronous case, is has been shown that the inequations corresponding
+	to every interval $[0, t]$ (with $t$ a job deadline happening before $H$) are
+	necessary and sufficient to test the feasibility of a system.\\
+	
+	Even then, the number of inequations to consider is exponential in the number
+	of tasks. While it has been shown that constraints that cover intervals ending
+	after the end of the first busy period are also redundant, this value depends on the $C_i$ and is
+	therefore not usable, or at least not for the purposes of this paper. The
+	following concept is thus introduced, which is similar to the end of the busy period but which does not depend on the execution times.
+	
+	\begin{definition}
+		A \textbf{definitive idle time} (DIT) is a time $t$ such that every job
+		released strictly before instant $t$ has its absolute deadline before or at instant $t$.
+	\end{definition}
+	
+	\begin{definition}
+		The earliest DIT occurring in the system strictly after $t=0$ is called the
+		\textbf{first DIT} and is noted $t_d$.
+	\end{definition}
 
-	In the synchronous case, is has been shown that the equations corresponding to every interval $[0, t]$ (with $t$ a job deadline happening before $H$) are necessary and sufficient to test the feasibility.\\
-	
-	Even then, the number of equations to consider is exponential in the number of tasks. While it has been shown that intervals ending after the end of the busy period are also redundant, this value depends on the $C_i$ and is therefore not usable. The following concept is thus introduced, which is similar to the end of the busy period but which does not depend on the execution times.
-	
-	\begin{definition}
-		A \textbf{definitive idle time} (DIT) is a time $t$ such that every job released strictly before instant $t$ has its absolute deadline before or at instant $t$.
-	\end{definition}
-	
-	\begin{definition}
-		The earliest DIT occurring in the system strictly after $t=0$ is called the \textbf{first DIT} and is noted $t_d$.
-	\end{definition}
-	
 	The value of the first DIT can be found by solving the following equation:
 	\[
 		t_d = \min 
@@ -214,22 +220,23 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 			\right.
 		\right)
 	\]
-	
+
 	\begin{remark} (from the definition):
 		\begin{itemize}
 			\item Contrary to other idle times, DITs are independent of the
 			scheduling or the execution times of the jobs.
 			\item In a feasible system, every DIT is an idle time.
-			\item In a feasible system, the first DIT happens after the end of the
+			\item In a feasible system, the first DIT happens at the end of the
 			first busy period.
-			\item As $H$ is always a DIT in synchronous systems, we have $t_d \leq H$ in
-			this case.
+			\item As $H$ is always a DIT in synchronous systems, we have at least $t_d
+			\leqslant H$ in this case.
 		\end{itemize}
 	\end{remark}
-	
+
 	Every DIT being an idle instant, the execution of the system after a DIT does
 	not depend on what happened before. Because the synchronous arrival pattern is
-	the worst case [citation needed], it is sufficient for the DBF test to only consider intervals $[0, t]$ with $t$ being a deadline before the first DIT.\\
+	the worst case [citation needed], it is sufficient for the DBF test to only
+	consider intervals $[0, t]$ with $t$ being a deadline before the first DIT.\\
 	
 	To summarize, we reduced the description of the C-space from an infinite number
 	of constraints to only the inequations where $t_1 = 0$, $t_2 \leqslant t_d$ and
@@ -237,7 +244,6 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 	constraints is still exponential in the number of tasks.
 
 	\subsection{Our work}
-	
 		In this paper, we extend the work of \cite{george2009characterization} to the
 		asynchronous case. In section \ref{sct:asyncDIT}, we present an extension of
 		the concept of DIT adapted to the asynchronous case called first periodic DIT
@@ -251,12 +257,11 @@ turpis ultricies vulputate vel at arcu. Curabitur lectus metus, rutrum sed males
 
 	\subsection{Definition}
 
-		In an asynchronous system, the first DIT could happen before the arrival of at
-		least one job of each task. We thus introduce the following notion:
+		In an asynchronous system, the first DIT may happen before $O_{max}$, i.e. before all tasks are in the system. We thus introduce the following notion:
 
 		\begin{definition}
 			The \textbf{first periodic DIT} of a system is the earliest DIT occurring
-			strictly after the arrival of at least one job of each task.
+			strictly after $O_{max}$.
 		\end{definition}
 
 		By a slight abuse of notation, it will also be noted $t_d$. Note that in the
@@ -314,19 +319,20 @@ A similar argument can be made if $t_1$ is an instant without any job arrival (a
   First let us recall how an asynchronous system behaves under, for example, EDF.\\
 
 \begin{figure}[h]
-\[
-	\begin{array}{|c|c|c|c|l}
-		\text{Incomplete} & \text{Transitive} & \text{Stationary} & 2^{nd}
-		\text{Stationary} & \cdots \\
-		\text{period} & \text{period} & \text{period} & \text{period} & \\
-		\hline
-		t > 0 & O_{max} & O_{max} + H & O_{max} + 2H & \cdots
-	\end{array}
-\]
-\begin{center}
-\caption{Behavior of an asynchronous system under EDF.}
-\label{fig:asyncBehavior}
-\end{center}
+	\[
+		\begin{array}{r||c|c|c|l}
+			& \text{Incomplete} & \text{Transitive} & \text{Stationary} & \cdots \\
+			\text{Name} & \text{period} & \text{period} & \text{period}  & \\
+			\hline
+			\text{size} & O_{max} & H & H & \cdots \\
+			\hline
+			t \geqslant & 0 & O_{max} & O_{max} + H & \cdots
+		\end{array}
+	\]
+	\begin{center}
+	\caption{Behavior of an asynchronous system under EDF.}
+	\label{fig:asyncBehavior}
+	\end{center}
 \end{figure}
 
 As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the \emph{incomplete period}, where all tasks are not in the system. Then, after $O_{max}$ time units, every tasks is in the system and the \emph{transitive period} begins. Then, after $O_{max} + H$ time units, the system is faced with the same pattern of arrival as in $O_{max}$. However, because in $O_{max} + H$ every task is in the system and in $O_{max}$ some were missing, the state of the system will be different. The \emph{stationary period} then begins. It is only after $O_{max} + 2H$ time units that the system comes back into a state in which it was before.\\
@@ -339,7 +345,7 @@ The first periodic DIT, if it exists, must occur in the transitive period. Indee
 
 We show (...) that we can restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the first periodic DIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.\\
 
-To summarize, we reduced the number of equation from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise.
+To summarize, we reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise.
 
 \section{Example}
 
