@@ -304,13 +304,64 @@ Buzzword: sensitivity analysis
 			T_j)) \; \forall i,j
 		\]
 		which means that there could be systems with no first periodic DIT.
+		We now present an example of such a system.\\
 
+		\begin{center}
+		\begin{tabular}{|r|c|c|c|c|}
+		 \hline
+		  & $O_i$ & $C_i$ & $D_i$ & $T_i$ \\
+		 \hline
+		 $\tau_1$ & 0 & $C_1$ & 3 & 4\\
+		 \hline
+		 $\tau_2$ & 2 & $C_2$ & 7 & 8\\
+		 \hline
+		\end{tabular}
+		\end{center}
+		~\\
 
-  \subsection{Simulation}
+		Here, the possible values of $a_1$ are 3 and 4, and the possible values
+		of $a_2$ are 7 and 8. For a first periodic DIT to exist, one of those
+		condition must be fulfilled:
+		\[
+		\left[
+		\begin{array}{c}
+			3 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
+			3 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
+			4 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
+			4 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
+		\end{array}
+		\right.
+		\]
+		However those four conditions are false, so the system has no first
+		periodic DIT (and no other DIT than $t=0$).
 
-  (Work in Progress...)
+	\subsection{Simulation}
 
-  `e' factor...
+	We wanted to quantify how much systems has a first periodic DIT........
+
+	We generated task systems by
+	\begin{itemize}
+		\item Generating utilization values with the \texttt{UUniSort} algorithm described in \cite{bini2005measuring}, with parameters
+		\begin{itemize}
+			\item $U_{tot}$ (system utilization) chosen uniformly between 0.25 and 0.75
+			\item $n$ (number of tasks) equal to 3
+		\end{itemize}
+		\item Choosing the $T_i$ uniformly between 5 and 20, which also gives us the $C_i = \lfloor U_i \, T_i \rfloor$
+		\item Choosing the $O_i$ with a normal distribution of mean $T_{min}$ and standard deviation $\frac{T_{max} - T_{min}}{2}$
+		\item Choosing the $D_i$ uniformly in the interval $[T_i - \frac{T_i - C_i}{CDF}, T_i]$, where the $CDF$ is called \emph{Constrained Deadline Factor}.
+	\end{itemize}
+	and then computed the value of the first periodic DIT.\\
+
+	We use the CDF because........
+
+	The result are represented in Fig. \ref{fig:noFPDIT}
+
+	\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{python-simulation/plots/nofpdit.png}
+	\end{center}
+	\label{fig:noFPDIT}
+	\end{figure}
 
 \section{C-space of asynchronous systems}
   \label{sct:asyncCspace}
