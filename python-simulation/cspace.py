@@ -22,6 +22,7 @@ def Cspace(tau, upperLimit="def"):
 				upperLimit = Omax + 2 * tau.hyperPeriod()
 
 	# for each arrival and each deadline, create an equation
+	# TODO: more intelligent stuff
 	equations = []
 	for task in tau.tasks:
 		for a in [0] if isSynchronous else range(task.O, upperLimit + 1, task.T):
@@ -30,6 +31,50 @@ def Cspace(tau, upperLimit="def"):
 					equations.append([algorithms.completedJobCount(t, a, d) for t in tau.tasks] + [d - a])
 
 	return equations
+
+
+def toGLPSOLData(cspace, filename):
+	# suppose the last cstr of cspace is the one to be checked
+	with open(filename, 'w') as f:
+		assert len(cspace) > 1
+		assert len(cspace[0]) >= 1
+		constrK = len(cspace) - 1  # - 1 because the last one is to be checked
+		taskN = len(cspace[0]) - 1  # -1 because the last value in cspace is tk
+		f.write("param constrK := " + str(constrK) + ";\n")
+		f.write("param taskN := " + str(taskN) + ";\n")
+
+		f.write("param nJob: ")
+		for i in range(taskN):
+			f.write(str(i + 1) + " ")
+		f.write(":=\n")
+		for i, eq in enumerate(cspace[:-1]):  # the last cstr is to be tested
+			f.write(str(i + 1) + "\t")
+			for nJob in eq[:-1]:
+				f.write(str(nJob) + " ")
+			if i == constrK - 1:
+				f.write(";")
+			f.write("\n")
+
+		f.write("param tk := \n")
+		for i, eq in enumerate(cspace[:-1]):
+			f.write(str(i + 1) + "\t")
+			f.write(str(eq[-1]))
+			if i < constrK - 1:
+				f.write(",\n")
+			else:
+				f.write(";\n")
+
+		f.write("param nJobNew := \n")
+		for i, nJobNew in enumerate(cspace[-1][:-1]):
+			f.write (str(i + 1) + "\t" + str(nJobNew))
+			if i < taskN - 1:
+				f.write(",\n")
+			else:
+				f.write(";\n")
+
+		f.write("param tkNew := ")
+		f.write(str(cspace[-1][-1]))
+		f.write(";\n")
 
 
 def testCVector(cspace, cvector):
@@ -66,3 +111,5 @@ if __name__ == '__main__':
 	print "found ", len(tau_Cspace), "equations"
 
 	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
+
+	toGLPSOLData(tau_Cspace, "redundant_test.dat")
