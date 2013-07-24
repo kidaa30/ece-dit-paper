@@ -3,6 +3,8 @@ import algorithms
 import math
 import Task
 import TaskGenerator
+import heapq
+import array
 
 def newChineseRemainder(a, n):
 	'''
@@ -14,20 +16,22 @@ def newChineseRemainder(a, n):
 # 	calculate all terms of the sums
 	sumChunks = []
 	for i in range(len(n)):
-		sumChunks.append([])
+		sumChunks.append(array.array('i',[0])*len(a[i]))
 		Mi = H / n[i]
 # 		if(myAlgebra.egcd_couple(Mi,n[i]) == 1):
 		invMi = myAlgebra.modinv(Mi, n[i])
-		for aValue in a[i]:
-			sumChunks[i].append(aValue * Mi * invMi)
+		for cnt,aValue in enumerate(a[i]):
+			sumChunks[i][cnt] = (aValue * Mi * invMi)
 
 # 	calculate the sums from the precomputed terms
 	results = [0]
 	for i in range(len(n)):
-		newResults = []
+		newResults = array.array('i',[0])*(len(a[i])*len(results))
+		index = 0
 		for j in range(len(a[i])):
 			for r in results:
-				newResults.append(r + sumChunks[i][j])
+				newResults[index] = r + sumChunks[i][j]
+				index += 1
 		results = newResults
 
 	return [r % H for r in results]
@@ -44,6 +48,17 @@ def removeBadChineseRemainderResults(results,a,n):
 		results.remove(badR)
 		
 	return results
+
+def isGoodResult(res,a,n):
+	for cnt,i in enumerate(n):
+		foundGoodA = False
+		for aValue in a[cnt]:
+			if res % i == aValue:
+				foundGoodA = True
+				break
+		if not foundGoodA:
+			return False
+	return True
 
 # print chineseRemainder([[1, 2], [4], [3, 6]], [3, 5, 7])
 # print myAlgebra.chineseRemainderTheorem([1, 4, 3], [3, 5, 7])
@@ -79,10 +94,10 @@ def newCongruencePrimalPower(primalSystem, aList):
 					prime = int(math.pow(p, b))
 					aSet = set()
 					aSet.update([a % prime for a in aList[indice]])
-				else:
-					aSet.intersection_update([a % prime for a in aList[indice]])
-					if not aSet: #no a values in common
-						return None  # Impossible system
+  				else:
+  					aSet.intersection_update([a % prime for a in aList[indice]])
+  					if not aSet: #no a values in common
+  						return None  # Impossible system
 				ps[p][b] = list(aSet)
 
 	# Group system into subsystems of the same p and solve them separately
@@ -91,17 +106,17 @@ def newCongruencePrimalPower(primalSystem, aList):
 	for p in ps.keys():
 		maxB[p] = max(ps[p].keys())
 		maxA = ps[p][maxB[p]]
-		aSet = set(maxA)
-		
-		# Check that all values are consistent modulo p^b
-		# For that we check that ai = aj mod p^(b_min(i,j)) for all pairs
-		for bi in filter(lambda x: x < maxB[p], primalSystem[p]):
-			iPow = int(math.pow(p, bi))
-			ai = ps[p][bi]
-			isSame = [len(filter(None, [y % iPow == a % iPow for y in ai])) > 0 for a in maxA]
- 			aSet = set([a for a,ok in zip(aSet,isSame) if ok])
- 			if not aSet:
- 				return None
+# 		aSet = set(maxA)
+# 		
+# 		# Check that all values are consistent modulo p^b
+# 		# For that we check that ai = aj mod p^(b_min(i,j)) for all pairs
+# 		for bi in filter(lambda x: x < maxB[p], primalSystem[p]):
+# 			iPow = int(math.pow(p, bi))
+# 			ai = ps[p][bi]
+# 			isSame = [len(filter(None, [y % iPow == a % iPow for y in ai])) > 0 for a in maxA]
+#  			aSet = set([a for a,ok in zip(aSet,isSame) if ok])
+#  			if not aSet:
+#  				return None
  		subX[p] = maxA
  		
 # 				
@@ -129,12 +144,12 @@ def newCongruencePrimalPower(primalSystem, aList):
 
 	# Create lists to use as parameters of our CRT function
 	subXList = []
-	pbList = []
-	for p in ps.keys():
+	pbArray = array.array('i',[0])*len(ps.keys())
+	for cnt,p in enumerate(ps.keys()):
 		subXList.append(subX[p])
-		pbList.append(int(math.pow(p, maxB[p])))
+		pbArray[cnt] = int(math.pow(p, maxB[p]))
 
-	return newChineseRemainder(subXList, pbList)
+	return newChineseRemainder(subXList, pbArray)
 
 #TODO : return None if no DIT
 def newFindFirstPeriodicDIT(tau):
@@ -150,32 +165,62 @@ def newFindFirstPeriodicDIT(tau):
   		for j in range(len(intervals[i])):
   			intervals[i][j] += task.O
   			intervals[i][j] %= task.T
-  			
-  	print intervals
-
+ 
 	T = [task.T for task in tau.tasks]
 	Omax = max([task.O for task in tau.tasks])
 
 	# Pre-processing for our congruence algorithm
 	primalSystem_T = myAlgebra.toPrimalPowerSystem(T)
-	currentMin = None
 # 	numberOfCombinations = reduce(lambda x, y: x*len(y), intervals, 1)
 # 	for i, combination in enumerate(itertools.product(*intervals)):
 		# if i % 1000 == 0: print "combination ", i, "/", numberOfCombinations
-	print T
  	allResults = newCongruencePrimalPower(primalSystem_T, intervals)
- 	print allResults
- 	goodResults = removeBadChineseRemainderResults(allResults,intervals,T)
- 	print goodResults
- 	tIdle = min(goodResults)
-
-	if tIdle is not None and tIdle <= Omax:
-		while tIdle <= Omax:
-			tIdle += tau.hyperPeriod()
-	if tIdle is not None:
-		if currentMin is None or tIdle < currentMin:
-			currentMin = tIdle
-	return currentMin
+ 	
+ 	if not allResults:
+ 		return None
+ 	
+#  	goodResults = removeBadChineseRemainderResults(allResults,intervals,T)
+#  	
+#  	if not goodResults:
+#  		return None
+ 	
+ 	idles = zip(allResults,[False for i in range(len(allResults))])
+ 	heapq.heapify(idles)
+ 	idleTuple = heapq.heappop(idles)
+ 	tIdle = idleTuple[0]
+ 	
+ 	while(not isGoodResult(tIdle,intervals,T)):
+  		if not idles:
+  			return None
+  		idleTuple = heapq.heappop(idles)
+  		tIdle = idleTuple[0]
+ 
+ 	while(tIdle <= Omax):
+ 		heapq.heappush(idles,(tIdle+tau.hyperPeriod(),True))
+ 		idleTuple = heapq.heappop(idles)
+ 		tIdle = idleTuple[0]
+ 		alreadyTested = idleTuple[1]
+ 		while(not alreadyTested and not isGoodResult(tIdle,intervals,T)):
+ 	 		if not idles:
+ 	 			return None
+ 	  		idleTuple = heapq.heappop(idles)
+ 	 		tIdle = idleTuple[0]
+  	 		alreadyTested = idleTuple[1]
+ 	
+#   	while(not isGoodResult(tIdle,intervals,T)):
+#   		if not allResults:
+#   			return None
+#   		tIdle = heapq.heappop(allResults)
+#  
+#  	while(tIdle <= Omax):
+#  		heapq.heappush(allResults,tIdle+tau.hyperPeriod())
+#  		tIdle = heapq.heappop(allResults)
+#  		while(not isGoodResult(tIdle,intervals,T)):
+#  	 		if not allResults:
+#  	 			return None
+#  	 		tIdle = heapq.heappop(allResults)
+		
+	return tIdle
 
 # 
 # ps = toPrimalPowerSystem([6,9])
@@ -184,9 +229,40 @@ def newFindFirstPeriodicDIT(tau):
 # print results
 # print removeBadChineseRemainderResults(results,[[1, 2], [7,5,3]],[6,9])
 
-system = Task.TaskSystem(TaskGenerator.generateTasks(1, 3, 554400, 2, 7, False))
-print system
-print newFindFirstPeriodicDIT(system)
+import cProfile
+import pstats
+
+def benchmark_main():
+	systems = [Task.TaskSystem(TaskGenerator.generateTasks(1, 3, 554400, 2, 7, False)) for i in range(10000)]
+	newL = newCRLoop(systems)
+	oldL = oldCRLoop(systems)
+	for n,o in zip(newL,oldL):
+		assert(n == o)
+	
+def newCRLoop(systems):
+	l = list()
+	for s in systems:
+		l.append(newFindFirstPeriodicDIT(s))
+	return l
+
+def oldCRLoop(systems):
+	l = list()
+	for s in systems:
+		l.append(algorithms.findFirstPeriodicDIT(s))
+	return l
 
 def benchmarkNewChineseRemainder():
-	pass
+# 	systems = [Task.TaskSystem(TaskGenerator.generateTasks(1, 3, 554400, 2, 7, False)) for i in range(1000)]
+	
+	cProfile.run('benchmark_main()','CRstats')
+	
+	p = pstats.Stats('CRstats')
+	p.strip_dirs()
+	p.sort_stats('cumulative')
+	p.print_stats()	
+	p.print_callees('newFindFirstPeriodicDIT()')
+	p.print_callees('newCongruencePrimalPower()')
+	
+if __name__ == '__main__' :
+# 	print (array.array('i',[0])*10)
+  	benchmarkNewChineseRemainder()

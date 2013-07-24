@@ -3,11 +3,12 @@ import itertools
 import math
 
 import myAlgebra
-
+import newChineseRemainder
 
 def findFirstDIT(tau):
 	# language abuse ;-)
-	return findFirstPeriodicDIT(tau)
+#  	return findFirstPeriodicDIT(tau)
+ 	return newChineseRemainder.newFindFirstPeriodicDIT(tau)
 
 def findFirstPeriodicDIT(tau):
 	# Requires to solve several system of modular equations
@@ -226,3 +227,5 @@ if __name__ == '__main__':
 	assert 0 < tau.hyperPeriod()
 	assert findSynchronousInstant(tau) or True, "returned: " + str(findSynchronousInstant(tau)) + "\n" + str(tau)
 	assert findFirstPeriodicDIT(tau) or True
+	
+	print '3/3 OK'
