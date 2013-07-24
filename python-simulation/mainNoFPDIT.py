@@ -31,7 +31,7 @@ if __name__ == '__main__':
 	NUMBER_OF_SYSTEMS = 10000
 	noFPDITpcts = []
 	CDFvalues = []
-	for constrDeadlineFactor in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+	for constrDeadlineFactor in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20]:
 		#print "CONSTR DEAD FACTOR", constrDeadlineFactor
 		systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor)
 		firstDITs = []
