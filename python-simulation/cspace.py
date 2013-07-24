@@ -1,6 +1,8 @@
 import algorithms
 import Task
 
+import subprocess  # in order to launch GLPSOL
+
 
 def Cspace(tau, upperLimit="def"):
 	# return a system of equation of the form
@@ -32,13 +34,45 @@ def Cspace(tau, upperLimit="def"):
 
 	return equations
 
+def removeRedundancy(cspace):
+	# Idea:
+	# start with an empty list of cstr,
+	# add each cstr only if it is not redundant
+	
+	# !! this is not sufficient
+	# we could add a non-redundant cstr which renders
+	# a previous one redundant
+	# so TODO : change everything
+	
+	newCspace = [cspace[0]]
+	for cstr in cspace:
+		if not isRedundant(cstr, newCspace):
+			newCspace.append(cstr)
+	return newCspace
 
-def toGLPSOLData(cspace, filename):
-	# suppose the last cstr of cspace is the one to be checked
+
+def isRedundant(cstr, cspace):
+	# cspace descibes constraints A X <= B
+	# cstr is another C X <= d
+	# We want to know if cstr is redundant w.r.t. cspace
+	# Linear problem (solved by GLPK)
+	# max C X
+	# s.t.
+	# 	AX <= b
+	# 	C X <= d + 1
+	# If the optimal value of the LP is > d, the 
+	toGLPSOLData(cspace, cstr, "redundant_temp.dat")
+	p = subprocess.Popen(["scriptname", "arg1", "arg2"], stdout=subprocess.PIPE)
+	(output, err) = p.communicate()
+	resultMaximization = True  # TODO BI DOU DA (parse 'output')
+	return resultMaximization >= cstr[-1]
+
+
+def toGLPSOLData(cspace, cstr, filename):
 	with open(filename, 'w') as f:
 		assert len(cspace) > 1
 		assert len(cspace[0]) >= 1
-		constrK = len(cspace) - 1  # - 1 because the last one is to be checked
+		constrK = len(cspace)
 		taskN = len(cspace[0]) - 1  # -1 because the last value in cspace is tk
 		f.write("param constrK := " + str(constrK) + ";\n")
 		f.write("param taskN := " + str(taskN) + ";\n")
@@ -47,7 +81,7 @@ def toGLPSOLData(cspace, filename):
 		for i in range(taskN):
 			f.write(str(i + 1) + " ")
 		f.write(":=\n")
-		for i, eq in enumerate(cspace[:-1]):  # the last cstr is to be tested
+		for i, eq in enumerate(cspace):
 			f.write(str(i + 1) + "\t")
 			for nJob in eq[:-1]:
 				f.write(str(nJob) + " ")
@@ -56,7 +90,7 @@ def toGLPSOLData(cspace, filename):
 			f.write("\n")
 
 		f.write("param tk := \n")
-		for i, eq in enumerate(cspace[:-1]):
+		for i, eq in enumerate(cspace):
 			f.write(str(i + 1) + "\t")
 			f.write(str(eq[-1]))
 			if i < constrK - 1:
@@ -65,7 +99,7 @@ def toGLPSOLData(cspace, filename):
 				f.write(";\n")
 
 		f.write("param nJobNew := \n")
-		for i, nJobNew in enumerate(cspace[-1][:-1]):
+		for i, nJobNew in enumerate(cstr):
 			f.write (str(i + 1) + "\t" + str(nJobNew))
 			if i < taskN - 1:
 				f.write(",\n")
@@ -73,7 +107,7 @@ def toGLPSOLData(cspace, filename):
 				f.write(";\n")
 
 		f.write("param tkNew := ")
-		f.write(str(cspace[-1][-1]))
+		f.write(str(cstr[-1]))
 		f.write(";\n")
 
 
@@ -112,4 +146,4 @@ if __name__ == '__main__':
 
 	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
 
-	toGLPSOLData(tau_Cspace, "redundant_test.dat")
+	# TODO : Test Units for removeRedundancy and subfunction !!!
