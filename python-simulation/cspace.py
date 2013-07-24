@@ -24,7 +24,9 @@ def Cspace(tau, upperLimit="def"):
 				upperLimit = Omax + 2 * tau.hyperPeriod()
 
 	# for each arrival and each deadline, create an equation
-	# TODO: more intelligent stuff
+	# TODO (smartly):
+	# 1) Detect identical deadlines and remove them
+	# 2) Add a lowerLimit
 	equations = []
 	for task in tau.tasks:
 		for a in [0] if isSynchronous else range(task.O, upperLimit + 1, task.T):
