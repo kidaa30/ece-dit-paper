@@ -408,13 +408,63 @@ For this reason, as explained in \cite{leung1982complexity}, it is sufficient to
 
 The first periodic DIT, if it exists, must occur in the transitive period. Indeed, it cannot occur in the incomplete period by definition ($t_d > O_{max}$) and if it occurred in the $k^{th}$ stationary period, another DIT should have occurred in the transitive period at instant $t_d - k H$ (a contradiction).\\
 
-We show (...) that we can restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the first periodic DIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.\\
+We show (???) that we can restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the first periodic DIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.\\
 
-To summarize, we reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise.
+\subsubsection{Redundancy as an integer linear problem}
+
+The general problem of redundancy of a new linear constraint $C \, X \leq d$ w.r.t. a set of previous linear constraints $A \, X \leq B$ in an ILP can itself be written as the following ILP:
+
+\begin{figure}[h]
+$$z = \max C \, X$$
+s.t.
+\[
+\begin{array}{rccc}
+	A & X &\leq & B \\
+	C & X &\leq & d + 1
+\end{array}
+\]
+with
+\[
+	\begin{array}{ccc}
+		A & : & [k,n] \text{ matrix}\\
+		B & : & [1,n] \text{ matrix}\\
+		C & : & [k,1] \text{ matrix}\\
+		X & : & [1,n] \text{ matrix}\\
+		d & : & \text{integer}
+	\end{array}
+\]
+\caption{Redundancy of $CX \leq d$ w.r.t. $A X \leq B$ as a ILP}
+\end{figure}
+
+Indeed, if the maximization returns $z=d+1$, it means that there are some integer values accessible with the previous constraints that the new constraint forbids. On the other hands, if the maximization returns $z \leq d$, it means that the limitation expressed in the new constraint is already enforced by the previous constraints. Therefore $z \leq d$ is a necessary and sufficient condition of redundancy of the new constraint.\\
+
+Such a linear problem can be solved by the simplex algorithm. However, here the problem is not exactly the same as we have a set of constraints and we want to find all redundant constraints within. The naive method would be to test each constraints against the set of all the others, we present an efficient preprocessing slightly more efficient approach in Algorithm \ref{alg:prunRedun}.
+
+\begin{algorithm}
+\caption{Removing redundancy - first pass}
+\label{alg:prunRedun}
+	\begin{algorithmic}[1]
+		\STATE $CSPACE$ : set of constraints
+		\STATE $S \leftarrow \emptyset$
+		\FOR{$cstr$ \textbf{in} $CSPACE$}
+			\IF {$cstr$ is not redundant w.r.t. $S$}
+				\STATE $S \leftarrow cstr$
+			\ENDIF
+		\ENDFOR
+
+		\STATE $S_2 \leftarrow \emptyset$
+		\FOR{$cstr$ \textbf{in} $S$}
+
+	\end{algorithmic}
+\end{algorithm}
+
+After doing this, no redundant constraints are left. However, this algorithm takes an exponential time in the number of constraints. An efficient initial description of $CSPACE$, as described in previous sections, is therefore preferred.\\
+
+To summarize, we first reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise. This gives us a first correct description of the C-SPACE which is not efficient. We then solve a linear integer problem per constraint which allow us to determine redundancy.
 
 \section{Example}
 
-!!! (Sans appliquer le simplexe ou un truc comme ça, si un DIT existe on divisera toujours par 4 le nombre de contraintes)
+!!! (Sans appliquer le simplexe ou un truc comme ça, si un DIT existe on divisera toujours par 4 le nombre de contraintes ??)
 
 \section{Conclusion}
 
