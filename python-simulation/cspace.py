@@ -151,7 +151,7 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(0, 1, 381, 400))
 	tau = Task.TaskSystem(tasks)
 	print "computing Cspace..."
-	tau_Cspace = Cspace(tau, 381)  # 381 = DIT of the system (obviously ;D)
+	tau_Cspace = Cspace(tau, algorithms.findFirstDIT(tau))
 	print "found ", len(tau_Cspace), "equations"
 
 	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
