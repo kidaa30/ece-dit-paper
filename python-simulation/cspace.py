@@ -7,6 +7,7 @@ import subprocess  # in order to launch GLPSOL
 import array
 import heapq
 import math
+import os.path
 
 
 def Cspace(tau, upperLimit="def", lowerLimit = 0):
@@ -107,10 +108,13 @@ def isRedundant(cstr, cspace):
 	# 	C X <= d + 1
 	# If the optimal value of the LP is > d, the
 	toGLPSOLData(cspace, cstr, "redundant_temp.dat")
-	p = subprocess.Popen(["glpsol", "-m", "GLPK/redundant.mod", "-d", "redundant_temp.dat"], stdout=subprocess.PIPE)
+	p = subprocess.Popen(args=["glpsol", "-m", os.path.join("GLPK","redundant.mod"),"-d", "redundant_temp.dat"], stdout=subprocess.PIPE)
+	
+# 	p = subprocess.Popen(executable="glpsol", shell=True, args=" ".join(["glpsol", "-m", os.path.join("GLPK","redundant.mod"),"-d", "redundant_temp.dat"]), stdout=subprocess.PIPE)
 	(output, err) = p.communicate()
-	resPositionStart = output.find("sol: ") + 5
-	resPositionEnd = output.find(" <", resPositionStart)
+	resPositionStart = output.find("Display statement at line 28") + 30
+	resPositionEnd = output.find("Model", resPositionStart)
+	print resPositionStart, resPositionEnd
 	assert resPositionStart > 4 and resPositionEnd > -1, "Problem with GLPSOL output \n" + str(output)
 	resultMaximization = int(output[resPositionStart:resPositionEnd])
 	return resultMaximization <= cstr[-1]
