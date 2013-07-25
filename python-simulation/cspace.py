@@ -78,17 +78,22 @@ def removeRedundancy(cspace):
 	# Idea:
 	# start with an empty list of cstr,
 	# add each cstr only if it is not redundant
-	
-	# !! this is not sufficient
-	# we could add a non-redundant cstr which renders
-	# a previous one redundant
-	# so TODO : change everything
-	
+
+	# THEN do the same with what is left
+	# but in reversed order
+
+
 	newCspace = [cspace[0]]
 	for cstr in cspace:
 		if not isRedundant(cstr, newCspace):
 			newCspace.append(cstr)
-	return newCspace
+
+	reversedCspace = [newCspace[0]]
+	for cstr in newCspace:
+		if not isRedundant(cstr, reversedCspace):
+			reversedCspace.append(cstr)
+
+	return reversedCspace
 
 
 def isRedundant(cstr, cspace):
@@ -100,18 +105,21 @@ def isRedundant(cstr, cspace):
 	# s.t.
 	# 	AX <= b
 	# 	C X <= d + 1
-	# If the optimal value of the LP is > d, the 
+	# If the optimal value of the LP is > d, the
 	toGLPSOLData(cspace, cstr, "redundant_temp.dat")
-	p = subprocess.Popen(["scriptname", "arg1", "arg2"], stdout=subprocess.PIPE)
+	p = subprocess.Popen(["./GLPK/launchRedundant.sh"], stdout=subprocess.PIPE)
 	(output, err) = p.communicate()
-	resultMaximization = True  # TODO BI DOU DA (parse 'output')
-	return resultMaximization >= cstr[-1]
+	resPositionStart = output.find("sol: ") + 5
+	resPositionEnd = output.find(" <", resPositionStart)
+	assert resPositionStart > 4 and resPositionEnd > -1, "Problem with GLPSOL output \n" + str(output)
+	resultMaximization = int(output[resPositionStart:resPositionEnd])
+	return resultMaximization <= cstr[-1]
 
 
 def toGLPSOLData(cspace, cstr, filename):
+	assert len(cspace) >= 1
+	assert len(cspace[0]) >= 1
 	with open(filename, 'w') as f:
-		assert len(cspace) > 1
-		assert len(cspace[0]) >= 1
 		constrK = len(cspace)
 		taskN = len(cspace[0]) - 1  # -1 because the last value in cspace is tk
 		f.write("param constrK := " + str(constrK) + ";\n")
@@ -139,7 +147,7 @@ def toGLPSOLData(cspace, cstr, filename):
 				f.write(";\n")
 
 		f.write("param nJobNew := \n")
-		for i, nJobNew in enumerate(cstr):
+		for i, nJobNew in enumerate(cstr[:-1]):
 			f.write (str(i + 1) + "\t" + str(nJobNew))
 			if i < taskN - 1:
 				f.write(",\n")
@@ -181,9 +189,11 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(0, 1, 381, 400))
 	tau = Task.TaskSystem(tasks)
 	print "computing Cspace..."
-	tau_Cspace = Cspace(tau, 381)  # 381 = DIT of the system (obviously ;D)
+	tau_Cspace = Cspace(tau, algorithms.findFirstDIT(tau))
 	print "found ", len(tau_Cspace), "equations"
 
 	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
 
-	# TODO : Test Units for removeRedundancy and subfunction !!!
+	tau_Cspace_noredun = removeRedundancy(tau_Cspace)
+	assert len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
+	print tau_Cspace_noredun
