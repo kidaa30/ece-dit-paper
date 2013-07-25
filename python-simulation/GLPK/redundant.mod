@@ -22,8 +22,10 @@ cstr_2 : sum{i in iterN} C[i] * nJobNew[i] <= tkNew + 1;
 
 solve;
 
-printf{i in iterN} "C[%d] = %d\n", i, C[i];
-printf "sol: %d < %d\n", newCstr, tkNew;
+# printf{i in iterN} "C[%d] = %d\n", i, C[i];
+# printf "sol: %d < %d\n", newCstr, tkNew;
+
+display sum{i in iterN} C[i] * nJobNew[i];
 
 end;
 
