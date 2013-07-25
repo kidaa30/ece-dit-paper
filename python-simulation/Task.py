@@ -1,6 +1,10 @@
 import math
 import myAlgebra
 
+import array
+import heapq
+
+
 class Task(object):
 	def __init__(self, O, C, D, T):
 		self.O = O
@@ -56,6 +60,36 @@ class TaskSystem(object):
 		return tauString
 
 
+	def dbf_intervals(self, lowerLimit, upperLimit):
+		starts = {task: int(task.O + task.T * math.ceil((lowerLimit - task.O) / float(task.T))) for task in self.tasks}
+		dSet = set()
+		for task in self.tasks:
+			dSet.update(list(range(starts[task] + task.D, upperLimit + 1, task.T)))
+		deadlines = sorted(array.array('i', dSet))
+		arrivals = []
+		heapq.heapify(arrivals)
+		for task in self.tasks:
+			heapTuple = (starts[task], task)
+			heapq.heappush(arrivals, heapTuple)
+
+		lastArrival = None
+		lastDeadlineIndex = 0
+		while(arrivals):
+			arrival, task = heapq.heappop(arrivals)
+			if(arrival != lastArrival):
+				lastArrival = arrival
+				dTuples = [(cnt, d) for cnt, d in enumerate(deadlines[lastDeadlineIndex:]) if d > arrival]
+				dIndexes, dValues = zip(*dTuples)
+				lastDeadlineIndex += dIndexes[0]  # add number of skipped deadlines
+				for deadline in dValues:
+					yield arrival, deadline
+			nextArrival = arrival + task.T
+			if(nextArrival + task.D <= upperLimit):
+				heapTuple = (nextArrival, task)
+				heapq.heappush(arrivals, heapTuple)
+
+
+
 import unittest
 
 class TestTask(unittest.TestCase):
@@ -65,34 +99,34 @@ class TestTask(unittest.TestCase):
 		self.tasks.append(Task(0, 1, 3, 6))
 		self.tasks.append(Task(0, 1, 3, 3))
 		self.tasks.append(Task(1, 1, 5, 4))
-		
+
 		self.tasks2 = []
 		#                 0, C, D, T
 		self.tasks2.append(Task(0, 38, 73, 154))
 		self.tasks2.append(Task(0, 156, 362, 825))
 		self.tasks2.append(Task(0, 120, 362, 400))
-		
+
 		self.tau = TaskSystem(self.tasks)
 		self.tau2 = TaskSystem(self.tasks[0:2])
 		self.tau3 = TaskSystem(self.tasks2)
-		
-		
+
+
 	def test_isSynchronous(self):
 		self.assertFalse(self.tau.isSynchronous())
 		self.assertTrue(self.tau2.isSynchronous())
 		self.assertTrue(self.tau3.isSynchronous())
-	
-	
+
+
 	def test_hasConstrainedDeadline(self):
 		self.assertFalse(self.tau.hasConstrainedDeadline())
 		self.assertTrue(self.tau2.hasConstrainedDeadline())
 		self.assertTrue(self.tau3.hasConstrainedDeadline())
-	
-	
+
+
 	def test_systemUtilization(self):
 		self.assertEqual(0.5, self.tau2.systemUtilization())
-		
-		
+
+
 	def test_hyperperiod(self):
 		self.assertEqual(6, self.tau2.hyperPeriod())
 
@@ -113,7 +147,7 @@ if __name__ == '__main__':
 # 	assert tau.hasConstrainedDeadline(), "Unit Test FAIL : hasConstrainedDeadline (2)"
 # 	assert tau.systemUtilization() == 1.0/3 + 1.0/6
 # 	assert tau.hyperPeriod() == 6
-# 
+#
 # 	tasks = []
 # 	#                 0, C, D, T
 # 	tasks.append(Task(0, 38, 73, 154))
