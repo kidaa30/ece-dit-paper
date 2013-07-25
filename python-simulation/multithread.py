@@ -60,18 +60,13 @@ class WorkThread(object):
 			#print i
 			firstDITs.append(algorithms.findFirstDIT(tau))
 		ditMedium = time.clock()
-# 		print "Thread", self.cdfIndex, "starting DIT dbf test..."
 		for i, tau in enumerate(systemArray):
 			ditResults.append(algorithms.dbf_test(tau, firstDITs[i]))
 		ditStop = time.clock()
-# 		print "Thread", self.cdfIndex, "done"
-	
-# 		print "Thread", self.cdfIndex, "Starting hyperT value..."
 		hyperTStart = time.clock()
 		for i, tau in enumerate(systemArray):
 			hyperTs.append(tau.hyperPeriod())
 		hyperTMedium = time.clock()
-# 		print "Thread", self.cdfIndex, "Starting hyperT test..."
 		for i, tau in enumerate(systemArray):
 			hyperTResults.append(algorithms.dbf_test(tau, hyperTs[i]))
 		hyperTStop = time.clock()
@@ -136,7 +131,7 @@ class ThreadManager(object):
 			
 		for i in range(self.numCdfValues):
 			cdfIndex,res = self.resultsQueue.get()
-			print "Got results for cdf", self.cdf[cdfIndex]
+			print "Got results for cdf", self.cdf[cdfIndex], [round(r,3) for r in res]
 			self.bpValue[cdfIndex] = res[1]
 			self.bpTest[cdfIndex] = res[0]
 			self.bpAll[cdfIndex] = res[0] + res[1]
@@ -147,10 +142,13 @@ class ThreadManager(object):
 			self.hyperTTest[cdfIndex] = res[4]
 			self.hyperTAll[cdfIndex] = res[4] + res[5]
 			
+		for t in self.threadList:
+			t.join()
+			
 if __name__ == '__main__':	
-	NUMBER_OF_SYSTEMS = 10000
+	NUMBER_OF_SYSTEMS = 1000
 	cdfRange = [f/10.0 for f in range(10, 51)]
-	manager = ThreadManager(cdfRange,8,NUMBER_OF_SYSTEMS)
+	manager = ThreadManager(cdfRange,4,NUMBER_OF_SYSTEMS)
 	manager.runAllThreads()
 
  	pylab.figure()
