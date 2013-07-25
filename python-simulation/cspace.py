@@ -80,14 +80,16 @@ def removeRedundancy(cspace):
 	# but in reversed order
 
 	newCspace = [cspace[0]]
-	for i, cstr in enumerate(cspace):
-		print "\t", i, "/", len(cspace), "\tLP with ", len(newCspace), "cstrs of size", len(newCspace[0])
+	print "first cstr : ", cspace[0]
+	for i, cstr in enumerate(cspace[1:]):
+		print "\t", i, "/", len(cspace), "\tLP with ", len(newCspace), "cstrs of size", len(newCspace[0]), ":", cstr
 		if not isRedundant(cstr, newCspace):
 			newCspace.append(cstr)
 
 	reversedCspace = [newCspace[0]]
-	for i, cstr in enumerate(newCspace):
-		print "\t", i, "/", len(newCspace), "\tLP with ", len(reversedCspace), "cstrs of size", len(reversedCspace[0])
+	print "first cstr : ", newCspace[0]
+	for i, cstr in enumerate(newCspace[1:]):
+		print "\t", i, "/", len(newCspace), "\tLP with ", len(reversedCspace), "cstrs of size", len(reversedCspace[0]), cstr
 		if not isRedundant(cstr, reversedCspace):
 			reversedCspace.append(cstr)
 
@@ -105,7 +107,7 @@ def isRedundant(cstr, cspace):
 	# 	C X <= d + 1
 	# If the optimal value of the LP is > d, the
 	toGLPSOLData(cspace, cstr, "redundant_temp.dat")
-	p = subprocess.Popen(["./GLPK/launchRedundant.sh"], stdout=subprocess.PIPE)
+	p = subprocess.Popen(["glpsol", "-m", "GLPK/redundant.mod", "-d", "redundant_temp.dat"], stdout=subprocess.PIPE)
 	(output, err) = p.communicate()
 	resPositionStart = output.find("sol: ") + 5
 	resPositionEnd = output.find(" <", resPositionStart)
@@ -210,7 +212,7 @@ if __name__ == '__main__':
 	assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
 
 	# RANDOM TEST
-	NUMBER_OF_SYSTEMS = 1000
+	NUMBER_OF_SYSTEMS = 1
 	systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, 1)
 	for tau in systemArray:
 		print tau
