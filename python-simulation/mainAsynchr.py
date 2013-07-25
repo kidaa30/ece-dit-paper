@@ -48,9 +48,9 @@ if __name__ == '__main__':
 				sizeWithoutDIT = sizeWithDIT
 			else:
 				sizeWithoutDIT = len(cspace.Cspace(tau, upperLimit=upLs[-1]))
+			stop = time.clock()
 			print "\tsize with DIT\t", sizeWithDIT
 			print "\tsize no DIT\t", sizeWithoutDIT
-			stop = time.clock()
 			print "\ttime: ", stop - start, "s"
 			print "\t"
 

@@ -1,6 +1,8 @@
 import algorithms
 import Task
+import TaskGenerator
 
+import random
 import subprocess  # in order to launch GLPSOL
 
 
@@ -46,12 +48,14 @@ def removeRedundancy(cspace):
 
 
 	newCspace = [cspace[0]]
-	for cstr in cspace:
+	for i, cstr in enumerate(cspace):
+		print "\t", i, "/", len(cspace), "\tLP with ", len(newCspace), "cstrs of size", len(newCspace[0])
 		if not isRedundant(cstr, newCspace):
 			newCspace.append(cstr)
 
 	reversedCspace = [newCspace[0]]
-	for cstr in newCspace:
+	for i, cstr in enumerate(newCspace):
+		print "\t", i, "/", len(newCspace), "\tLP with ", len(reversedCspace), "cstrs of size", len(reversedCspace[0])
 		if not isRedundant(cstr, reversedCspace):
 			reversedCspace.append(cstr)
 
@@ -110,7 +114,7 @@ def toGLPSOLData(cspace, cstr, filename):
 
 		f.write("param nJobNew := \n")
 		for i, nJobNew in enumerate(cstr[:-1]):
-			f.write (str(i + 1) + "\t" + str(nJobNew))
+			f.write(str(i + 1) + "\t" + str(nJobNew))
 			if i < taskN - 1:
 				f.write(",\n")
 			else:
@@ -127,9 +131,30 @@ def testCVector(cspace, cvector):
 		for j in range(len(cvector)):
 			res += equation[j]*cvector[j]
 		if res > equation[-1]:
-			print "testCVector: error at equation ", i, equation, "with vector", cvector, "res:", res
+			#print "testCVector: error at equation ", i, equation, "with vector", cvector, "res:", res
 			return False
 	return True
+
+
+def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
+	systemArray = []
+	for i in range(numberOfSystems):
+		Umin = 0.25
+		Umax = 0.75
+		Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
+		n = 3
+		# maxHyperT = 554400  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
+		maxHyperT = -1
+		Tmin = 5
+		Tmax = 15
+		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
+		if (verbose and numberOfSystems <= 10):
+			print "Generated task system # ", i
+			for task in tasks:
+					print "\t", task
+		systemArray.append(Task.TaskSystem(tasks))
+	return systemArray
+
 
 if __name__ == '__main__':
 	tasks = []
@@ -137,25 +162,30 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(5, 1, 1, 3))
 	tasks.append(Task.Task(0, 4, 4, 8))
 	tau = Task.TaskSystem(tasks)
-
 	tau_Cspace = Cspace(tau)
-	print "found ", len(tau_Cspace), "equations"
-
 	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is False
 
-	print "TEST2"
+	# "TEST2"
 
 	tasks = []
 	tasks.append(Task.Task(0, 1, 73, 154))
 	tasks.append(Task.Task(0, 1, 381, 825))
 	tasks.append(Task.Task(0, 1, 381, 400))
 	tau = Task.TaskSystem(tasks)
-	print "computing Cspace..."
 	tau_Cspace = Cspace(tau, algorithms.findFirstDIT(tau))
-	print "found ", len(tau_Cspace), "equations"
-
 	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
-
 	tau_Cspace_noredun = removeRedundancy(tau_Cspace)
-	assert len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
-	print tau_Cspace_noredun
+	assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
+
+	# RANDOM TEST
+	NUMBER_OF_SYSTEMS = 1000
+	systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, 1)
+	for tau in systemArray:
+		print tau
+		print "cspace..."
+		cspace = Cspace(tau)
+		print "found ", len(cspace), "equations"
+		print "remove redun..."
+		cspace_noredun = removeRedundancy(cspace)
+		print len(cspace), "=>", len(cspace_noredun), "equations left"
+		print ""
