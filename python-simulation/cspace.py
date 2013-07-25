@@ -8,6 +8,7 @@ import array
 import heapq
 import math
 import os.path
+import re
 
 
 def Cspace(tau, upperLimit="def", lowerLimit = 0):
@@ -32,9 +33,6 @@ def Cspace(tau, upperLimit="def", lowerLimit = 0):
 				upperLimit = Omax + 2 * tau.hyperPeriod()
 				lowerLimit = Omax
 
-	# for each arrival and each deadline, create an equation
-	# TODO (smartly):
-	# 1) Detect identical deadlines and remove them
 	equations = []
 	starts = {task: int(task.O + task.T * math.ceil((lowerLimit - task.O) / float(task.T))) for task in tau.tasks}
 
@@ -64,11 +62,6 @@ def Cspace(tau, upperLimit="def", lowerLimit = 0):
 		if(nextArrival + task.D <= upperLimit):
 			heapTuple = (nextArrival, task)
 			heapq.heappush(arrivals, heapTuple)
-#  	for task in tau.tasks:
-#  		for a in [0] if isSynchronous else range(task.O, upperLimit + 1, task.T):
-#  			for task2 in tau.tasks:
-#  				for d in filter(lambda x: x > a, range(task2.O + task2.D, upperLimit + 1, task2.T)):
-#  					equations.append([algorithms.completedJobCount(t, a, d) for t in tau.tasks] + [d - a])
 	return equations
 
 
@@ -109,14 +102,9 @@ def isRedundant(cstr, cspace):
 	# If the optimal value of the LP is > d, the
 	toGLPSOLData(cspace, cstr, "redundant_temp.dat")
 	p = subprocess.Popen(args=["glpsol", "-m", os.path.join("GLPK","redundant.mod"),"-d", "redundant_temp.dat"], stdout=subprocess.PIPE)
-	
-# 	p = subprocess.Popen(executable="glpsol", shell=True, args=" ".join(["glpsol", "-m", os.path.join("GLPK","redundant.mod"),"-d", "redundant_temp.dat"]), stdout=subprocess.PIPE)
 	(output, err) = p.communicate()
-	resPositionStart = output.find("Display statement at line 28") + 30
-	resPositionEnd = output.find("Model", resPositionStart)
-	print resPositionStart, resPositionEnd
-	assert resPositionStart > 4 and resPositionEnd > -1, "Problem with GLPSOL output \n" + str(output)
-	resultMaximization = int(output[resPositionStart:resPositionEnd])
+	reRes = re.search(r".*?Display\ statement\ at\ line\ 28.*?(?P<number>[0-9]+).*", output, re.DOTALL)
+	resultMaximization = int(reRes.group('number'))
 	return resultMaximization <= cstr[-1]
 
 
