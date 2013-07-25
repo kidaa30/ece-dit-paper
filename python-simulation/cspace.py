@@ -35,46 +35,41 @@ def Cspace(tau, upperLimit="def", lowerLimit = 0):
 	# TODO (smartly):
 	# 1) Detect identical deadlines and remove them
 	equations = []
-	starts = {task:int(task.O + task.T * math.ceil((lowerLimit - task.O) / float(task.T))) for task in tau.tasks}
-	
+	starts = {task: int(task.O + task.T * math.ceil((lowerLimit - task.O) / float(task.T))) for task in tau.tasks}
+
 	dSet = set()
 	for task in tau.tasks:
 		dSet.update(list(range(starts[task] + task.D, upperLimit + 1, task.T)))
-	deadlines = sorted(array.array('i',dSet))
-	
+	deadlines = sorted(array.array('i', dSet))
+
 	arrivals = []
 	heapq.heapify(arrivals)
 	for task in tau.tasks:
-		heapTuple = (starts[task],task)
+		heapTuple = (starts[task], task)
 		heapq.heappush(arrivals, heapTuple)
-		
+
 	lastArrival = None
 	lastDeadlineIndex = 0
 	while(arrivals):
-		arrival,task = heapq.heappop(arrivals)
+		arrival, task = heapq.heappop(arrivals)
 		if(arrival != lastArrival):
 			lastArrival = arrival
-			dTuples = [(cnt,d) for cnt,d in enumerate(deadlines[lastDeadlineIndex:]) if d > arrival]
-			dIndexes,dValues = zip(*dTuples) 
-			lastDeadlineIndex += dIndexes[0] #add number of skipped deadlines
+			dTuples = [(cnt, d) for cnt, d in enumerate(deadlines[lastDeadlineIndex:]) if d > arrival]
+			dIndexes, dValues = zip(*dTuples)
+			lastDeadlineIndex += dIndexes[0]  # add number of skipped deadlines
 			for deadline in dValues:
 				equations.append([algorithms.completedJobCount(t, arrival, deadline) for t in tau.tasks] + [deadline - arrival])
 		nextArrival = arrival + task.T
 		if(nextArrival + task.D <= upperLimit):
-			heapTuple = (nextArrival,task)
-			heapq.heappush(arrivals,heapTuple)
-	
-		
-		
-	
-	
+			heapTuple = (nextArrival, task)
+			heapq.heappush(arrivals, heapTuple)
 #  	for task in tau.tasks:
 #  		for a in [0] if isSynchronous else range(task.O, upperLimit + 1, task.T):
 #  			for task2 in tau.tasks:
 #  				for d in filter(lambda x: x > a, range(task2.O + task2.D, upperLimit + 1, task2.T)):
 #  					equations.append([algorithms.completedJobCount(t, a, d) for t in tau.tasks] + [d - a])
-
 	return equations
+
 
 def removeRedundancy(cspace):
 	# Idea:
@@ -83,7 +78,6 @@ def removeRedundancy(cspace):
 
 	# THEN do the same with what is left
 	# but in reversed order
-
 
 	newCspace = [cspace[0]]
 	for i, cstr in enumerate(cspace):
