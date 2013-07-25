@@ -79,7 +79,7 @@ def isRedundant(cstr, cspace):
 	if len(cspace) == 0:
 		return False
 	toGLPSOLData(cspace, cstr, "redundant_temp.dat")
-	p = subprocess.Popen(args=["glpsol", "-m", os.path.join("GLPK","redundant.mod"),"-d", "redundant_temp.dat"], stdout=subprocess.PIPE)
+	p = subprocess.Popen(args=["glpsol", "-m", os.path.join("GLPK", "redundant.mod"), "-d", "redundant_temp.dat"], stdout=subprocess.PIPE)
 	(output, err) = p.communicate()
 	reRes = re.search(r".*?Display\ statement\ at\ line\ 28.*?(?P<number>[0-9]+).*", output, re.DOTALL)
 	resultMaximization = int(reRes.group('number'))
