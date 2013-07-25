@@ -69,25 +69,27 @@ def removeRedundancy(cspace):
 	# Idea:
 	# start with an empty list of cstr,
 	# add each cstr only if it is not redundant
+	# THEN test every remaining cstr against the others
 
-	# THEN do the same with what is left
-	# but in reversed order
-
-	newCspace = [cspace[0]]
-	print "first cstr : ", cspace[0]
-	for i, cstr in enumerate(cspace[1:]):
-		print "\t", i, "/", len(cspace), "\tLP with ", len(newCspace), "cstrs of size", len(newCspace[0]), ":", cstr
+	# first pass - filter against previous cstr
+	newCspace = []
+	for i, cstr in enumerate(cspace):
 		if not isRedundant(cstr, newCspace):
+			print "\tNon-redundant at step ", i, ":", cstr
 			newCspace.append(cstr)
 
-	reversedCspace = [newCspace[0]]
-	print "first cstr : ", newCspace[0]
-	for i, cstr in enumerate(newCspace[1:]):
-		print "\t", i, "/", len(newCspace), "\tLP with ", len(reversedCspace), "cstrs of size", len(reversedCspace[0]), cstr
-		if not isRedundant(cstr, reversedCspace):
-			reversedCspace.append(cstr)
+	# second pass - filter against all cstr
+	# Note that the number of cstr should be small
+	i = 0
+	while i < len(newCspace):
+		cstr = newCspace.pop(i)
+		if not isRedundant(cstr, newCspace):
+			newCspace.insert(i, cstr)
+			i += 1
+		else:
+			print "\t", cstr, "was redundant against", newCspace
 
-	return reversedCspace
+	return newCspace
 
 
 def isRedundant(cstr, cspace):
@@ -100,6 +102,8 @@ def isRedundant(cstr, cspace):
 	# 	AX <= b
 	# 	C X <= d + 1
 	# If the optimal value of the LP is > d, the
+	if len(cspace) == 0:
+		return False
 	toGLPSOLData(cspace, cstr, "redundant_temp.dat")
 	p = subprocess.Popen(args=["glpsol", "-m", os.path.join("GLPK","redundant.mod"),"-d", "redundant_temp.dat"], stdout=subprocess.PIPE)
 	(output, err) = p.communicate()
