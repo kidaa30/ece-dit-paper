@@ -12,7 +12,7 @@ param tk {k in iterK}, >= 0;
 param nJobNew {i in iterN}, >= 0;
 param tkNew, >= 0;
 
-var C {i in iterN}, >= 1;
+var C {i in iterN}, integer, >= 1;
 
 maximize newCstr: sum{i in iterN} C[i] * nJobNew[i];
 
