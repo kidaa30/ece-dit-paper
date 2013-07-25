@@ -45,7 +45,7 @@ class TaskSystem(object):
 		return ok
 
 	def isSynchronous(self):
-		return sum([task.O for task in self.tasks]) == 0
+		return max([task.O for task in self.tasks]) == 0
 
 	def systemUtilization(self):
 		u = 0
@@ -61,22 +61,30 @@ class TaskSystem(object):
 
 
 	def dbf_intervals(self, lowerLimit, upperLimit):
-		starts = {task: int(task.O + task.T * math.ceil((lowerLimit - task.O) / float(task.T))) for task in self.tasks}
+		starts = {}  # will contain all tasks first arrival
+		for task in self.tasks:
+			starts[task] = int(task.O + task.T * max(0, math.ceil((lowerLimit - task.O) / float(task.T))))
 		dSet = set()
 		for task in self.tasks:
-			dSet.update(list(range(starts[task] + task.D, upperLimit + 1, task.T)))
+			deadlineInRange = list(range(starts[task] + task.D, upperLimit + 1, task.T))
+			if len(deadlineInRange) == 0:  # then add one anyway
+				deadlineInRange = [starts[task] + task.D]
+			dSet.update(deadlineInRange)
 		deadlines = sorted(array.array('i', dSet))
 		arrivals = []
-		heapq.heapify(arrivals)
-		for task in self.tasks:
-			heapTuple = (starts[task], task)
-			heapq.heappush(arrivals, heapTuple)
+		if not self.isSynchronous():
+			heapq.heapify(arrivals)
+			for task in self.tasks:
+				heapTuple = (starts[task], task)
+				heapq.heappush(arrivals, heapTuple)
+		else:
+			arrivals.append((0, self.tasks[0]))
 
 		lastArrival = None
 		lastDeadlineIndex = 0
-		while(arrivals):
+		while arrivals:
 			arrival, task = heapq.heappop(arrivals)
-			if(arrival != lastArrival):
+			if arrival != lastArrival:
 				lastArrival = arrival
 				dTuples = [(cnt, d) for cnt, d in enumerate(deadlines[lastDeadlineIndex:]) if d > arrival]
 				dIndexes, dValues = zip(*dTuples)
@@ -84,10 +92,9 @@ class TaskSystem(object):
 				for deadline in dValues:
 					yield arrival, deadline
 			nextArrival = arrival + task.T
-			if(nextArrival + task.D <= upperLimit):
+			if self.isSynchronous() and nextArrival + task.D <= upperLimit:
 				heapTuple = (nextArrival, task)
 				heapq.heappush(arrivals, heapTuple)
-
 
 
 import unittest

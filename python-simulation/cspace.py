@@ -200,6 +200,6 @@ if __name__ == '__main__':
 		cspace_noredun = removeRedundancy(cspace)
 		print len(cspace), "=>", len(cspace_noredun), "equations left"
 		print ""
-		assert testCVector(cspace_noredun, tau) == testCVector(cspace, tau)  # TODO test with dbf_test in algorithm
+		assert testCVector(cspace_noredun, tau) == testCVector(cspace, tau) == algorithms.dbf_test(tau)
 		print "redundancy (necessary) condition ok"
 
