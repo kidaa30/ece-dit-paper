@@ -339,7 +339,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 
 	We generated task systems by
 	\begin{itemize}
-		\item Generating utilization values with the \texttt{UUniSort} algorithm described in \cite{bini2005measuring}, with parameters
+		\item Generating utilization values with the \texttt{UUniFast} algorithm described in \cite{bini2005measuring}, with parameters
 		\begin{itemize}
 			\item $U_{tot}$ (system utilization) chosen uniformly between 0.25 and 0.75
 			\item $n$ (number of tasks) equal to 3
@@ -438,29 +438,33 @@ with
 
 Indeed, if the maximization returns $z=d+1$, it means that there are some integer values accessible with the previous constraints that the new constraint forbids. On the other hands, if the maximization returns $z \leq d$, it means that the limitation expressed in the new constraint is already enforced by the previous constraints. Therefore $z \leq d$ is a necessary and sufficient condition of redundancy of the new constraint.\\
 
-Such a linear problem can be solved by the simplex algorithm. However, here the problem is not exactly the same as we have a set of constraints and we want to find all redundant constraints within. The naive method would be to test each constraints against the set of all the others, we present an efficient preprocessing slightly more efficient approach in Algorithm \ref{alg:prunRedun}.
+Such a linear problem can be solved by the simplex algorithm. However, here the problem is not exactly the same as we have a set of constraints and we want to find all redundant constraints within. The naive method would be to directly test each constraints of the set against all the others, we present a similar method with an efficient preprocessing in Algorithm \ref{alg:prunRedun}.
 
 \begin{algorithm}
-\caption{Removing redundancy - first pass}
+\caption{Removing redundancy from CSPACE}
 \label{alg:prunRedun}
 	\begin{algorithmic}[1]
 		\STATE $CSPACE$ : set of constraints
 		\STATE $S \leftarrow \emptyset$
+		\STATE \COMMENT{First pass - test $cstr$ against previous ones}
 		\FOR{$cstr$ \textbf{in} $CSPACE$}
 			\IF {$cstr$ is not redundant w.r.t. $S$}
 				\STATE $S \leftarrow cstr$
 			\ENDIF
 		\ENDFOR
-
-		\STATE $S_2 \leftarrow \emptyset$
+		\STATE \COMMENT{Second pass - test $cstr$ against every other}
 		\FOR{$cstr$ \textbf{in} $S$}
-
+			\STATE Remove $cstr$ from $S$
+			\IF {$cstr$ is not redundant w.r.t. $S$}
+				\STATE Put $cstr$ back into $S$
+			\ENDIF
+		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
 
 After doing this, no redundant constraints are left. However, this algorithm takes an exponential time in the number of constraints. An efficient initial description of $CSPACE$, as described in previous sections, is therefore preferred.\\
 
-To summarize, we first reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise. This gives us a first correct description of the C-SPACE which is not efficient. We then solve a linear integer problem per constraint which allow us to determine redundancy.
+To summarize, we first reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise. After this correct but not efficient description of the C-SPACE, a linear integer approach removes the remaining redundancies.
 
 \section{Example}
 

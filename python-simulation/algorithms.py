@@ -88,30 +88,22 @@ def completedJobCount(task, t1, t2):
 	return max(0, jobBeforeT2 - jobBeforeT1 + 1)
 
 
-def dbf_test(tau, upperLimit="def"):
-	if upperLimit == "def":
-		firstDIT = findFirstDIT(tau)
-		busyPeriod = findBusyPeriod(tau)
-		upperLimit = min(firstDIT, busyPeriod)
+def dbf_test(tau, lowerLimit=None, upperLimit=None):
+	# TODO : add lowerLimit (already present in all subfunctions)
+	Omax = max([task.O for task in tau.tasks])
+	if upperLimit is None or lowerLimit is None:
+		if Omax == 0:
+			upperLimit = findBusyPeriod(tau)
+		else:
+			upperLimit = Omax + 2 * tau.hyperPeriod()
+		lowerLimit = Omax
 
-	# We use a heap to walk through the deadlines in chronological order
-	# only one deadline per task is in the heap at a time
-	# the node of the heap are tuple (deadline, task)
-	deadlineHeap = map(lambda task: (task.O + task.D, task), tau.tasks)
-	heapq.heapify(deadlineHeap)
-
-	# Apply the feasibility test to every deadline in the interval [0, upperLimit)
-	deadline = 0
-	while deadline < upperLimit:
-		tup = heapq.heappop(deadlineHeap)
-		deadline = tup[0]
-		task = tup[1]
-		testResult = dbf_synchr(tau, deadline) <= deadline
+	for arrival, deadline in tau.dbf_intervals(lowerLimit, upperLimit):
+		testResult = dbf(tau, arrival, deadline) <= deadline
 		if testResult is False:
 			return False
-		# add next deadline of this task to the heap
-		heapq.heappush(deadlineHeap, (deadline + task.T, task))
 
+	# If all previous test succeed, the system is feasible
 	return True
 
 if __name__ == '__main__':
@@ -227,5 +219,5 @@ if __name__ == '__main__':
 	assert 0 < tau.hyperPeriod()
 	assert findSynchronousInstant(tau) or True, "returned: " + str(findSynchronousInstant(tau)) + "\n" + str(tau)
 	assert findFirstPeriodicDIT(tau) or True
-	
+
 	print '3/3 OK'

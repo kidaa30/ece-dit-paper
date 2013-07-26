@@ -4,8 +4,6 @@ import TaskGenerator
 
 import random
 import subprocess  # in order to launch GLPSOL
-import array
-import heapq
 import math
 import os.path
 import re
@@ -32,35 +30,11 @@ def Cspace(tau, upperLimit="def", lowerLimit = 0):
 				upperLimit = Omax + 2 * tau.hyperPeriod()
 				lowerLimit = Omax
 
+	# for each arrival and each deadline, create an equation
 	equations = []
-	starts = {task: int(task.O + task.T * math.ceil((lowerLimit - task.O) / float(task.T))) for task in tau.tasks}
+	for a, d in tau.dbf_intervals(lowerLimit, upperLimit):
+		equations.append([algorithms.completedJobCount(t, a, d) for t in tau.tasks] + [d - a])
 
-	dSet = set()
-	for task in tau.tasks:
-		dSet.update(list(range(starts[task] + task.D, upperLimit + 1, task.T)))
-	deadlines = sorted(array.array('i', dSet))
-
-	arrivals = []
-	heapq.heapify(arrivals)
-	for task in tau.tasks:
-		heapTuple = (starts[task], task)
-		heapq.heappush(arrivals, heapTuple)
-
-	lastArrival = None
-	lastDeadlineIndex = 0
-	while(arrivals):
-		arrival, task = heapq.heappop(arrivals)
-		if(arrival != lastArrival):
-			lastArrival = arrival
-			dTuples = [(cnt, d) for cnt, d in enumerate(deadlines[lastDeadlineIndex:]) if d > arrival]
-			dIndexes, dValues = zip(*dTuples)
-			lastDeadlineIndex += dIndexes[0]  # add number of skipped deadlines
-			for deadline in dValues:
-				equations.append([algorithms.completedJobCount(t, arrival, deadline) for t in tau.tasks] + [deadline - arrival])
-		nextArrival = arrival + task.T
-		if(nextArrival + task.D <= upperLimit):
-			heapTuple = (nextArrival, task)
-			heapq.heappush(arrivals, heapTuple)
 	return equations
 
 
@@ -104,7 +78,7 @@ def isRedundant(cstr, cspace):
 	if len(cspace) == 0:
 		return False
 	toGLPSOLData(cspace, cstr, "redundant_temp.dat")
-	p = subprocess.Popen(args=["glpsol", "-m", os.path.join("GLPK","redundant.mod"),"-d", "redundant_temp.dat"], stdout=subprocess.PIPE)
+	p = subprocess.Popen(args=["glpsol", "-m", os.path.join("GLPK", "redundant.mod"), "-d", "redundant_temp.dat"], stdout=subprocess.PIPE)
 	(output, err) = p.communicate()
 	reRes = re.search(r".*?Display\ statement\ at\ line\ 28.*?(?P<number>[0-9]+).*", output, re.DOTALL)
 	resultMaximization = int(reRes.group('number'))
@@ -154,7 +128,8 @@ def toGLPSOLData(cspace, cstr, filename):
 		f.write(";\n")
 
 
-def testCVector(cspace, cvector):
+def testCVector(cspace, tau):
+	cvector = [task.C for task in tau.tasks]
 	for i, equation in enumerate(cspace):
 		res = 0
 		for j in range(len(cvector)):
@@ -192,7 +167,7 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(0, 4, 4, 8))
 	tau = Task.TaskSystem(tasks)
 	tau_Cspace = Cspace(tau)
-	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is False
+	assert testCVector(tau_Cspace, tau) is False
 
 	# "TEST2"
 
@@ -202,7 +177,7 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(0, 1, 381, 400))
 	tau = Task.TaskSystem(tasks)
 	tau_Cspace = Cspace(tau, algorithms.findFirstDIT(tau))
-	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
+	assert testCVector(tau_Cspace, tau) is True
 	tau_Cspace_noredun = removeRedundancy(tau_Cspace)
 	assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
 
@@ -218,3 +193,6 @@ if __name__ == '__main__':
 		cspace_noredun = removeRedundancy(cspace)
 		print len(cspace), "=>", len(cspace_noredun), "equations left"
 		print ""
+		assert testCVector(cspace_noredun, tau) == testCVector(cspace, tau) == algorithms.dbf_test(tau)
+		print "redundancy (necessary) condition ok"
+
