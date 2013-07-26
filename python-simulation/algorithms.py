@@ -5,10 +5,12 @@ import math
 import myAlgebra
 import newChineseRemainder
 
+
 def findFirstDIT(tau):
 	# language abuse ;-)
 #  	return findFirstPeriodicDIT(tau)
- 	return newChineseRemainder.newFindFirstPeriodicDIT(tau)
+	return newChineseRemainder.newFindFirstPeriodicDIT(tau)
+
 
 def findFirstPeriodicDIT(tau):
 	# Requires to solve several system of modular equations
@@ -43,12 +45,14 @@ def findFirstPeriodicDIT(tau):
 				currentMin = tIdle
 	return currentMin
 
+
 def findSynchronousInstant(tau):
 	T = [task.T for task in tau.tasks]
 	primalSystem_T = myAlgebra.toPrimalPowerSystem(T)
 	offsets = [task.O % task.T for task in tau.tasks]
 	tSync = myAlgebra.congruencePrimalPower(primalSystem_T, offsets)
 	return tSync
+
 
 def findBusyPeriod(tau):
 	# for synchronous arbitrary deadline:
