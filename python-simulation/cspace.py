@@ -4,6 +4,7 @@ import TaskGenerator
 
 import random
 import subprocess  # in order to launch GLPSOL
+import itertools
 import math
 import os.path
 import re
@@ -128,9 +129,15 @@ def toGLPSOLData(cspace, cstr, filename):
 		f.write(str(cstr[-1]))
 		f.write(";\n")
 
+def CspaceSize(tau, cspace=None):
+	if cspace is None:
+		cspace = Cspace(tau)
+	cValues = []
+	for task in tau.tasks:
+		cValues.append((c for c in range(1, task.D + 1)))
+	return len(filter(lambda cvector: testCVector(cspace, cvector), itertools.product(*cValues)))
 
-def testCVector(cspace, tau):
-	cvector = [task.C for task in tau.tasks]
+def testCVector(cspace, cvector):
 	for i, equation in enumerate(cspace):
 		res = 0
 		for j in range(len(cvector)):
@@ -147,11 +154,11 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 		Umin = 0.25
 		Umax = 0.75
 		Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
-		n = 3
+		n = 2
 		# maxHyperT = 554400  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
 		maxHyperT = -1
 		Tmin = 5
-		Tmax = 15
+		Tmax = 20
 		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
 		if (verbose and numberOfSystems <= 10):
 			print "Generated task system # ", i
@@ -168,7 +175,7 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(0, 4, 4, 8))
 	tau = Task.TaskSystem(tasks)
 	tau_Cspace = Cspace(tau)
-	assert testCVector(tau_Cspace, tau) is False
+	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is False
 
 	# "TEST2"
 
@@ -178,7 +185,7 @@ if __name__ == '__main__':
 	tasks.append(Task.Task(0, 1, 381, 400))
 	tau = Task.TaskSystem(tasks)
 	tau_Cspace = Cspace(tau, algorithms.findFirstDIT(tau))
-	assert testCVector(tau_Cspace, tau) is True
+	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
 	tau_Cspace_noredun = removeRedundancy(tau_Cspace)
 	assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
 
@@ -194,6 +201,7 @@ if __name__ == '__main__':
 		cspace_noredun = removeRedundancy(cspace)
 		print len(cspace), "=>", len(cspace_noredun), "equations left"
 		print ""
-		assert testCVector(cspace_noredun, tau) == testCVector(cspace, tau) == algorithms.dbf_test(tau)
+		assert testCVector(cspace_noredun, [task.C for task in tau.tasks]) == testCVector(cspace, [task.C for task in tau.tasks]) == algorithms.dbf_test(tau)
 		print "redundancy (necessary) condition ok"
-
+		print "synchronous instant", algorithms.findSynchronousInstant(tau)
+		print "cspacesize", CspaceSize(tau, cspace_noredun)
