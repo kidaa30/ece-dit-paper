@@ -178,8 +178,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 
 			The DBF test gives us a list of inequations on the WCET values of the task set which together are a necessary and sufficient condition of feasibility. They can all be written in the following way:
 			\[
-				\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq
-				t_1 \leq t_2
+				\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
 			\]
 			Note that for a given $t$, we have that the $n_i(t)$ are
 			constant (w.r.t. the $C_i$). Those inequations are thus indeed linear.\\
@@ -243,7 +242,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 	Every DIT being an idle instant, the execution of the system after a DIT does
 	not depend on the execution before it. Because the synchronous arrival pattern is
 	the worst case [citation needed], it is sufficient for the DBF test to only
-	consider intervals $[0, t]$ with $t$ being a deadline before the first DIT.\\
+	consider intervals $[0, t]$ with $t$ being a deadline before or at the first DIT.\\
 
 	To summarize, we reduced the description of the C-space from an infinite number
 	of constraints to only those where $t_1 = 0$, $t_2 \leqslant t_d$ and
@@ -254,7 +253,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		In this paper, we extend the work of \cite{george2009characterization} to the
 		asynchronous case. In section \ref{sct:asyncDIT}, we present an extension of
 		the concept of DIT adapted to the asynchronous case called first periodic DIT
-		($t_d$), along with an algorithm to find its value for any period values. In Section
+		($t_d$), along with an algorithm to determine its existence and value for any system. In Section
 		\ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous
 		system based on the DBF test, and we show why the interval $[t_d, t_d + H]$ is
 		sufficient to consider. In section ???, we present a simulation where we find that........
@@ -372,7 +371,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		
 		A better method for finding the FPDIT consists in splitting the algorithm that
 		is used to solve the CRP in two separate parts. The algorithm requires
-		calculating one modular inverse for each task. 
+		calculating one modular inverse for each task. %TODO continue
 
 	\subsection{Simulation}
 
@@ -451,6 +450,8 @@ The first periodic DIT, if it exists, must occur in the transitive period. Indee
 
 We show (???) that we can restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the first periodic DIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.\\
 
+(Remarque : Sans appliquer le simplexe ou un truc comme ça, si un DIT existe on divisera toujours par exactement 4 le nombre de contraintes ??)
+
 \subsubsection{Redundancy as an integer linear problem}
 
 The general problem of redundancy of a new linear constraint $C \, X \leq d$ w.r.t. a set of previous linear constraints $A \, X \leq B$ in an ILP can itself be written as the following ILP:
@@ -517,21 +518,67 @@ Consider the following task system
 		 \hline
 		  & $O_i$ & $C_i$ & $D_i$ & $T_i$ \\
 		 \hline
-		 $\tau_1$ & 5 & $C_1$ & 4 & 9\\
+		 $\tau_1$ & 8 & $C_1$ & 7 & 15\\
 		 \hline
-		 $\tau_2$ & 0 & $C_2$ & 12 & 14\\
+		 $\tau_2$ & 0 & $C_2$ & 2 & 5\\
 		 \hline
 		\end{tabular}
 		\end{center}
 		~\\
 
-The FPDIT happens at $t=12$ and $H = 126$. The study interval using the FPDIT is thus $[12, 138]$, which contains 261 intervals $[a,d]$ with $a$ being the arrival of a job, $d$ being the deadline of a job, and $12 \leqslant a < d \leqslant 138$. For comparison, the more pessimistic study interval is $[5, 257]$ which yields 1006 intervals.\\
+The FPDIT happens at $t=15$ and we have $H = 15$. The study interval using the FPDIT is thus $[15, 30]$, which contains 11 intervals $[a,d]$ with $a$ being the arrival of a job, $d$ being the deadline of a job, and $15 \leqslant a < d \leqslant 30$. Those intervals are
+$[15, 17]$, $[15, 22]$, $[15, 27]$, $[15, 30]$, $[20, 22]$, $[20, 27]$, $[20, 30]$, $[23, 27]$, $[23, 30]$, $[25, 27]$ and $[25, 30]$. For comparison, the more pessimistic study interval is $[8, 38]$ which yields 57 intervals.\\
 
-We now apply the
+For each $[a, d]$, we have a constraint $$\sum_{i=0}^{n-1} n_i(a, d) \, C_i \leqslant d - a$$ which give a description of the C-space.\\
+
+We now apply algorithm \ref{alg:prunRedun} to remove redundancies, leaving us with the following constraints:
+$$
+\left\{
+	\begin{array}{ccccc}
+		& & C_2 & \leqslant & 2 \\
+		C_1 & + & C_2 & \leqslant & 7
+	\end{array}
+\right.
+$$
+The C-space thus contains 11 points $(C_1, C_2) = (1, 1)$, $(2, 1)$, $(3, 1)$, $(4, 1)$, $(5, 1)$, $(6, 1)$, $(1, 2)$, $(2, 2)$, $(3, 2)$, $(4, 2)$ and $(5, 2)$.\\
+
+Let us now consider the same system but with a synchronous pattern of arrival.
+
+		\begin{center}
+		\begin{tabular}{|r|c|c|c|c|}
+		 \hline
+		  & $O_i$ & $C_i$ & $D_i$ & $T_i$ \\
+		 \hline
+		 $\tau_1$ & 0 & $C_1$ & 7 & 15\\
+		 \hline
+		 $\tau_2$ & 0 & $C_2$ & 2 & 5\\
+		 \hline
+		\end{tabular}
+		\end{center}
+		~\\
+
+The first DIT happens at time $t_d = 7$. The intervals to consider are thus of the form $[0, t]$ where $t$ is a deadline happening before or at time $t_d$. This yields 2 intervals ($[0, 2]$ and $[0, 7]$) and the following constraints describing the C-space, none of them being redundant:
+$$
+\left\{
+	\begin{array}{ccccc}
+		& & C_2 & \leqslant & 2 \\
+		C_1 & + & 2 C_2 & \leqslant & 7
+	\end{array}
+\right.
+$$
+This time, the C-space only contains 8 points: $(1, 1)$, $(2, 1)$, $(3, 1)$, $(4, 1)$, $(5, 1)$, $(1, 2)$, $(2, 2)$, $(3, 2)$.\\
+
+Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane.
+
+\begin{figure}[h]
+\begin{center}
+	\includegraphics[width=0.5\textwidth]{figs/cspace_example.png}
+	\caption{C-space of an asynchronous system and its corresponding synchronous system}
+	\label{fig:cspaceComp}
+\end{center}
+\end{figure}
 
 \section{Example}
-
-!!! (Sans appliquer le simplexe ou un truc comme ça, si un DIT existe on divisera toujours par 4 le nombre de contraintes ??)
 
 \section{Conclusion}
 

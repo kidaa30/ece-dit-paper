@@ -189,7 +189,7 @@ if __name__ == '__main__':
 	assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
 
 	# RANDOM TEST
-	NUMBER_OF_SYSTEMS = 1
+	NUMBER_OF_SYSTEMS = 10
 	systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, 1)
 	for tau in systemArray:
 		print tau
@@ -200,7 +200,10 @@ if __name__ == '__main__':
 		cspace_noredun = removeRedundancy(cspace)
 		print len(cspace), "=>", len(cspace_noredun), "equations left"
 		print ""
-		assert testCVector(cspace_noredun, [task.C for task in tau.tasks]) == testCVector(cspace, [task.C for task in tau.tasks]) == algorithms.dbf_test(tau)
+		resultCSPACE = testCVector(cspace_noredun, [task.C for task in tau.tasks])
+		resultCSPACENOREDUN = testCVector(cspace, [task.C for task in tau.tasks])
+		resultDBF = algorithms.dbf_test(tau)
+		assert resultCSPACE == resultCSPACENOREDUN == resultDBF, str(resultCSPACE) + str(resultCSPACENOREDUN) + str(resultDBF)
 		print "redundancy (necessary) condition ok"
 		print "synchronous instant", algorithms.findSynchronousInstant(tau)
 		print "cspacesize", CspaceSize(tau, cspace_noredun)
