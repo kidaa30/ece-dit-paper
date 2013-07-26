@@ -349,7 +349,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		(each constraint with a non-prime period can be split into powers of primes
 		without changing the solution if there is one) in order to make the problem
 		solvable through applying a solution for the CRP. \\
-		
+
 		Now that we have a solver for the problem of finding a synchronous instant, we
 		actually also have a solver for finding the FPDIT. The problem of finding the
 		first DIT is the same as finding all the possible DIT then taking the minimum.
@@ -368,7 +368,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		combinations of $a_i$ values. This is however very inefficient as there are
 		exponentially many different combinations of $a_i$ values in the number of
 		tasks.\\
-		
+
 		A better method for finding the FPDIT consists in splitting the algorithm that
 		is used to solve the CRP in two separate parts. The algorithm requires
 		calculating one modular inverse for each task. %TODO continue
@@ -446,8 +446,9 @@ For this reason, as explained in \cite{leung1982complexity}, it is sufficient to
 
 \subsubsection{Using the first periodic DIT}
 
-The first periodic DIT, if it exists, must occur in the transitive period. Indeed, it cannot occur in the incomplete period by definition ($t_d > O_{max}$) and if it occurred in the $k^{th}$ stationary period, another DIT should have occurred in the transitive period at instant $t_d - k H$ (a contradiction).\\
+The FPDIT, if it exists, must occur in the transitive period. Indeed, it cannot occur in the incomplete period by definition ($t_d > O_{max}$) and if it occurred in the $k^{th}$ stationary period, another DIT should have occurred in the transitive period at instant $t_d - k H$ (a contradiction).\\
 
+As the FPDIT happened when all tasks were in the system, we know that the system will arrive in the exact same state one hyperperiod later ($t_d + H$)
 We show (???) that we can restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the first periodic DIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.\\
 
 (Remarque : Sans appliquer le simplexe ou un truc comme ça, si un DIT existe on divisera toujours par exactement 4 le nombre de contraintes ??)
@@ -480,7 +481,7 @@ with
 
 Indeed, if the maximization returns $z=d+1$, it means that there are some integer values accessible with the previous constraints that the new constraint forbids. On the other hands, if the maximization returns $z \leq d$, it means that the limitation expressed in the new constraint is already enforced by the previous constraints. Therefore $z \leq d$ is a necessary and sufficient condition of redundancy of the new constraint.\\
 
-Such a linear problem can be solved by the simplex algorithm. However, here the problem is not exactly the same as we have a set of constraints and we want to find all redundant constraints within. The naive method would be to directly test each constraints of the set against all the others, we present a similar method with an efficient preprocessing in Algorithm \ref{alg:prunRedun}.\\
+Such a linear problem can be solved by the simplex algorithm. However, in our case the problem is not exactly the same as we have a set of constraints and we want to find all redundant constraints within. A naive method would be to test each constraint against all the others. We present a similar method with an efficient preprocessing when most constraints are redundant in Algorithm \ref{alg:prunRedun}.\\
 
 \begin{algorithm}
 \caption{Removing redundancy from CSPACE}
@@ -509,7 +510,7 @@ After doing this, no redundant constraints are left. However, this algorithm tak
 
 To summarize, we first reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise. After this correct but not efficient description of the C-SPACE, a linear integer approach removes the remaining redundancies. Note that
 
-\subsection{Numerical Example}
+\section{Numerical Example}
 
 Consider the following task system
 
@@ -531,7 +532,7 @@ $[15, 17]$, $[15, 22]$, $[15, 27]$, $[15, 30]$, $[20, 22]$, $[20, 27]$, $[20, 30
 
 For each $[a, d]$, we have a constraint $$\sum_{i=0}^{n-1} n_i(a, d) \, C_i \leqslant d - a$$ which give a description of the C-space.\\
 
-We now apply algorithm \ref{alg:prunRedun} to remove redundancies, leaving us with the following constraints:
+We now apply Algorithm \ref{alg:prunRedun} to remove redundancies, leaving us with the following constraints:
 $$
 \left\{
 	\begin{array}{ccccc}
@@ -577,8 +578,6 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane.
 	\label{fig:cspaceComp}
 \end{center}
 \end{figure}
-
-\section{Example}
 
 \section{Conclusion}
 
