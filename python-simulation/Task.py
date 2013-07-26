@@ -32,11 +32,14 @@ class Task(object):
 class TaskSystem(object):
 	def __init__(self, tasks):
 		self.tasks = tasks
+		self.hyperperiod = None
 		#self.hyperT = self.hyperPeriod()
 
 	def hyperPeriod(self):
-		Tset = [task.T for task in self.tasks]
-		return myAlgebra.lcmArray(Tset)
+		if not self.hyperperiod:
+			Tset = [task.T for task in self.tasks]
+			self.hyperperiod = myAlgebra.lcmArray(Tset)
+		return self.hyperperiod
 
 	def hasConstrainedDeadline(self):
 		ok = True

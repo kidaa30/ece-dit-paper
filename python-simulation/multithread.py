@@ -38,41 +38,42 @@ class WorkThread(object):
 		firstDITs = []
 		hyperTs = []
 		# Feasibility Arrays
-		bpResults = []
+# 		bpResults = []
 		ditResults = []
 		hyperTResults = []
 	
 		# Compare algorithms
 	
-# 		print "Thread", self.cdfIndex, "start busy period tests..."
-		bpStart = time.clock()
-		for tau in systemArray:
-			busyPeriods.append(algorithms.findBusyPeriod(tau))
-		bpMedium = time.clock()
-		for i, tau in enumerate(systemArray):
-			bpResults.append(algorithms.dbf_test(tau, busyPeriods[i]))
-		bpStop = time.clock()
+# # 		print "Thread", self.cdfIndex, "start busy period tests..."
+ 		bpStart = time.clock()
+# 		for tau in systemArray:
+# 			busyPeriods.append(algorithms.findBusyPeriod(tau))
+ 		bpMedium = time.clock()
+# 		for i, tau in enumerate(systemArray):
+# 			bpResults.append(algorithms.dbf_test(tau, busyPeriods[i]))
+ 		bpStop = time.clock()
 	
 	
 # 		print "Thread", self.cdfIndex, "starting DIT value computation..."
+		hyperTStart = time.clock()
+		for i, tau in enumerate(systemArray):
+			hyperTs.append(tau.hyperPeriod())
+		hyperTMedium = time.clock()
+		for i, tau in enumerate(systemArray):
+			hyperTResults.append(algorithms.dbfTest(tau))
+		hyperTStop = time.clock()
+
 		ditStart = time.clock()
 		for i, tau in enumerate(systemArray):
 			#print i
 			firstDITs.append(algorithms.findFirstDIT(tau))
 		ditMedium = time.clock()
 		for i, tau in enumerate(systemArray):
-			ditResults.append(algorithms.dbf_test(tau, firstDITs[i]))
+			ditResults.append(algorithms.dbfTest(tau, firstDITs[i]))
 		ditStop = time.clock()
-		hyperTStart = time.clock()
-		for i, tau in enumerate(systemArray):
-			hyperTs.append(tau.hyperPeriod())
-		hyperTMedium = time.clock()
-		for i, tau in enumerate(systemArray):
-			hyperTResults.append(algorithms.dbf_test(tau, hyperTs[i]))
-		hyperTStop = time.clock()
 	
 		for i in range(len(systemArray)):
-			assert bpResults[i] == ditResults[i] == hyperTResults[i]
+			assert ditResults[i] == hyperTResults[i]
 	
 # 		self.outLock.acquire()
 # 		print "Thread", self.cdfIndex, "== Test Results (on " + str(numberOfSystems) + " tasks system)"
@@ -152,8 +153,8 @@ if __name__ == '__main__':
 	manager.runAllThreads()
 
  	pylab.figure()
- 	pylab.plot(cdfRange, manager.bpAll, "k-", label="BP ALL")
- 	pylab.plot(cdfRange, manager.bpValue, "k--", label="BP VALUE")
+#  	pylab.plot(cdfRange, manager.bpAll, "k-", label="BP ALL")
+#  	pylab.plot(cdfRange, manager.bpValue, "k--", label="BP VALUE")
  	pylab.plot(cdfRange, manager.ditAll, "b-", label="DIT ALL")
  	pylab.plot(cdfRange, manager.ditValue, "b--", label="DIT VALUE")
  	pylab.plot(cdfRange, manager.hyperTAll, "r-", label="HYPERT ALL")

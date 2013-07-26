@@ -88,15 +88,18 @@ def completedJobCount(task, t1, t2):
 	return max(0, jobBeforeT2 - jobBeforeT1 + 1)
 
 
-def dbf_test(tau, lowerLimit=None, upperLimit=None):
+def dbfTest(tau, firstDIT=None):
 	# TODO : add lowerLimit (already present in all subfunctions)
 	Omax = max([task.O for task in tau.tasks])
-	if upperLimit is None or lowerLimit is None:
+	if firstDIT is None:
 		if Omax == 0:
 			upperLimit = findBusyPeriod(tau)
 		else:
 			upperLimit = Omax + 2 * tau.hyperPeriod()
 		lowerLimit = Omax
+	else:
+		lowerLimit = Omax
+		upperLimit = firstDIT + tau.hyperPeriod()
 
 	for arrival, deadline in tau.dbf_intervals(lowerLimit, upperLimit):
 		testResult = dbf(tau, arrival, deadline) <= deadline
@@ -121,7 +124,7 @@ if __name__ == '__main__':
 	assert findBusyPeriod(tau) == 2, "Unit Test FAIL : findBusyPeriod"
 	assert findFirstDIT(tau) == 3, "Unit Test FAIL : findFirstDIT, returned: " + str(findFirstDIT(tau))
 	assert findSynchronousInstant(tau) == 0, "Unit Test FAIL : findSynchronousInstant; returned: " + str(findSynchronousInstant(tau))
-	assert dbf_test(tau) is True
+	assert dbfTest(tau) is True
 
 	# UNIT TEST 2 -- Influence of deadline on the DIT
 	tasks = []
@@ -132,7 +135,7 @@ if __name__ == '__main__':
 	assert findBusyPeriod(tau) == 2, "Unit Test FAIL : findBusyPeriod (2); " + "returned: " + str(findBusyPeriod(tau))
 	assert findFirstDIT(tau) == 1, "Unit Test FAIL : findFirstDIT (2)"
 	assert findSynchronousInstant(tau) == 0, "Unit Test FAIL : findSynchronousInstant (2); returned: " + str(findSynchronousInstant(tau))
-	assert dbf_test(tau) is False
+	assert dbfTest(tau) is False
 
 	# UNIT TEST 3 -- Edge case of congruence (cannot return 0: we do not consider 0 to be a DIT)
 	tasks = []
@@ -143,7 +146,7 @@ if __name__ == '__main__':
 	assert findBusyPeriod(tau) == 2, "Unit Test FAIL : findBusyPeriod (3); " + "returned: " + str(findBusyPeriod(tau))
 	assert findFirstDIT(tau) == 6, "Unit Test FAIL : findFirstDIT (3); " + "returned: " + str(findFirstDIT(tau))
 	assert findSynchronousInstant(tau) == 0, "Unit Test FAIL : findSynchronousInstant (3); returned: " + str(findSynchronousInstant(tau))
-	assert dbf_test(tau) is True
+	assert dbfTest(tau) is True
 
 	# UNIT TEST 4 -- Asynchronous system
 	tasks = []
@@ -185,7 +188,7 @@ if __name__ == '__main__':
 	assert findBusyPeriod(tau) == 390
 	assert findFirstDIT(tau) == 381, "returned: " + str(findFirstDIT(tau))
 	assert findSynchronousInstant(tau) == 0, "returned: " + str(findSynchronousInstant(tau))
-	assert dbf_test(tau) is False
+	assert dbfTest(tau) is False
 
 	print "(1/3 OK)"
 	# random test
@@ -202,7 +205,7 @@ if __name__ == '__main__':
 	assert 0 < findBusyPeriod(tau)
 	assert 0 < findFirstDIT(tau) <= tau.hyperPeriod()
 	assert findSynchronousInstant(tau) == 0, "returned: " + str(findSynchronousInstant(tau))
-	assert dbf_test(tau) or True
+	assert dbfTest(tau) or True
 
 	print "(2/3 OK)"
 	# random test - asynchr (and other parameters)
