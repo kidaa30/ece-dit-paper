@@ -90,10 +90,11 @@ class TaskSystem(object):
 			if arrival != lastArrival:
 				lastArrival = arrival
 				dTuples = [(cnt, d) for cnt, d in enumerate(deadlines[lastDeadlineIndex:]) if d > arrival]
-				dIndexes, dValues = zip(*dTuples)
-				lastDeadlineIndex += dIndexes[0]  # add number of skipped deadlines
-				for deadline in dValues:
-					yield arrival, deadline
+				if dTuples:
+					dIndexes, dValues = zip(*dTuples)
+					lastDeadlineIndex += dIndexes[0]  # add number of skipped deadlines
+					for deadline in dValues:
+						yield arrival, deadline
 			nextArrival = arrival + task.T
 			if not self.isSynchronous() and nextArrival + task.D <= upperLimit:
 				heapTuple = (nextArrival, task)
