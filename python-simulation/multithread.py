@@ -1,10 +1,23 @@
+import main
+import algorithms
+
 import multiprocessing
 import array
-import main
 import time
-import algorithms
 import pylab	
 import sys
+import atexit
+import os
+import signal
+
+def cleanup():
+	pList = multiprocessing.active_children()
+	for p in pList:
+		os.kill(p.pid(),signal.SIGKILL)
+# 		p.terminate()
+		
+atexit.register(cleanup)
+	
 
 class WorkThread(object):
 	def __init__(self, cdfIndex, numSystems, numCdfValues):
@@ -31,6 +44,8 @@ class WorkThread(object):
 			
 	def runSystems(self,numberOfSystems, constrDeadlineFactor):
 		systemArray = main.generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False)
+		print "systems generated"
+		sys.stdout.flush()
 		verbose = False
 	
 		# Upper Limit Arrays
@@ -54,12 +69,15 @@ class WorkThread(object):
  		bpStop = time.clock()
 	
 	
-# 		print "Thread", self.cdfIndex, "starting DIT value computation..."
+		print "CDF Index", self.cdfIndex, "starting hyperperiod computation..."
+		sys.stdout.flush()
 		hyperTStart = time.clock()
 		for i, tau in enumerate(systemArray):
 			hyperTs.append(tau.hyperPeriod())
 		hyperTMedium = time.clock()
 		for i, tau in enumerate(systemArray):
+			print "CDF Index", self.cdfIndex, "system", i
+			sys.stdout.flush()
 			hyperTResults.append(algorithms.dbfTest(tau))
 		hyperTStop = time.clock()
 
@@ -92,10 +110,17 @@ class WorkThread(object):
 # 		self.outLock.release()
 	
 		return bpStop - bpMedium, bpMedium - bpStart, ditStop - ditMedium, ditMedium - ditStart, hyperTStop - hyperTMedium, hyperTMedium - hyperTStart
-	
+
 def processRun(cdfIndex, numSystems, numCdfValues, resQueue, globalCdfIndex, cdfArray, resLock, outLock):
 	work = WorkThread(cdfIndex, numSystems, numCdfValues)
 	work.run(resQueue, globalCdfIndex, cdfArray, resLock, outLock)
+	
+# def zombieKiller(masterQueue, workerPidList):
+# 	master = masterQueue.get()
+# 	master.join()
+# 	for worker in workerPidList:
+# 		os.kill(worker, signal.SIGKILL)
+# 	sys.exit()
 		
 class ThreadManager(object):
 	def __init__(self,cdf,threadCountLimit,numSystems):
@@ -128,6 +153,10 @@ class ThreadManager(object):
 			self.threadList.append(t)
 			t.start()
 			self.curCdfIndex.value += 1
+# 		masterQueue = multiprocessing.Queue()
+# 		masterQueue.put(multiprocessing.current_process())
+#  		k = multiprocessing.Process(target=zombieKiller, args=(masterQueue,[worker.pid for worker in self.threadList]))
+#  		k.start()
 		resLock.release()
 			
 		for i in range(self.numCdfValues):
@@ -147,8 +176,8 @@ class ThreadManager(object):
 			t.join()
 			
 if __name__ == '__main__':	
-	NUMBER_OF_SYSTEMS = 1000
-	cdfRange = [f/10.0 for f in range(10, 51)]
+	NUMBER_OF_SYSTEMS = 10
+	cdfRange = [f/2.0 for f in range(2, 11)]
 	manager = ThreadManager(cdfRange,4,NUMBER_OF_SYSTEMS)
 	manager.runAllThreads()
 

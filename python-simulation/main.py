@@ -18,7 +18,7 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 		maxHyperT = 554400  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
 		# maxHyperT = -1
 		Tmin = 2
-		Tmax = 50
+		Tmax = 25
 		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
 		if (verbose and numberOfSystems <= 10):
 			print "Generated task system # ", i
