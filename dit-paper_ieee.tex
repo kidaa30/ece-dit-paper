@@ -166,9 +166,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 
 			The authors of \cite{george2009characterization} give the following definition of the C-space:
 			\begin{definition}
-				For a given task system $\tau$ in which the $C_i$ are not known, the
-				\textbf{C-space} is a region of $n$ dimensions (where each dimension denotes
-				the possible $C_i$ of a task of $\tau$) such that for any vector $C = \{ C_0, \cdots, C_{n-1}\}$ in the C-space, $\tau$ is feasible.
+				The \textbf{C-space} of a task system $\tau$ is a region of $n$ dimensions (where each dimension denotes the possible $C_i$ of a task of $\tau$) such that for any vector $C = \{ C_0, \cdots, C_{n-1}\}$ in it, $\tau$ is feasible.
 			\end{definition}
 
 %Thus, with a good description of the C-space, it is easy to check if a given vector of $C_i$ value (given e.g. when deploying the application on a specific platform) allows the system to be scheduled or not.
@@ -176,14 +174,9 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		\subsubsection{Description using DBF}
 			\label{sct:cspaceDescr}
 
-			A region of $\mathbb{N}^n$ can be described by a list of parametric linear
-			constraints describing the convex hull of that region. In other words, a
-			list of conditions which can unequivocally decide if a point is included in the region or not.\\
+			As explained in \cite{nemhauser1988integer}, a region of $\mathbb{N}_0^n$ such as the C-space can be described by a \emph{polytope}, or a list of parametric linear constraints (called the \emph{formulation}). The constraints must be conditions which can unequivocally decide if a point is included in the region or not. In the sequel we give a formulation for the C-space in $\mathbb{N}_0^n$\footnote{For a formulation in $\mathbb{N}^n$ rather than in $\mathbb{N}_0^n$, the following inequations can be added to the formulation \[ C_i \geqslant 1 \; \forall i \]}.\\
 
-			For the synchronous case, the DBF test gives us a list of inequations
-			on the WCET values of the task set which together are a necessary and
-			sufficient condition of feasibility. They can all be written in the
-			following way:
+			The DBF test gives us a list of inequations on the WCET values of the task set which together are a necessary and sufficient condition of feasibility. They can all be written in the following way:
 			\[
 				\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq
 				t_1 \leq t_2
@@ -220,38 +213,40 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		\textbf{first DIT} and is noted $t_d$.
 	\end{definition}
 
-	The value of the first DIT can be found by solving the following equation:
+	\begin{remark} (from the definitions):
+		\begin{itemize}
+			\item Contrary to other idle times, DITs are independent of the
+			scheduling or the execution times of the jobs.
+			\item In a feasible system, every DIT is an idle time.
+			\item In a feasible system, the first DIT happens after the end of the
+			first busy period.
+			\item As any $kH$ with $k \geqslant 0$ is a DIT in synchronous systems, we have at least $t_d
+			\leqslant H$ in this case.
+		\end{itemize}
+	\end{remark}
+
+	The value of the first DIT can be found by solving the following modular equation system:
 	\[
 		t_d = \min
 		\left( t \; s.t. \; \forall i:
 			\left\{
 				\begin{array}{c}
+					t > 0 \\
 					t \equiv a_i \; (mod \; T_i) \\
 					a_i \in [D_i, T_i]
 				\end{array}
 			\right.
 		\right)
 	\]
-
-	\begin{remark} (from the definition):
-		\begin{itemize}
-			\item Contrary to other idle times, DITs are independent of the
-			scheduling or the execution times of the jobs.
-			\item In a feasible system, every DIT is an idle time.
-			\item In a feasible system, the first DIT happens at the end of the
-			first busy period.
-			\item As $H$ is always a DIT in synchronous systems, we have at least $t_d
-			\leqslant H$ in this case.
-		\end{itemize}
-	\end{remark}
+	The authors of \cite{george2009characterization} give a method to solve this system for cases in which periods are pairwise coprime.\\
 
 	Every DIT being an idle instant, the execution of the system after a DIT does
-	not depend on what happened before. Because the synchronous arrival pattern is
+	not depend on the execution before it. Because the synchronous arrival pattern is
 	the worst case [citation needed], it is sufficient for the DBF test to only
 	consider intervals $[0, t]$ with $t$ being a deadline before the first DIT.\\
 
 	To summarize, we reduced the description of the C-space from an infinite number
-	of constraints to only the inequations where $t_1 = 0$, $t_2 \leqslant t_d$ and
+	of constraints to only those where $t_1 = 0$, $t_2 \leqslant t_d$ and
 	values of $t_2$ correspond to job deadlines. Note that the number of
 	constraints is still exponential in the number of tasks.
 
@@ -259,10 +254,10 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		In this paper, we extend the work of \cite{george2009characterization} to the
 		asynchronous case. In section \ref{sct:asyncDIT}, we present an extension of
 		the concept of DIT adapted to the asynchronous case called first periodic DIT
-		($t_d$), along with an algorithm to find its value. In Section
+		($t_d$), along with an algorithm to find its value for any period values. In Section
 		\ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous
 		system based on the DBF test, and we show why the interval $[t_d, t_d + H]$ is
-		sufficient to consider.
+		sufficient to consider. In section ???, we present a simulation where we find that........
 
 \section{DIT in asynchronous systems}
 	\label{sct:asyncDIT}
@@ -334,6 +329,10 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		However those four conditions are false, so the system has no FPDIT
 		(and no other DIT than $t=0$).
 
+	\subsection{Solving the modular system}
+
+	PAUL PAUL PAUL ?
+
 	\subsection{Simulation}
 
 	We wanted to quantify how much systems have a FPDIT........
@@ -368,7 +367,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 
   \subsection{Description using DBF}
 
-  The description we presented in Section \ref{sct:cspaceDescr} was general, and is thus still relevant. Therefore the C-space is still described by the following infinite number of constraints:$$\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2$$
+  The description we presented in Section \ref{sct:cspaceDescr} was general, and is thus still relevant. Therefore the C-space is still accurately described by the following infinite number of constraints:$$\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2$$
 
   However, the method used in the synchronous case to remove redundancy does not apply here. A more general approach is presented in the following section.
 
@@ -429,17 +428,17 @@ with
 	\begin{array}{ccc}
 		A & : & [k,n] \text{ matrix}\\
 		B & : & [1,n] \text{ matrix}\\
-		C & : & [k,1] \text{ matrix}\\
+		C & : & [n,1] \text{ matrix}\\
 		X & : & [1,n] \text{ matrix}\\
 		d & : & \text{integer}
 	\end{array}
 \]
-\caption{Redundancy of $CX \leq d$ w.r.t. $A X \leq B$ as a ILP}
+\caption{Redundancy of $CX \leq d$ w.r.t. $A X \leq B$ as an ILP}
 \end{figure}
 
 Indeed, if the maximization returns $z=d+1$, it means that there are some integer values accessible with the previous constraints that the new constraint forbids. On the other hands, if the maximization returns $z \leq d$, it means that the limitation expressed in the new constraint is already enforced by the previous constraints. Therefore $z \leq d$ is a necessary and sufficient condition of redundancy of the new constraint.\\
 
-Such a linear problem can be solved by the simplex algorithm. However, here the problem is not exactly the same as we have a set of constraints and we want to find all redundant constraints within. The naive method would be to directly test each constraints of the set against all the others, we present a similar method with an efficient preprocessing in Algorithm \ref{alg:prunRedun}.
+Such a linear problem can be solved by the simplex algorithm. However, here the problem is not exactly the same as we have a set of constraints and we want to find all redundant constraints within. The naive method would be to directly test each constraints of the set against all the others, we present a similar method with an efficient preprocessing in Algorithm \ref{alg:prunRedun}.\\
 
 \begin{algorithm}
 \caption{Removing redundancy from CSPACE}
@@ -447,25 +446,47 @@ Such a linear problem can be solved by the simplex algorithm. However, here the 
 	\begin{algorithmic}[1]
 		\STATE $CSPACE$ : set of constraints
 		\STATE $S \leftarrow \emptyset$
-		\STATE \COMMENT{First pass - test $cstr$ against previous ones}
+		\STATE \COMMENT{$1^{st}$ pass: test each $cstr$ against previous ones}
 		\FOR{$cstr$ \textbf{in} $CSPACE$}
 			\IF {$cstr$ is not redundant w.r.t. $S$}
 				\STATE $S \leftarrow cstr$
 			\ENDIF
 		\ENDFOR
-		\STATE \COMMENT{Second pass - test $cstr$ against every other}
+		\STATE \COMMENT{$2^{nd}$ pass: test each $cstr$ against every other}
 		\FOR{$cstr$ \textbf{in} $S$}
 			\STATE Remove $cstr$ from $S$
 			\IF {$cstr$ is not redundant w.r.t. $S$}
 				\STATE Put $cstr$ back into $S$
 			\ENDIF
 		\ENDFOR
+		\RETURN{S}
 	\end{algorithmic}
 \end{algorithm}
 
-After doing this, no redundant constraints are left. However, this algorithm takes an exponential time in the number of constraints. An efficient initial description of $CSPACE$, as described in previous sections, is therefore preferred.\\
+After doing this, no redundant constraints are left. However, this algorithm takes an exponential time in the number of constraints. An efficient initial description of $CSPACE$, as given by the methods described in previous sections, is therefore preferred.\\
 
-To summarize, we first reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise. After this correct but not efficient description of the C-SPACE, a linear integer approach removes the remaining redundancies.
+To summarize, we first reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise. After this correct but not efficient description of the C-SPACE, a linear integer approach removes the remaining redundancies. Note that
+
+\subsection{Numerical Example}
+
+Consider the following task system
+
+		\begin{center}
+		\begin{tabular}{|r|c|c|c|c|}
+		 \hline
+		  & $O_i$ & $C_i$ & $D_i$ & $T_i$ \\
+		 \hline
+		 $\tau_1$ & 5 & $C_1$ & 4 & 9\\
+		 \hline
+		 $\tau_2$ & 0 & $C_2$ & 12 & 14\\
+		 \hline
+		\end{tabular}
+		\end{center}
+		~\\
+
+The FPDIT happens at $t=12$ and $H = 126$. The study interval using the FPDIT is thus $[12, 138]$, which contains 261 intervals $[a,d]$ with $a$ being the arrival of a job, $d$ being the deadline of a job, and $12 \leqslant a < d \leqslant 138$. For comparison, the more pessimistic study interval is $[5, 257]$ which yields 1006 intervals.\\
+
+We now apply the
 
 \section{Example}
 
