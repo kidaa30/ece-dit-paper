@@ -10,7 +10,6 @@ import math
 import os.path
 import re
 
-
 def Cspace(tau, upperLimit="def", lowerLimit = 0):
 	# return a system of inequations of the form
 	# cst_1 * C_1 + cst_2 * C_2 + ... + cst_n * C_n <= CST

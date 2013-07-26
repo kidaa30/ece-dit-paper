@@ -18,7 +18,6 @@ def newChineseRemainder(a, n):
 	for i in range(len(n)):
 		sumChunks.append(array.array('i',[0])*len(a[i]))
 		Mi = H / n[i]
-# 		if(myAlgebra.egcd_couple(Mi,n[i]) == 1):
 		invMi = myAlgebra.modinv(Mi, n[i])
 		for cnt,aValue in enumerate(a[i]):
 			sumChunks[i][cnt] = (aValue * Mi * invMi)
@@ -36,6 +35,7 @@ def newChineseRemainder(a, n):
 
 	return [r % H for r in results]
 
+#not used anymore
 def removeBadChineseRemainderResults(results,a,n):
 	badResults = []
 	for r in results:
@@ -59,18 +59,6 @@ def isGoodResult(res,a,n):
 		if not foundGoodA:
 			return False
 	return True
-
-# print chineseRemainder([[1, 2], [4], [3, 6]], [3, 5, 7])
-# print myAlgebra.chineseRemainderTheorem([1, 4, 3], [3, 5, 7])
-# print myAlgebra.chineseRemainderTheorem([1, 4, 6], [3, 5, 7])
-# print myAlgebra.chineseRemainderTheorem([2, 4, 3], [3, 5, 7])
-# print myAlgebra.chineseRemainderTheorem([2, 4, 6], [3, 5, 7])
-# assert chineseRemainder([[1], [4], [3]], [3, 5, 7])[0] == myAlgebra.chineseRemainderTheorem([1, 4, 3], [3, 5, 7])
-# 
-# ps = myAlgebra.toPrimalPowerSystem([3, 5, 7])
-# print myAlgebra.congruencePrimalPower(ps, [1, 4, 3])
-
-#TODO convert primalsystem to usable stuff
 
 def newCongruencePrimalPower(primalSystem, aList):
 	# Source : http://math.stackexchange.com/questions/120070/chinese-remainder-theorem-with-non-pairwise-coprime-moduli
@@ -106,35 +94,10 @@ def newCongruencePrimalPower(primalSystem, aList):
 	for p in ps.keys():
 		maxB[p] = max(ps[p].keys())
 		maxA = ps[p][maxB[p]]
-# 		aSet = set(maxA)
-# 		
-# 		# Check that all values are consistent modulo p^b
-# 		# For that we check that ai = aj mod p^(b_min(i,j)) for all pairs
-# 		for bi in filter(lambda x: x < maxB[p], primalSystem[p]):
-# 			iPow = int(math.pow(p, bi))
-# 			ai = ps[p][bi]
-# 			isSame = [len(filter(None, [y % iPow == a % iPow for y in ai])) > 0 for a in maxA]
-#  			aSet = set([a for a,ok in zip(aSet,isSame) if ok])
-#  			if not aSet:
-#  				return None
  		subX[p] = maxA
- 		
-# 				
-			
+
 		# Check that all values are consistent modulo p^b
 		# For that we check that ai = aj mod p^(b_min(i,j)) for all pairs
-#  		for bi in ps[p]: #TODO : verify should we only check for the smallest bi
-# 			iPow = int(math.pow(p, bi))
-# 			ai = ps[p][bi]
-# 			for bj in filter(lambda x: x > bi, primalSystem[p]):
-# 				aj = ps[p][bj]
-# 				# by construction we know that bi < bj
-# 				isSame = reduce(lambda x,y: x % iPow == y % iPow, ai,aj)
-# 				aSet = set([a for a,ok in zip(aSet,isSame) if ok])
-# 				
-# 				aSet.intersection_update(jSet)
-# 				if not aSet:
-# 					return None
 		# if the equations are coherent, we can only keep the one of biggest b
 
 	# 3) Now we have a system respecting the condition of the CRT:
@@ -151,7 +114,6 @@ def newCongruencePrimalPower(primalSystem, aList):
 
 	return newChineseRemainder(subXList, pbArray)
 
-#TODO : return None if no DIT
 def newFindFirstPeriodicDIT(tau):
 	# Requires to solve several system of modular equations
 
@@ -171,18 +133,10 @@ def newFindFirstPeriodicDIT(tau):
 
 	# Pre-processing for our congruence algorithm
 	primalSystem_T = myAlgebra.toPrimalPowerSystem(T)
-# 	numberOfCombinations = reduce(lambda x, y: x*len(y), intervals, 1)
-# 	for i, combination in enumerate(itertools.product(*intervals)):
-		# if i % 1000 == 0: print "combination ", i, "/", numberOfCombinations
  	allResults = newCongruencePrimalPower(primalSystem_T, intervals)
  	
  	if not allResults:
  		return None
- 	
-#  	goodResults = removeBadChineseRemainderResults(allResults,intervals,T)
-#  	
-#  	if not goodResults:
-#  		return None
  	
  	idles = zip(allResults,[False for i in range(len(allResults))])
  	heapq.heapify(idles)
@@ -206,28 +160,8 @@ def newFindFirstPeriodicDIT(tau):
  	  		idleTuple = heapq.heappop(idles)
  	 		tIdle = idleTuple[0]
   	 		alreadyTested = idleTuple[1]
- 	
-#   	while(not isGoodResult(tIdle,intervals,T)):
-#   		if not allResults:
-#   			return None
-#   		tIdle = heapq.heappop(allResults)
-#  
-#  	while(tIdle <= Omax):
-#  		heapq.heappush(allResults,tIdle+tau.hyperPeriod())
-#  		tIdle = heapq.heappop(allResults)
-#  		while(not isGoodResult(tIdle,intervals,T)):
-#  	 		if not allResults:
-#  	 			return None
-#  	 		tIdle = heapq.heappop(allResults)
 		
 	return tIdle
-
-# 
-# ps = toPrimalPowerSystem([6,9])
-# subXList, pbList = newCongruencePrimalPower(ps,[[1, 2], [7,5,3]])
-# results = chineseRemainder(subXList, pbList)
-# print results
-# print removeBadChineseRemainderResults(results,[[1, 2], [7,5,3]],[6,9])
 
 import cProfile
 import pstats
