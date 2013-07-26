@@ -314,8 +314,8 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		~\\
 
 		Here, the possible values of $a_1$ are 3 and 4, and the possible values
-		of $a_2$ are 7 and 8. For a FPDIT to exist, one of those
-		condition must be fulfilled:
+		of $a_2$ are 7 and 8. For a FPDIT to exist, one of the following
+		conditions must be fulfilled:
 		\[
 		\left[
 		\begin{array}{c}
@@ -326,12 +326,53 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		\end{array}
 		\right.
 		\]
-		However those four conditions are false, so the system has no FPDIT
-		(and no other DIT than $t=0$).
+		However those four conditions cannot be satisfied, which means the system has
+		no FPDIT (and no other DIT than $t=0$).
 
 	\subsection{Solving the modular system}
-
-	PAUL PAUL PAUL ?
+		Finding the FPDIT of a system is similar to finding a synchronous instant of
+		this system (an instant at which all tasks release a job simultaneously), but
+		with weaker constraints. That is, the FPDIT is an instant after the last
+		deadline of all tasks, but before the next arrival time of all tasks. Finding
+		a synchronous instant is equivalent to finding a solution $t$ for the
+		following set of constraints :
+		\[
+			\left\{
+			\begin{array}{l}
+				t \geqslant O_i \: \forall \: \tau_i \in \tau \\
+				t \equiv O_i \; (mod \; T_i) \: \forall \: \tau_i \in \tau \\
+			\end{array}
+			\right.
+		\]
+		which is very similar to an instance of the Chinese Remainer Problem (CRP). It
+		is not possible to directly use a solver for the CRP as in a task system,
+		$T_i$ values could have common factors. However, the instance can be modified
+		(each constraint with a non-prime period can be split into powers of primes
+		without changing the solution if there is one) in order to make the problem
+		solvable through applying a solution for the CRP. \\
+		
+		Now that we have a solver for the problem of finding a synchronous instant, we
+		actually also have a solver for finding the FPDIT. The problem of finding the
+		first DIT is the same as finding all the possible DIT then taking the minimum.
+		Each of those DIT corresponds to a unique combination of $a_i$ values (one
+		for each task). Finding one of such DIT is the same problem as finding a
+		synchronous instant :
+		\[
+			\left\{
+			\begin{array}{l}
+				t \geqslant O_i + a_i \: \forall \: \tau_i \in \tau \\
+				t \equiv O_i \; (mod \; T_i) \: \forall \: \tau_i \in \tau \\
+			\end{array}
+			\right.
+		\]
+		all DITs can be found by solving the equivalent CRP problem for all
+		combinations of $a_i$ values. This is however very inefficient as there are
+		exponentially many different combinations of $a_i$ values in the number of
+		tasks.\\
+		
+		A better method for finding the FPDIT consists in splitting the algorithm that
+		is used to solve the CRP in two separate parts. The algorithm requires
+		calculating one modular inverse for each task. 
 
 	\subsection{Simulation}
 
