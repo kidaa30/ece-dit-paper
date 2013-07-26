@@ -32,11 +32,14 @@ class Task(object):
 class TaskSystem(object):
 	def __init__(self, tasks):
 		self.tasks = tasks
+		self.hyperperiod = None
 		#self.hyperT = self.hyperPeriod()
 
 	def hyperPeriod(self):
-		Tset = [task.T for task in self.tasks]
-		return myAlgebra.lcmArray(Tset)
+		if not self.hyperperiod:
+			Tset = [task.T for task in self.tasks]
+			self.hyperperiod = myAlgebra.lcmArray(Tset)
+		return self.hyperperiod
 
 	def hasConstrainedDeadline(self):
 		ok = True
@@ -87,10 +90,11 @@ class TaskSystem(object):
 			if arrival != lastArrival:
 				lastArrival = arrival
 				dTuples = [(cnt, d) for cnt, d in enumerate(deadlines[lastDeadlineIndex:]) if d > arrival]
-				dIndexes, dValues = zip(*dTuples)
-				lastDeadlineIndex += dIndexes[0]  # add number of skipped deadlines
-				for deadline in dValues:
-					yield arrival, deadline
+				if dTuples:
+					dIndexes, dValues = zip(*dTuples)
+					lastDeadlineIndex += dIndexes[0]  # add number of skipped deadlines
+					for deadline in dValues:
+						yield arrival, deadline
 			nextArrival = arrival + task.T
 			if not self.isSynchronous() and nextArrival + task.D <= upperLimit:
 				heapTuple = (nextArrival, task)
