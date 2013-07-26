@@ -95,7 +95,7 @@ class TaskSystem(object):
 				for deadline in dValues:
 					yield arrival, deadline
 			nextArrival = arrival + task.T
-			if self.isSynchronous() and nextArrival + task.D <= upperLimit:
+			if not self.isSynchronous() and nextArrival + task.D <= upperLimit:
 				heapTuple = (nextArrival, task)
 				heapq.heappush(arrivals, heapTuple)
 
