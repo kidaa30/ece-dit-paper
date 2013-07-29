@@ -640,9 +640,9 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane.
 	the design of a real-time system is a useful trick to fit a heavy but periodic task set
 	into a given platform.
 	
-	In Fig.~\ref{fig:sizeRatio} a number of feasible asynchronous task sets without
-	synchronous instants were generated and the size of their C-space was
-	calculated and compared with the size of the C-space of the same
+	In Fig.~\ref{fig:sizeRatio} a number of feasible asynchronous task sets of
+	three tasks without synchronous instants were generated. The size of their
+	C-space was calculated and compared with the size of the C-space of the same
 	task sets with all task offsets set to zero. In other words, this figure
 	evaluates the feasibility gain of adding random offsets to a synchronous task
 	set. It is assumed that a more advanced strategy to assign these offsets
@@ -656,6 +656,18 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane.
 			\label{fig:sizeRatio}
 		\end{center}
 	\end{figure}
+	
+	The ratio between the size of the synchronous and asynchronous C-spaces of
+	these systems roughly range from 0.95 in the worst case (high utilization, high
+	CDF) to 0.85 in the best case (low utilization, low CDF). Note that the value
+	of the CDF has a greater influence on this ratio than the system's total
+	utilization, but less so when the CDF is lower. It is also important to note
+	that even though a 0.95 ratio may not seem much, the synchronous C-spaces of
+	the systems contain many dominated WCET vectors, and only those that are
+	pareto-optimal (i.e. non-dominated) actually matter to the system's engineer.
+	Using the asynchronous C-space instead will relax some constraints and therefore add new acceptable
+	solutions that will dominate solutions that were previous non-dominated,
+	increasing the quality of the WCET pareto-front.
 	
 	
 \section{Conclusion}
@@ -697,7 +709,7 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane.
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
 % \nocite{*}
-\bibliographystyle{plain}
+\bibliographystyle{IEEEtran}
 \bibliography{dit-paper}
 
 
