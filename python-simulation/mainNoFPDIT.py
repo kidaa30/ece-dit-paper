@@ -8,13 +8,13 @@ import Task
 import TaskGenerator
 
 
-def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
+def generateSystemArray(numberOfSystems, constrDeadlineFactor, tasksCnt, verbose=False):
 	systemArray = []
 	for i in range(numberOfSystems):
 		Umin = 0.25
 		Umax = 0.75
 		Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
-		n = 3
+		n = tasksCnt
 		# maxHyperT = 554400  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
 		maxHyperT = -1
 		Tmin = 5
@@ -29,39 +29,34 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 
 if __name__ == '__main__':
 	NUMBER_OF_SYSTEMS = 10000
-	noFPDITpcts = []
+	noFPDITpcts2 = []
+	noFPDITpcts3 = []
+	noFPDITpcts4 = []
 	CDFvalues = []
-	for constrDeadlineFactor in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20]:
-		#print "CONSTR DEAD FACTOR", constrDeadlineFactor
-		systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor)
-		firstDITs = []
-		upLs = []
-		for i, tau in enumerate(systemArray):
-			start = time.clock()
-
-			firstDITs.append(algorithms.findFirstPeriodicDIT(tau))
-			if firstDITs[-1] is not None:
-				firstDITs[-1] += tau.hyperPeriod()
-			upLs.append(max([task.O for task in tau.tasks]) + 2 * tau.hyperPeriod())
-			# print "\t", i, "Limit :", firstDITs[-1] if firstDITs[-1] is None else firstDITs[-1], "/", upLs[-1]
-
-			# sizeWithDIT = len(cspace.Cspace(tau, upperLimit="def"))  # will use first DIT if it exists
-			# if firstDIT is None:
-			# 	sizeWithoutDIT = sizeWithDIT
-			# else:
-			# 	sizeWithoutDIT = len(cspace.Cspace(tau, upperLimit=upL))
-			# print "\tsize with DIT\t", sizeWithDIT
-			# print "\tsize no DIT\t", sizeWithoutDIT
-			# stop = time.clock()
-			# print "\ttime: ", stop - start, "s"
-			# print "\t"
+	for constrDeadlineFactor in reversed(range(1, 15)):
+		systemArray2 = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor, 2)
+		systemArray3 = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor, 3)
+		systemArray4 = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor, 4)
+		firstDITs2 = []
+		firstDITs3 = []
+		firstDITs4 = []
+		for i, tau in enumerate(systemArray2):
+			firstDITs2.append(algorithms.findFirstPeriodicDIT(tau))
+		for i, tau in enumerate(systemArray3):
+			firstDITs3.append(algorithms.findFirstPeriodicDIT(tau))
+		for i, tau in enumerate(systemArray4):
+			firstDITs4.append(algorithms.findFirstPeriodicDIT(tau))
 		print "CDF", constrDeadlineFactor
-		noFPDITpcts.append((100.0*len(filter(lambda x: x is None, firstDITs)))/len(firstDITs))
-		print "Percentage of system with no FPDIT:", noFPDITpcts[-1], "%"
+		noFPDITpcts2.append((100.0*len(filter(lambda x: x is None, firstDITs2)))/len(firstDITs2))
+		noFPDITpcts3.append((100.0*len(filter(lambda x: x is None, firstDITs3)))/len(firstDITs3))
+		noFPDITpcts4.append((100.0*len(filter(lambda x: x is None, firstDITs4)))/len(firstDITs4))
+		print "Percentage of system with no FPDIT:", noFPDITpcts2[-1], noFPDITpcts3[-1], noFPDITpcts4[-1], "%"
 		CDFvalues.append(constrDeadlineFactor)
 
 	pylab.figure()
-	pylab.plot(CDFvalues, noFPDITpcts, "r-o", label="No FPDIT %")
+	pylab.plot(CDFvalues, noFPDITpcts2, "g-s", label="2 Tasks")
+	pylab.plot(CDFvalues, noFPDITpcts3, "r-o", label="3 Tasks")
+	pylab.plot(CDFvalues, noFPDITpcts4, "b-^", label="4 Tasks")
 	pylab.ylabel("%")
 	pylab.xlabel("CDF")
 	pylab.title("Number of systems with no FPDIT")
