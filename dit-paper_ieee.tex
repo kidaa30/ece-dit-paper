@@ -181,7 +181,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		\subsubsection{Description using DBF}
 			\label{sct:cspaceDescr}
 
-			As explained in \cite{nemhauser1988integer}, a region of $\mathbb{N}_0^n$ such as the C-space can be described by a \emph{polytope}, or a list of parametric linear constraints (called the \emph{formulation}). The constraints must be conditions which can unequivocally decide if a point is included in the region or not. In the sequel we give a formulation for the C-space in $\mathbb{N}_0^n$ (For a formulation in $\mathbb{N}^n$, we can add $C_i \geqslant 1 \; \forall i$ to the formulation).\\
+			As explained in \cite{nemhauser1988integer}, a region of $\mathbb{N}_0^n$ such as the C-space can be described by a \emph{polytope}, or a list of parametric linear constraints (called the \emph{formulation}). The constraints must be conditions which can unequivocally decide if a point is included in the region or not. In the sequel we give a formulation for the C-space in $\mathbb{N}_0^n$ (For a formulation in $\mathbb{N}^n$, we can add $C_i \geqslant 1 \; \forall i$ in the list of constraints).\\
 
 			The DBF test gives us a list of inequations on the WCET values of the task set which together are a necessary and sufficient condition of feasibility. They can all be written in the following way:
 			\[
@@ -350,9 +350,9 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 			\end{array}
 			\right.
 		\]
-		which is very similar to an instance of the Chinese Remainer Problem (CRP). It
+		which is very similar to an instance of the Chinese Remainder Problem (CRP). It
 		is not possible to directly use a solver for the CRP (such as Gauss's
-		algorithm) as in a task system, $T_i$ values could have common factors.
+		algorithm \cite{gauss1965disquisitiones}) as in a task system, $T_i$ values could have common factors.
 		However, the instance can be modified (each constraint with a non-prime period can be split into powers of primes
 		without changing the solution if there is one) in order to make the problem
 		solvable through applying a solution for the CRP. \\
@@ -378,8 +378,8 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 
 		A better method for finding the FPDIT consists in splitting Gauss's algorithm
 		into two separate parts. The global structure is simply a sum of factors, each
-		term being dependant on which $a_i$ value is chosen. A major speedup can
-		be acheived by first computing all possible terms for each task (only one
+		term being dependent on which $a_i$ value is chosen. A major speedup can
+		be achieved by first computing all possible terms for each task (only one
 		modular inverse must be computed per task that way) then creating all possible DIT values
 		by summing the terms in all possible ways. The number of results is still
 		exponential in the number of tasks, but the only operation that is repeated
