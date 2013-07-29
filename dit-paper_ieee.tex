@@ -180,7 +180,7 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		\subsubsection{Description using DBF}
 			\label{sct:cspaceDescr}
 
-			As explained in \cite{nemhauser1988integer}, a region of $\mathbb{N}_0^n$ such as the C-space can be described by a \emph{polytope}, or a list of parametric linear constraints (called the \emph{formulation}). The constraints must be conditions which can unequivocally decide if a point is included in the region or not. In the sequel we give a formulation for the C-space in $\mathbb{N}_0^n$\footnote{For a formulation in $\mathbb{N}^n$ rather than in $\mathbb{N}_0^n$, the following inequations can be added to the formulation \[ C_i \geqslant 1 \; \forall i \]}.\\
+			As explained in \cite{nemhauser1988integer}, a region of $\mathbb{N}_0^n$ such as the C-space can be described by a \emph{polytope}, or a list of parametric linear constraints (called the \emph{formulation}). The constraints must be conditions which can unequivocally decide if a point is included in the region or not. In the sequel we give a formulation for the C-space in $\mathbb{N}_0^n$ (For a formulation in $\mathbb{N}^n$, we can add $C_i \geqslant 1 \; \forall i$ to the formulation).\\
 
 			The DBF test gives us a list of inequations on the WCET values of the task set which together are a necessary and sufficient condition of feasibility. They can all be written in the following way:
 			\[
@@ -459,8 +459,7 @@ For this reason, as explained in \cite{leung1982complexity}, it is sufficient to
 
 The FPDIT, if it exists, must occur in the transitive period. Indeed, it cannot occur in the incomplete period by definition ($t_d > O_{max}$) and if it occurred in the $k^{th}$ stationary period, another DIT should have occurred in the transitive period at instant $t_d - k H$ (a contradiction).\\
 
-As the FPDIT happened when all tasks were in the system, we know that the system will arrive in the exact same state one hyperperiod later ($t_d + H$)
-We show (???) that we can restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the first periodic DIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.\\
+As the FPDIT happens when all tasks are in the system, we know that the system will arrive in the exact same state one hyperperiod later ($t_d + H$). We can thus restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the FPDIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.\\
 
 (Remarque : Sans appliquer le simplexe ou un truc comme ça, si un DIT existe on divisera toujours par exactement 4 le nombre de contraintes ??)
 
