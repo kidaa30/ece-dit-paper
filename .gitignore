@@ -2,6 +2,7 @@
 *.pyo
 *.pyc
 python-simulation/plots
+!python-simulation/plotS/nofpdit.png
 
 # LaTeX
 *.acn
