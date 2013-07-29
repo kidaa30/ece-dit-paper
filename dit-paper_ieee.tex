@@ -311,15 +311,12 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		We now present an example of such a system.\\
 
 		\begin{center}
-		\begin{tabular}{|r|c|c|c|c|}
-		 \hline
-		  & $O_i$ & $C_i$ & $D_i$ & $T_i$ \\
-		 \hline
-		 $\tau_1$ & 0 & $C_1$ & 3 & 4\\
-		 \hline
-		 $\tau_2$ & 2 & $C_2$ & 7 & 8\\
-		 \hline
-		\end{tabular}
+			\begin{tabular}{|r|c|c|c|c|}
+				\hline
+							& $O_i$ & $C_i$ & $D_i$ & $T_i$ \\ \hline
+				$\tau_1$ 	& 0 	& $C_1$ & 3 	& 4\\ \hline
+				$\tau_2$ 	& 2 	& $C_2$ & 7 	& 8\\ \hline
+			\end{tabular}
 		\end{center}
 		~\\
 
@@ -327,14 +324,14 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 		of $a_2$ are 7 and 8. For a FPDIT to exist, one of the following
 		conditions must be fulfilled:
 		\[
-		\left[
-		\begin{array}{c}
-			3 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
-			3 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
-			4 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
-			4 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
-		\end{array}
-		\right.
+			\left[
+			\begin{array}{c}
+				3 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
+				3 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
+				4 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
+				4 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
+			\end{array}
+			\right.
 		\]
 		However those four conditions cannot be satisfied, which means the system has
 		no FPDIT (and no other DIT than $t=0$).
@@ -387,42 +384,52 @@ Keywords: Real-time systems, C-space, WCET, sensitivity analysis
 	The result are represented in Fig. \ref{fig:noFPDIT}. We observe that the more we are close to the implicit deadline case, the less systems have FPDIT.
 
 \section{C-space of asynchronous systems}
-  \label{sct:asyncCspace}
+\label{sct:asyncCspace}
 
-  \subsection{Description using DBF}
+	\subsection{Description using DBF}
+	
+		The description we presented in Section \ref{sct:cspaceDescr} was general, and
+		is thus still relevant. Therefore the C-space is still accurately described by
+		the following infinite number of constraints:
+		
+		\[
+			\sum_{i=0}^{n-1} n_i(t_1, t_2)
+			\, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
+		\]
+	
+		However, the method used in the synchronous case to remove redundancy does not
+		apply here. A more general approach is presented in the following section.
 
-  The description we presented in Section \ref{sct:cspaceDescr} was general, and is thus still relevant. Therefore the C-space is still accurately described by the following infinite number of constraints:$$\sum_{i=0}^{n-1} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2$$
+	\subsection{Removing redundancy}
 
-  However, the method used in the synchronous case to remove redundancy does not apply here. A more general approach is presented in the following section.
+		\subsubsection{Job arrival and deadline}
+			Consider an interval $[t_1, t_2]$. If $t_2$ is an instant without any job
+			deadline, then by definition the value of $\dbf{t_1, t_2}$ will be equal to
+			$\dbf{t_1, t_2^*}$, where $t_2^*$ is the latest deadline before $t_2$.\\
+			
+			A similar argument can be made if $t_1$ is an instant without any job arrival
+			(and $t_1^*$ is the earliest arrival after $t_1$). We can thus restricts
+			ourselves to intervals where $t_1$ is an instant with at least one job
+			arrival, and $t_2$ is an instant with at least one job deadline.
 
-  \subsection{Removing redundancy}
+		\subsubsection{Feasibility interval}
+			First let us recall how an asynchronous system behaves under an optimal
+			scheduler, for example EDF.\\
 
-\subsubsection{Job arrival and deadline}
-
-Consider an interval $[t_1, t_2]$. If $t_2$ is an instant without any job deadline, then by definition the value of $\dbf{t_1, t_2}$ will be equal to $\dbf{t_1, t_2^*}$, where $t_2^*$ is the latest deadline before $t_2$.\\
-
-A similar argument can be made if $t_1$ is an instant without any job arrival (and $t_1^*$ is the earliest arrival after $t_1$). We can thus restricts ourselves to intervals where $t_1$ is an instant with at least one job arrival, and $t_2$ is an instant with at least one job deadline.
-
-  \subsubsection{Feasibility interval}
-
-  First let us recall how an asynchronous system behaves under an optimal scheduler, for example EDF.\\
-
-\begin{figure}[h]
-	\[
-		\begin{array}{r||c|c|c|l}
-			& \text{Incomplete} & \text{Transitive} & \text{Stationary} & \cdots \\
-			\text{Name} & \text{period} & \text{period} & \text{period}  & \\
-			\hline
-			\text{size} & O_{max} & H & H & \cdots \\
-			\hline
-			t \geqslant & 0 & O_{max} & O_{max} + H & \cdots
-		\end{array}
-	\]
-	\begin{center}
-	\caption{Behavior of an asynchronous system under EDF.}
-	\label{fig:asyncBehavior}
-	\end{center}
-\end{figure}
+			\begin{figure}[h]
+				\[
+					\begin{array}{r||c|c|c|l}
+									& \text{Incomplete} & \text{Transitive} & \text{Stationary} & \cdots \\
+						\text{Name} & \text{period} 	& \text{period} 	& \text{period}  	& \\ \hline
+						\text{size} & O_{max} 			& H 				& H 				& \cdots \\ \hline
+						t \geqslant & 0 				& O_{max} 			& O_{max} + H 		& \cdots
+					\end{array}
+				\]
+				\begin{center}
+				\caption{Behavior of an asynchronous system under EDF.}
+				\label{fig:asyncBehavior}
+				\end{center}
+			\end{figure}
 
 As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the \emph{incomplete period}, where all tasks are not in the system. Then, after $O_{max}$ time units, every tasks is in the system and the \emph{transitive period} begins. Then, after $O_{max} + H$ time units, the system is faced with the same pattern of arrival as in $O_{max}$. However, because in $O_{max} + H$ every task is in the system and in $O_{max}$ some were missing, the state of the system will be different. The \emph{stationary period} then begins. It is only after $O_{max} + 2H$ time units that the system comes back into a state in which we can be sure it has been before.\\
 
