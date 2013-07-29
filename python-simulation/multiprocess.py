@@ -19,7 +19,7 @@ def cleanup():
 atexit.register(cleanup)
 	
 
-class WorkThread(object):
+class Worker(object):
 	def __init__(self, cdfIndex, numSystems, numCdfValues):
 		self.cdfIndex = cdfIndex
 		self.numCdfValues = numCdfValues
@@ -112,7 +112,7 @@ class WorkThread(object):
 		return bpStop - bpMedium, bpMedium - bpStart, ditStop - ditMedium, ditMedium - ditStart, hyperTStop - hyperTMedium, hyperTMedium - hyperTStart
 
 def processRun(cdfIndex, numSystems, numCdfValues, resQueue, globalCdfIndex, cdfArray, resLock, outLock):
-	work = WorkThread(cdfIndex, numSystems, numCdfValues)
+	work = Worker(cdfIndex, numSystems, numCdfValues)
 	work.run(resQueue, globalCdfIndex, cdfArray, resLock, outLock)
 	
 # def zombieKiller(masterQueue, workerPidList):
@@ -122,15 +122,15 @@ def processRun(cdfIndex, numSystems, numCdfValues, resQueue, globalCdfIndex, cdf
 # 		os.kill(worker, signal.SIGKILL)
 # 	sys.exit()
 		
-class ThreadManager(object):
+class ProcessManager(object):
 	def __init__(self,cdf,threadCountLimit,numSystems):
 		self.resultsQueue = multiprocessing.Queue()
 		self.stdoutLock = multiprocessing.Lock()
 		self.numSystems = numSystems
 		self.cdf = multiprocessing.Array('d', cdf)
 		self.numCdfValues = len(self.cdf)
-		self.threadCountLimit = min(threadCountLimit,self.numCdfValues)
-		self.threadList = []
+		self.processCountLimit = min(threadCountLimit,self.numCdfValues)
+		self.workerList = []
 		self.bpValue = array.array('f',[0.0])*self.numCdfValues
 		self.bpTest = array.array('f',[0.0])*self.numCdfValues
 		self.bpAll = array.array('f',[0.0])*self.numCdfValues
@@ -146,16 +146,16 @@ class ThreadManager(object):
 		resLock = multiprocessing.Lock()
 		outLock = multiprocessing.Lock()
 		resLock.acquire()
-		for i in range(self.threadCountLimit):
+		for i in range(self.processCountLimit):
 			t = multiprocessing.Process(target=processRun, 
 										args=(	self.curCdfIndex.value,self.numSystems,	self.numCdfValues, 
 												self.resultsQueue,self.curCdfIndex,self.cdf,resLock,outLock))
-			self.threadList.append(t)
+			self.workerList.append(t)
 			t.start()
 			self.curCdfIndex.value += 1
 # 		masterQueue = multiprocessing.Queue()
 # 		masterQueue.put(multiprocessing.current_process())
-#  		k = multiprocessing.Process(target=zombieKiller, args=(masterQueue,[worker.pid for worker in self.threadList]))
+#  		k = multiprocessing.Process(target=zombieKiller, args=(masterQueue,[worker.pid for worker in self.workerList]))
 #  		k.start()
 		resLock.release()
 			
@@ -172,13 +172,14 @@ class ThreadManager(object):
 			self.hyperTTest[cdfIndex] = res[4]
 			self.hyperTAll[cdfIndex] = res[4] + res[5]
 			
-		for t in self.threadList:
+		for t in self.workerList:
 			t.join()
 			
 if __name__ == '__main__':	
-	NUMBER_OF_SYSTEMS = 10
-	cdfRange = [f/2.0 for f in range(2, 11)]
-	manager = ThreadManager(cdfRange,4,NUMBER_OF_SYSTEMS)
+	NUMBER_OF_SYSTEMS = 10000
+	cdfRange = [1]
+# 	cdfRange = [f/2.0 for f in range(2, 11)]
+	manager = ProcessManager(cdfRange,4,NUMBER_OF_SYSTEMS)
 	manager.runAllThreads()
 
  	pylab.figure()
