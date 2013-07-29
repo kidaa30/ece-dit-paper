@@ -462,7 +462,7 @@ The FPDIT, if it exists, must occur in the transitive period. Indeed, it cannot 
 
 As the FPDIT happens when all tasks are in the system, we know that the system will arrive in the exact same state one hyperperiod later ($t_d + H$). We can thus restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the FPDIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.\\
 
-(Remarque : Sans appliquer le simplexe ou un truc comme ça, si un DIT existe on divisera toujours par exactement 4 le nombre de contraintes ??)
+(Remarque : Avec seulement cette méthode, si un DIT existe on divisera toujours par exactement 4 le nombre de contraintes par rapport à $O_{max} + 2H$)
 
 \subsubsection{Redundancy as an integer linear problem}
 
@@ -480,8 +480,8 @@ s.t.
 with
 \[
 	\begin{array}{ccc}
-		A & : & [k,n] \text{ matrix}\\
-		B & : & [1,n] \text{ matrix}\\
+		A & : & [n,k] \text{ matrix}\\
+		B & : & [n,1] \text{ matrix}\\
 		C & : & [n,1] \text{ matrix}\\
 		X & : & [1,n] \text{ matrix}\\
 		d & : & \text{integer}
@@ -492,7 +492,7 @@ with
 
 Indeed, if the maximization returns $z=d+1$, it means that there are some integer values accessible with the previous constraints that the new constraint forbids. On the other hands, if the maximization returns $z \leq d$, it means that the limitation expressed in the new constraint is already enforced by the previous constraints. Therefore $z \leq d$ is a necessary and sufficient condition of redundancy of the new constraint.\\
 
-Such a linear problem can be solved by the simplex algorithm. However, in our case the problem is not exactly the same as we have a set of constraints and we want to find all redundant constraints within. A naive method would be to test each constraint against all the others. We present a similar method with an efficient preprocessing when most constraints are redundant in Algorithm \ref{alg:prunRedun}.\\
+Such a linear problem can be solved by e.g. the simplex algorithm and a branch-and-cut approach. However, in our case the problem is not exactly the same as we have a set of constraints and we want to find all redundant constraints within. A naive method would be to test each constraint against all the others. We present a similar method with an efficient preprocessing when most constraints are redundant in Algorithm \ref{alg:prunRedun}.\\
 
 \begin{algorithm}
 \caption{Removing redundancy from CSPACE}
@@ -519,7 +519,7 @@ Such a linear problem can be solved by the simplex algorithm. However, in our ca
 
 After doing this, no redundant constraints are left. However, this algorithm takes an exponential time in the number of constraints. An efficient initial description of $CSPACE$, as given by the methods described in previous sections, is therefore preferred.\\
 
-To summarize, we first reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise. After this correct but not efficient description of the C-SPACE, a linear integer approach removes the remaining redundancies. Note that
+To summarize, we first reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise. After this correct but not efficient description of the C-SPACE, a linear integer approach removes the remaining redundancies.
 
 \section{Numerical Example}
 
@@ -539,7 +539,7 @@ Consider the following task system
 		~\\
 
 The FPDIT happens at $t=15$ and we have $H = 15$. The study interval using the FPDIT is thus $[15, 30]$, which contains 11 intervals $[a,d]$ with $a$ being the arrival of a job, $d$ being the deadline of a job, and $15 \leqslant a < d \leqslant 30$. Those intervals are
-$[15, 17]$, $[15, 22]$, $[15, 27]$, $[15, 30]$, $[20, 22]$, $[20, 27]$, $[20, 30]$, $[23, 27]$, $[23, 30]$, $[25, 27]$ and $[25, 30]$. For comparison, the more pessimistic study interval is $[8, 38]$ which yields 57 intervals.\\
+$[15, 17]$, $[15, 22]$, $[15, 27]$, $[15, 30]$, $[20, 22]$, $[20, 27]$, $[20, 30]$, $[23, 27]$, $[23, 30]$, $[25, 27]$ and $[25, 30]$. For comparison, the original study interval of $[O_{max}, O_{max} + 2H]$ is $[8, 38]$ which yields 57 intervals.\\
 
 For each $[a, d]$, we have a constraint $$\sum_{i=0}^{n-1} n_i(a, d) \, C_i \leqslant d - a$$ which give a description of the C-space.\\
 
