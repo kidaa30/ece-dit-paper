@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
 	pylab.figure()
 	pylab.plot(CDFvalues, noFPDITpcts2, "g-s", label="2 Tasks")
-	pylab.plot(CDFvalues, noFPDITpcts3, "r-o", label="3 Tasks")
+	pylab.plot(CDFvalues, noFPDITpcts3, "k-o", label="3 Tasks")
 	pylab.plot(CDFvalues, noFPDITpcts4, "b-^", label="4 Tasks")
 	pylab.ylabel("%")
 	pylab.xlabel("CDF")
