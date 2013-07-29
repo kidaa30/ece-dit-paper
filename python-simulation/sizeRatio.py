@@ -8,7 +8,7 @@ import time
 if __name__ == "__main__":
 	UTIL_BINS = [f/10.0 for f in range(1,11)]
 	CDF_BINS = [e/1.0 for e in range(1,5)]
-	NUMBER_OF_SYSTEMS = 100
+	NUMBER_OF_SYSTEMS = 1000
 	results = []
 	for cdf in CDF_BINS:
 		resCdf = []
