@@ -632,6 +632,33 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane.
 \end{center}
 \end{figure}
 
+
+\section{Experimental C-space size gain of asynchronous systems}
+	One of the advantages of asynchronous systems over synchronous systems in the
+	context of periodic tasks is that the critical instants of asynchronous systems
+	cannot be more constraining for the C-space than synchronous instants. For this
+	reason, it has long been known that modifying task offsets when possible during
+	the design of a real-time system is a useful trick to fit a heavy but periodic task set
+	into a given platform.
+	
+	In Fig.~\ref{fig:sizeRatio} a number of feasible asynchronous task sets without
+	synchronous instants were generated and the size of their C-space was
+	calculated and compared with the size of the C-space of the same
+	task sets with all task offsets set to zero. In other words, this figure
+	evaluates the feasibility gain of adding random offsets to a synchronous task
+	set. It is assumed that a more advanced strategy to assign these offsets
+	would yield a greater difference.
+	
+	\begin{figure}[h]
+		\begin{center}
+			\includegraphics[width=0.5\textwidth]{figs/sizeRatio.png}
+			\caption{C-space size ratio between asynchronous and equivalent synchronous
+			systems}
+			\label{fig:sizeRatio}
+		\end{center}
+	\end{figure}
+	
+	
 \section{Conclusion}
 
 
