@@ -35,7 +35,6 @@ class TaskSystem(object):
 		self.tasks = tasks
 		self.hyperperiod = None
 		#self.hyperT = self.hyperPeriod()
-		
 
 	def hyperPeriod(self):
 		if not self.hyperperiod:
@@ -43,40 +42,33 @@ class TaskSystem(object):
 			self.hyperperiod = myAlgebra.lcmArray(Tset)
 		return self.hyperperiod
 
-
 	def hasConstrainedDeadline(self):
 		ok = True
 		for task in self.tasks:
 			ok = ok and task.D <= task.T
 		return ok
 
-
 	def isSynchronous(self):
 		return max([task.O for task in self.tasks]) == 0
-
 
 	def systemUtilization(self):
 		u = 0
 		for task in self.tasks:
 			u += task.utilization()
 		return u
-	
-	
+
 	def omax(self):
 		return reduce(max,[task.O for task in self.tasks])
-	
-	
+
 	def util(self):
 		return self.systemUtilization()
-	
 
 	def __repr__(self):
 		tauString = "TASK SYSTEM"
 		for task in self.tasks:
 			tauString += "\n\t" + str(task)
 		return tauString
-	
-	
+
 	def synchronousEquivalent(self):
 		if self.isSynchronous():
 			return self
@@ -85,8 +77,7 @@ class TaskSystem(object):
 			for t in sync.tasks:
 				t.O = 0
 			return sync
-	
-	
+
 	def firstSynchronousInstant(self):
 		if(self.isSynchronous()):
 			return 0
@@ -101,7 +92,6 @@ class TaskSystem(object):
 				while tSync < Omax:
 					tSync += H
 			return tSync
-
 
 	def dbf_intervals(self, lowerLimit, upperLimit):
 		starts = {}  # will contain all tasks first arrival
@@ -161,26 +151,21 @@ class TestTask(unittest.TestCase):
 		self.tau2 = TaskSystem(self.tasks[0:2])
 		self.tau3 = TaskSystem(self.tasks2)
 
-
 	def test_isSynchronous(self):
 		self.assertFalse(self.tau.isSynchronous())
 		self.assertTrue(self.tau2.isSynchronous())
 		self.assertTrue(self.tau3.isSynchronous())
-
 
 	def test_hasConstrainedDeadline(self):
 		self.assertFalse(self.tau.hasConstrainedDeadline())
 		self.assertTrue(self.tau2.hasConstrainedDeadline())
 		self.assertTrue(self.tau3.hasConstrainedDeadline())
 
-
 	def test_systemUtilization(self):
 		self.assertEqual(0.5, self.tau2.systemUtilization())
 
-
 	def test_hyperperiod(self):
 		self.assertEqual(6, self.tau2.hyperPeriod())
-
 
 if __name__ == '__main__':
 	unittest.main()
