@@ -1,7 +1,8 @@
 # Python
 *.pyo
 *.pyc
-python-simulation/plots
+python-simulation/plots/001*.png
+python-simulation/plots/backup/001*.png
 !python-simulation/plots/nofpdit.png
 
 # LaTeX
