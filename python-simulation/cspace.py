@@ -128,6 +128,7 @@ def toGLPSOLData(cspace, cstr, filename):
 		f.write(str(cstr[-1]))
 		f.write(";\n")
 
+
 def CspaceSize(tau, cspace=None):
 	if cspace is None:
 		cspace = Cspace(tau)
@@ -135,6 +136,7 @@ def CspaceSize(tau, cspace=None):
 	for task in tau.tasks:
 		cValues.append((c for c in range(1, task.D + 1)))
 	return len(filter(lambda cvector: testCVector(cspace, cvector), itertools.product(*cValues)))
+
 
 def testCVector(cspace, cvector):
 	for i, equation in enumerate(cspace):
@@ -153,7 +155,7 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 		Umin = 0.25
 		Umax = 0.75
 		Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
-		n = 2
+		n = 3
 		# maxHyperT = 554400  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
 		maxHyperT = -1
 		Tmin = 5
@@ -202,7 +204,7 @@ if __name__ == '__main__':
 		print ""
 		resultCSPACE = testCVector(cspace_noredun, [task.C for task in tau.tasks])
 		resultCSPACENOREDUN = testCVector(cspace, [task.C for task in tau.tasks])
-		resultDBF = algorithms.dbf_test(tau)
+		resultDBF = algorithms.dbfTest(tau)
 		assert resultCSPACE == resultCSPACENOREDUN == resultDBF, str(resultCSPACE) + str(resultCSPACENOREDUN) + str(resultDBF)
 		print "redundancy (necessary) condition ok"
 		print "synchronous instant", algorithms.findSynchronousInstant(tau)

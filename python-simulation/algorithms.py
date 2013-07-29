@@ -161,7 +161,7 @@ if __name__ == '__main__':
 	# No busy period test as it does not make sense in asynchronous system
 	assert findFirstPeriodicDIT(tau) == 6, "Unit Test FAIL : findFirstDIT (4a); " + "returned: " + str(findFirstDIT(tau))
 	assert findSynchronousInstant(tau) == 8, "Unit Test FAIL : findSynchronousInstant (4a); " + "returned: " + str(findSynchronousInstant(tau))
-	#assert dbf_test(tau) is True
+	#assert dbfTest(tau) is True
 
 	tasks = []
 	#                      0, C, D, T
