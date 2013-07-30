@@ -90,11 +90,11 @@ Definitive Idle Times}
 
 
 \author{
-\IEEEauthorblockN{Thomas Chapeaux\\ and Paul Rodriguez}
+\IEEEauthorblockN{Thomas Chapeaux and Paul Rodriguez}
 \IEEEauthorblockA{Universit\'{e} Libre de Bruxelles\\
 Email: tchapeau@ulb.ac.be, paurodri@ulb.ac.be}
 \and
-\IEEEauthorblockN{Laurent George\\ and ???}
+\IEEEauthorblockN{Laurent George and ???}
 \IEEEauthorblockA{ECE Paris\\
 Email}
 }
@@ -428,7 +428,7 @@ synchronous system.
 
 	\begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=0.5\textwidth]{python-simulation/plots/nofpdit.png}
+		\includegraphics[width=0.5\textwidth]{python-simulation/plots/nofpdit_3.eps}
 	\end{center}
 	\caption{Evolution of the existence of FPDIT with the CDF}
 	\label{fig:noFPDIT}
@@ -656,10 +656,10 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark grey reg
 	utilization, but less so when the CDF is lower. It is also important to note
 	that even though a 0.95 ratio may not seem much, the synchronous C-spaces of
 	the systems contain many dominated WCET vectors, and only those that are
-	pareto-optimal (i.e. non-dominated) actually matter to the designer of the system.
+	in the border (i.e. non-dominated) actually matter to the designer of the system.
 	Using the asynchronous C-space instead will relax some constraints and therefore add new acceptable
 	solutions that will dominate solutions that were previously non-dominated,
-	increasing the quality of the WCET pareto-front.
+	increasing the quality of the C-space border.
 
 
 \section{Conclusion}
