@@ -54,9 +54,9 @@ if __name__ == '__main__':
 		CDFvalues.append(constrDeadlineFactor)
 
 	pylab.figure()
-	pylab.plot(CDFvalues, noFPDITpcts4, "b-^", label="4 Tasks")
-	pylab.plot(CDFvalues, noFPDITpcts3, "k-o", label="3 Tasks")
-	pylab.plot(CDFvalues, noFPDITpcts2, "g-s", label="2 Tasks")
+	pylab.plot(map(lambda x: 1.0/x, CDFvalues), noFPDITpcts4, "b-^", label="4 Tasks")
+	pylab.plot(map(lambda x: 1.0/x, CDFvalues), noFPDITpcts3, "k-o", label="3 Tasks")
+	pylab.plot(map(lambda x: 1.0/x, CDFvalues), noFPDITpcts2, "g-s", label="2 Tasks")
 	pylab.ylabel("%")
 	pylab.xlabel("CDF")
 	pylab.title("Number of systems with no FPDIT")
