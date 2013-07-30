@@ -463,7 +463,11 @@ synchronous system.
 	\label{fig:noFPDIT}
 	\end{figure}
 
-	We observe that the more we are close to the implicit deadline case ($CDF = 0$), the less systems have FPDIT. This is easily explained by the fact that a lower CDF means more idle instant for each task, and thus more opportunities for DITs to happen. Similarly, as all tasks must be synchronized for a DIT to happen, a higher number of tasks results in a decrease in FPDIT density.
+	We observe that the closer we are to the implicit deadline case ($CDF =
+	0$), the fewer systems have a FPDIT. This is easily explained by the fact that
+	a lower CDF means more idle instants for each task, and thus more opportunities
+	for DITs to happen. Similarly, as all tasks must be synchronized for a DIT to
+	happen, a higher number of tasks results in a decrease in FPDIT density.
 
 \section{C-space of asynchronous systems}
 \label{sct:asyncCspace}
@@ -489,12 +493,12 @@ synchronous system.
 		but heavy method for removing constraints redundancies.
 
 		\subsubsection{Job arrival and deadline}
-			Consider an interval $[t_1, t_2]$. If $t_2$ is an instant without any job
-			deadline, then by definition the value of $\dbf{t_1, t_2}$ will be equal to
+			Consider a time interval $[t_1, t_2]$. If $t_2$ is an instant without any
+			job deadline, then by definition the value of $\dbf{t_1, t_2}$ will be equal to
 			$\dbf{t_1, t_2^*}$, where $t_2^*$ is the latest deadline before $t_2$.
 
 			A similar argument can be made if $t_1$ is an instant without any job arrival
-			(and $t_1^*$ is the earliest arrival after $t_1$). We can thus restricts
+			(and $t_1^*$ is the earliest arrival after $t_1$). We can thus restrict
 			ourselves to intervals where $t_1$ is an instant with at least one job
 			arrival, and $t_2$ is an instant with at least one job deadline.
 
@@ -505,7 +509,7 @@ synchronous system.
 			\begin{figure}[h]
 				\[
 					\begin{array}{r||c|c|c|l}
-									& \text{Incomplete} & \text{Transitive} & \text{Stationary} & \cdots \\
+									& \text{Incomplete} & \text{Transient}	& \text{Stationary} & \cdots \\
 						\text{Name} & \text{period} 	& \text{period} 	& \text{period}  	& \\ \hline
 						\text{size} & O_{max} 			& H 				& H 				& \cdots \\ \hline
 						t \geqslant & 0 				& O_{max} 			& O_{max} + H 		& \cdots
@@ -517,7 +521,16 @@ synchronous system.
 				\end{center}
 			\end{figure}
 
-As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the \emph{incomplete period}, where all tasks are not in the system. Then, after $O_{max}$ time units, every tasks is in the system and the \emph{transitive period} begins. Then, after $O_{max} + H$ time units, the system is faced with the same pattern of arrival as in $O_{max}$. However, because in $O_{max} + H$ every task is in the system and in $O_{max}$ some were missing, the state of the system will be different. The \emph{stationary period} then begins. It is only after $O_{max} + 2H$ time units that the system comes back into a state in which we can be sure it has been before.
+			As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the
+			\emph{incomplete period}, where all tasks are not in the system. Then, after
+			$O_{max}$ time units, every tasks is in the system and the \emph{transient
+			period} begins. Then, after $O_{max} + H$ time units, the system is faced
+			with the same pattern of arrival as in $O_{max}$. However, because in
+			$O_{max} + H$ every task is in the system and in $O_{max}$ some were missing,
+			the state of the system will be different. The \emph{stationary period} then
+			begins. At instant $O_{max} + 2H$ it is guaranteed that the system is in the
+			exact same situation it was at instant $O_{max} + H$ (however it may be
+			possible to find earlier intervals with the same property).
 
 For this reason, as explained in \cite{leung1982complexity}, it is sufficient to check for intervals included in the interval $[O_{max}, O_{max} + 2H]$, which has an exponential length in the number of tasks.
 
