@@ -593,9 +593,17 @@ Such a linear problem can be solved by e.g. the simplex algorithm and a branch-a
   \end{algorithmic}
 \end{algorithm}
 
-After doing this, no redundant constraints are left. However, this algorithm takes an exponential time in the number of constraints. An efficient initial description of $CSPACE$, as given by the methods described in previous sections, is therefore preferred.
+After doing this, no redundant constraints are left. However, this algorithm
+takes an exponential time in the number of constraints. An efficient initial
+description of $CSPACE$, as given by the methods described in previous
+sections, is therefore preferred.
 
-To summarize, we first reduced the number of constraint from every possible interval $[t_1, t_2]$ to only the interval where $t_1$ is an arrival and $t_2$ is a deadline between $[t_d, t_d + H]$ if $t_d$ exists, or between $[O_{max}, O_{max} + 2H]$ otherwise. After this correct but not efficient description of the C-SPACE, a linear integer approach removes the remaining redundancies.
+To summarize, we first reduced the number of constraints from every possible
+interval $[t_1, t_2]$ to the intervals where $t_1$ is an arrival time and
+$t_2$ is a deadline in $[t_d, t_d + H]$ if $t_d$ exists, or in
+$[O_{max}, O_{max} + 2H]$ otherwise. This set of constraints is a
+correct description of the C-Space, but it is not efficient. Redundant
+contraints are removed through a linear integer approach.
 
 \section{Numerical Example}
 
