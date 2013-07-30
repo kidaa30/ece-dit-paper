@@ -3,10 +3,12 @@ import TaskGenerator
 import algorithms
 import cspace
 
+import pylab
+
 import random
 import time
 
-def testSystem(tau):
+def testSystem(tau, maxCstrcnt=1000):
 	print "TESTING SYSTEM"
 	print tau
 
@@ -19,7 +21,7 @@ def testSystem(tau):
 	print "H", H
 	print "#cstr of cspace", len(tau_cspace)
 
-	if len(tau_cspace) <= 2000:
+	if len(tau_cspace) <= maxCstrcnt:
 		twoPassStart = time.clock()
 		cspacePruned = cspace.removeRedundancy(tau_cspace)
 		twoPassStop = time.clock()
@@ -56,8 +58,27 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 	return systemArray
 
 if __name__ == '__main__':
-	systemArray = generateSystemArray(10, 1)
+	systemArray = generateSystemArray(100, 1)
+	cstrSizes = []
+	twoTimes = []
+	oneTimes = []
 
 	for i, tau in enumerate(systemArray):
 		print "TEST NUMBER", i
-		cstrSize, twoPassTime, onePassTime
+		returnTuple = testSystem(tau, maxCstrcnt=1000)
+		if returnTuple is not None:
+			cstrSize, twoPassTime, onePassTime = returnTuple[0], returnTuple[1], returnTuple[2]
+			cstrSizes.append(cstrSize)
+			twoTimes.append(twoPassTime)
+			oneTimes.append(onePassTime)
+
+	pylab.figure()
+	pylab.plot(cstrSize, twoTimes, "g-s", label="Two passes")
+	pylab.plot(cstrSize, oneTimes, "b-r", label="One pass")
+	pylab.ylabel("s")
+	pylab.xlabel("cstr number")
+	pylab.title("Comparison of redundancy removal techniques")
+	pylab.legend(loc=0)
+	# pylab.axis()
+	# pylab.savefig("./plots/001_" + str(time.time()).replace(".", "") + ".png")
+	pylab.show()

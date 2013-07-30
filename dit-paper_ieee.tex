@@ -409,6 +409,7 @@ synchronous system.
 		exponentially many times is now a sum.
 
 	\subsection{Simulation}
+	\label{sct:noFPDITsimu}
 
 	This simulation aims to quantify how much system have a FPDIT and which factor can influence this quantity.
 
@@ -434,7 +435,7 @@ synchronous system.
 	\label{fig:noFPDIT}
 	\end{figure}
 
-	We observe that the more we are close to the implicit deadline case, the less systems have FPDIT. This is easily explained by the fact that a lower CDF means more idle instant for each task, and thus more opportunities for DITs to happen. Similarly, as all tasks must be synchronized for a DIT to happen, a higher number of tasks results in a decrease in FPDIT density.
+	We observe that the more we are close to the implicit deadline case ($CDF = 0$), the less systems have FPDIT. This is easily explained by the fact that a lower CDF means more idle instant for each task, and thus more opportunities for DITs to happen. Similarly, as all tasks must be synchronized for a DIT to happen, a higher number of tasks results in a decrease in FPDIT density.
 
 \section{C-space of asynchronous systems}
 \label{sct:asyncCspace}
@@ -634,8 +635,11 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark grey reg
 
 	In Fig.~\ref{fig:sizeRatio} a number of feasible asynchronous task sets of
 	three tasks without synchronous instants were generated. The size of their
-	C-space (number of valid WCET vectors) was calculated and compared with that of the same
-	task sets with all offsets set to zero. In other words, this figure
+	C-space (number of valid WCET vectors) was compared with that of the same
+	task sets with all offsets set to zero. The systems were generated as in section~\ref{sct:noFPDITsimu}
+	and the integer linear problems used to remove redundancies were solved via the GLPK tool\footnote{\url{http://www.gnu.org/software/glpk/}}.
+
+	In other words, this figure
 	evaluates the feasibility gain of adding random offsets to a synchronous task
 	set. It is assumed that a more advanced strategy to assign these offsets
 	would yield a greater difference.
