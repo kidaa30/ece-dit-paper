@@ -90,11 +90,11 @@ Definitive Idle Times}
 
 
 \author{
-\IEEEauthorblockN{Thomas Chapeaux\\ and Paul Rodriguez}
+\IEEEauthorblockN{Thomas Chapeaux and Paul Rodriguez}
 \IEEEauthorblockA{Universit\'{e} Libre de Bruxelles\\
 Email: tchapeau@ulb.ac.be, paurodri@ulb.ac.be}
 \and
-\IEEEauthorblockN{Laurent George\\ and ???}
+\IEEEauthorblockN{Laurent George and ???}
 \IEEEauthorblockA{ECE Paris\\
 Email}
 }
@@ -445,6 +445,7 @@ synchronous system.
 		factor is close to one, but with only a slight increase in computation time as the sizes of the $[D_i, T_i]$ intervals grow.
 
 	\subsection{Simulation}
+	\label{sct:noFPDITsimu}
 
 	This simulation aims to quantify how much system have a FPDIT and which factor can influence this quantity.
 
@@ -464,13 +465,13 @@ synchronous system.
 
 	\begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=0.5\textwidth]{python-simulation/plots/nofpdit.png}
+		\includegraphics[width=0.5\textwidth]{python-simulation/plots/nofpdit_3.eps}
 	\end{center}
 	\caption{Evolution of the existence of FPDIT with the CDF}
 	\label{fig:noFPDIT}
 	\end{figure}
 
-	We observe that the more we are close to the implicit deadline case, the less systems have FPDIT. This is easily explained by the fact that a lower CDF means more idle instant for each task, and thus more opportunities for DITs to happen. Similarly, as all tasks must be synchronized for a DIT to happen, a higher number of tasks results in a decrease in FPDIT density.
+	We observe that the more we are close to the implicit deadline case ($CDF = 0$), the less systems have FPDIT. This is easily explained by the fact that a lower CDF means more idle instant for each task, and thus more opportunities for DITs to happen. Similarly, as all tasks must be synchronized for a DIT to happen, a higher number of tasks results in a decrease in FPDIT density.
 
 \section{C-space of asynchronous systems}
 \label{sct:asyncCspace}
@@ -670,8 +671,11 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark grey reg
 
 	In Fig.~\ref{fig:sizeRatio} a number of feasible asynchronous task sets of
 	three tasks without synchronous instants were generated. The size of their
-	C-space (number of valid WCET vectors) was calculated and compared with that of the same
-	task sets with all offsets set to zero. In other words, this figure
+	C-space (number of valid WCET vectors) was compared with that of the same
+	task sets with all offsets set to zero. The systems were generated as in section~\ref{sct:noFPDITsimu}
+	and the integer linear problems used to remove redundancies were solved via the GLPK tool\footnote{\url{http://www.gnu.org/software/glpk/}}.
+
+	In other words, this figure
 	evaluates the feasibility gain of adding random offsets to a synchronous task
 	set. It is assumed that a more advanced strategy to assign these offsets
 	would yield a greater difference.
@@ -692,10 +696,10 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark grey reg
 	utilization, but less so when the CDF is lower. It is also important to note
 	that even though a 0.95 ratio may not seem much, the synchronous C-spaces of
 	the systems contain many dominated WCET vectors, and only those that are
-	pareto-optimal (i.e. non-dominated) actually matter to the designer of the system.
+	in the border (i.e. non-dominated) actually matter to the designer of the system.
 	Using the asynchronous C-space instead will relax some constraints and therefore add new acceptable
 	solutions that will dominate solutions that were previously non-dominated,
-	increasing the quality of the WCET pareto-front.
+	increasing the quality of the C-space border.
 
 
 \section{Conclusion}

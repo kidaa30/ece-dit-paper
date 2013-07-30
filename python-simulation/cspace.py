@@ -39,7 +39,7 @@ def Cspace(tau, upperLimit="def", lowerLimit = 0):
 	return equations
 
 
-def removeRedundancy(cspace):
+def removeRedundancy(cspace, firstPass=True, verbose=False):
 	# Idea:
 	# start with an empty list of cstr,
 	# add each cstr only if it is not redundant
@@ -47,10 +47,13 @@ def removeRedundancy(cspace):
 
 	# first pass - filter against previous cstr
 	newCspace = []
-	for i, cstr in enumerate(cspace):
-		if not isRedundant(cstr, newCspace):
-			print "\tNon-redundant at step ", i, ":", cstr
-			newCspace.append(cstr)
+	if firstPass:
+		for i, cstr in enumerate(cspace):
+			if not isRedundant(cstr, newCspace):
+				if verbose: print "\tNon-redundant at step ", i, ":", cstr
+				newCspace.append(cstr)
+	else:
+		newCspace.extend(cspace)
 
 	# second pass - filter against all cstr
 	# Note that the number of cstr should be small
@@ -60,7 +63,7 @@ def removeRedundancy(cspace):
 		if not isRedundant(cstr, newCspace):
 			newCspace.insert(i, cstr)
 			i += 1
-		else:
+		elif verbose:
 			print "\t", cstr, "was redundant against", newCspace
 
 	return newCspace
@@ -169,43 +172,73 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 	return systemArray
 
 
+class CSpaceConstraint(object):  # TODO : make the code use this lovely class
+	def __init__(self, coeffs, t):
+		self.coeffs = coeffs
+		self.t = t
+
+	def __repr__(self):
+		reprStr = ""
+		for i, a in enumerate(self.coeffs):
+			reprStr += str(a) + "\tx" + str(i+1) + "\t+ "
+		reprStr = reprStr[:-2]  # remove final "+"
+		reprStr += "<=\t" + str(self.t)
+		return reprStr
+
+
 if __name__ == '__main__':
+
 	tasks = []
 	#                      0, C, D, T
-	tasks.append(Task.Task(5, 1, 1, 3))
-	tasks.append(Task.Task(0, 4, 4, 8))
+	tasks.append(Task.Task(0, 1, 5, 7))
+	tasks.append(Task.Task(0, 1, 7, 11))
+	tasks.append(Task.Task(0, 1, 10, 13))
 	tau = Task.TaskSystem(tasks)
+	print tau
 	tau_Cspace = Cspace(tau)
-	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is False
-
-	# "TEST2"
-
-	tasks = []
-	tasks.append(Task.Task(0, 1, 73, 154))
-	tasks.append(Task.Task(0, 1, 381, 825))
-	tasks.append(Task.Task(0, 1, 381, 400))
-	tau = Task.TaskSystem(tasks)
-	tau_Cspace = Cspace(tau, algorithms.findFirstDIT(tau))
-	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
 	tau_Cspace_noredun = removeRedundancy(tau_Cspace)
-	assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
 
-	# RANDOM TEST
-	NUMBER_OF_SYSTEMS = 10
-	systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, 1)
-	for tau in systemArray:
-		print tau
-		print "cspace..."
-		cspace = Cspace(tau)
-		print "found ", len(cspace), "equations"
-		print "remove redun..."
-		cspace_noredun = removeRedundancy(cspace)
-		print len(cspace), "=>", len(cspace_noredun), "equations left"
-		print ""
-		resultCSPACE = testCVector(cspace_noredun, [task.C for task in tau.tasks])
-		resultCSPACENOREDUN = testCVector(cspace, [task.C for task in tau.tasks])
-		resultDBF = algorithms.dbfTest(tau)
-		assert resultCSPACE == resultCSPACENOREDUN == resultDBF, str(resultCSPACE) + str(resultCSPACENOREDUN) + str(resultDBF)
-		print "redundancy (necessary) condition ok"
-		print "synchronous instant", algorithms.findSynchronousInstant(tau)
-		print "cspacesize", CspaceSize(tau, cspace_noredun)
+	print "FINAL CSPACE"
+	for cstr in tau_Cspace_noredun:
+		print CSpaceConstraint(cstr[:-1], cstr[-1])
+	print len(tau_Cspace), "=>", len(tau_Cspace_noredun), "equations left"
+
+	# tasks = []
+	# #                      0, C, D, T
+	# tasks.append(Task.Task(5, 1, 1, 3))
+	# tasks.append(Task.Task(0, 4, 4, 8))
+	# tau = Task.TaskSystem(tasks)
+	# tau_Cspace = Cspace(tau)
+	# assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is False
+
+	# # "TEST2"
+
+	# tasks = []
+	# tasks.append(Task.Task(0, 1, 73, 154))
+	# tasks.append(Task.Task(0, 1, 381, 825))
+	# tasks.append(Task.Task(0, 1, 381, 400))
+	# tau = Task.TaskSystem(tasks)
+	# tau_Cspace = Cspace(tau, algorithms.findFirstDIT(tau))
+	# assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
+	# tau_Cspace_noredun = removeRedundancy(tau_Cspace)
+	# assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
+
+	# # RANDOM TEST
+	# NUMBER_OF_SYSTEMS = 10
+	# systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, 1)
+	# for tau in systemArray:
+	# 	print tau
+	# 	print "cspace..."
+	# 	cspace = Cspace(tau)
+	# 	print "found ", len(cspace), "equations"
+	# 	print "remove redun..."
+	# 	cspace_noredun = removeRedundancy(cspace)
+	# 	print len(cspace), "=>", len(cspace_noredun), "equations left"
+	# 	print ""
+	# 	resultCSPACE = testCVector(cspace_noredun, [task.C for task in tau.tasks])
+	# 	resultCSPACENOREDUN = testCVector(cspace, [task.C for task in tau.tasks])
+	# 	resultDBF = algorithms.dbfTest(tau)
+	# 	assert resultCSPACE == resultCSPACENOREDUN == resultDBF, str(resultCSPACE) + str(resultCSPACENOREDUN) + str(resultDBF)
+	# 	print "redundancy (necessary) condition ok"
+	# 	print "synchronous instant", algorithms.findSynchronousInstant(tau)
+	# 	print "cspacesize", CspaceSize(tau, cspace_noredun)

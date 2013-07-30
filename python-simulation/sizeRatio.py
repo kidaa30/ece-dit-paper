@@ -18,7 +18,7 @@ if __name__ == "__main__":
 			tasksLists = [TaskGenerator.generateTasks(Utot=util, n=3, maxHyperT=554400, Tmin=3, Tmax=15, synchronous=False, constrDeadlineFactor=cdf)
 						for i in range(NUMBER_OF_SYSTEMS)]
 			systems = [Task.TaskSystem(tasks) for tasks in tasksLists]
-		
+
 			for tau in systems:
 				tSync = tau.firstSynchronousInstant()
 				if not tSync:
@@ -29,12 +29,12 @@ if __name__ == "__main__":
 						syncCSpaceSize = cspace.CspaceSize(syncTau)
 						resUtil += float(syncCSpaceSize)/asyncCSpaceSize
 						trueAsyncCnt += 1
-			if(trueAsyncCnt > 0):		
+			if(trueAsyncCnt > 0):
 				resCdf.append(float(resUtil)/trueAsyncCnt)
 			else:
 				resCdf.append(0)
 		results.append(resCdf)
-	
+
 	pylab.figure()
 	markers = ['s','*','o','D']
 	for cnt,cdf in enumerate(CDF_BINS):
@@ -44,6 +44,6 @@ if __name__ == "__main__":
 	pylab.title("synchronous/asynchronous C-space size (" + str(NUMBER_OF_SYSTEMS) + " systems)")
 	pylab.legend(loc=0)
 #  	pylab.axis([0, 1, 0, 1])
-	pylab.savefig("./plots/sizeratio_" + str(NUMBER_OF_SYSTEMS) + "-" + str(time.time()).replace(".", "") + ".png")
+	pylab.savefig("./plots/sizeratio_" + str(NUMBER_OF_SYSTEMS) + "-" + str(time.time()).replace(".", "") + ".eps")
 	pylab.spectral()
 	pylab.show()

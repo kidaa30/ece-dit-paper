@@ -33,7 +33,7 @@ if __name__ == '__main__':
 	noFPDITpcts3 = []
 	noFPDITpcts4 = []
 	CDFvalues = []
-	for constrDeadlineFactor in reversed(range(1, 15)):
+	for constrDeadlineFactor in [1/(x * 0.1) for x in range(1, 11)]:
 		systemArray2 = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor, 2)
 		systemArray3 = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor, 3)
 		systemArray4 = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor, 4)
