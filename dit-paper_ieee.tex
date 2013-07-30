@@ -7,9 +7,6 @@
 %% http://www.michaelshell.org/
 %% for current contact information.
 %%
-%% This is a skeleton file demonstrating the use of IEEEtran.cls
-%% (requires IEEEtran.cls version 1.7 or later) with an IEEE conference paper.
-%%
 %% Support sites:
 %% http://www.michaelshell.org/tex/ieeetran/
 %% http://www.ctan.org/tex-archive/macros/latex/contrib/IEEEtran/
@@ -42,14 +39,6 @@
 %% File list of work: IEEEtran.cls, IEEEtran_HOWTO.pdf, bare_adv.tex,
 %%                    bare_conf.tex, bare_jrnl.tex, bare_jrnl_compsoc.tex
 %%*************************************************************************
-
-% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
-% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
-% *** with production work. IEEE's font choices can trigger bugs that do  ***
-% *** not appear when using other class files.                            ***
-% The testflow support page is at:
-% http://www.michaelshell.org/tex/testflow/
-
 
 %
 \documentclass[conference]{IEEEtran}
@@ -96,30 +85,22 @@
 
 
 \begin{document}
-%
-% paper title
-% can use linebreaks \\ within to get better formatting as desired
 \title{Describing the C-Space of Asynchronous Periodic Task Systems using
 Definitive Idle Times}
 
 
-% author names and affiliations
-% use a multiple column layout for up to three different
-% affiliations
 \author{
 \IEEEauthorblockN{Thomas Chapeaux\\ and Paul Rodriguez}
 \IEEEauthorblockA{Universit\'{e} Libre de Bruxelles\\
 Email: tchapeau@ulb.ac.be, paurodri@ulb.ac.be}
 \and
-\IEEEauthorblockN{Laurent George\\ and Jean-Fran\c{c}ois Hermant}
+\IEEEauthorblockN{Laurent George\\ and ???}
 \IEEEauthorblockA{ECE Paris\\
 Email}
 }
-% make the title area
 \maketitle
 
 \begin{abstract}
-%\boldmath
 Sensitivity analysis for real-time systems asks for efficient methods to determine feasibility
 after small changes of execution times, such as when porting a system to a different platform.
 The C-space, presented in \cite{bini2004schedulability,george2009characterization}, describes the
@@ -130,9 +111,6 @@ expressed as the volume ratio between the C-space of an asynchronous system and 
 synchronous system.
 \end{abstract}
 
-
-
-
 % For peer review papers, you can put extra information on the cover
 % page as needed:
 % \ifCLASSOPTIONpeerreview
@@ -141,9 +119,17 @@ synchronous system.
 %
 % For peerreview papers, this IEEEtran command inserts a page break and
 % creates the second title. It will be ignored for other modes.
-\IEEEpeerreviewmaketitle
+%\IEEEpeerreviewmaketitle
 
 
+\section*{TODO}
+
+\begin{itemize}
+	\item changer CDF
+	\item Expliquer simulation plus en d\'etail (GLPK)
+	\item Donner un algo pour CRP
+	\item fix bibliography
+\end{itemize}
 
 \section{Introduction}
 
@@ -256,10 +242,10 @@ synchronous system.
 
       However, this description contains an infinite number of constraints, most of
       which are redundant. While this does not harm the precision of the
-      test, the smallest description is preferred as it can greatly
+      test, a smaller description is preferred as it can greatly
       reduce the computation time of practical feasibility tests. In Section~\ref{sct:removeRedundancy} a method to reduce the size of this set of constraints is given.
 
-  \subsection{Removing redundancy}
+  \subsection{Removing redundant constraints}
     \label{sct:removeRedundancy}
 
   In the synchronous case, is has been shown in \cite{baruah1990algorithms} that the constraints corresponding
@@ -310,7 +296,7 @@ synchronous system.
   The authors of \cite{george2009characterization} give a method to solve this system for cases in which periods are pairwise coprime.
 
   For synchronous systems in which the execution times are not known, the first DIT $t_d$
-  is our ``best guess'' at an upper limit for the end of the busy period. As it was sufficient
+  is our ``best guess'' at an upper limit on the end of the busy period. As it was sufficient
   to check the DBF test in intervals $[0, t]$ before the end of the busy period, it is
   slightly more pessimistic but still correct to use the following condition:
   \[
@@ -334,7 +320,8 @@ synchronous system.
     \ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous
     system based on the DBF test, we show why the interval $[t_d, t_d + H]$ is
     sometimes sufficient to consider and we give a numerical example.
-    Finally, in section ???, we present a simulation where we find that........
+    Finally, in section \ref{sct:expCspaceGain}, we use a simulation to quantify the feasibility
+    gain of asynchronous system in terms of volume of the C-space.
 
 \section{DIT in asynchronous systems}
   \label{sct:asyncDIT}
@@ -466,7 +453,11 @@ synchronous system.
 		However, the method used in the synchronous case to remove redundancy does not
 		apply here. A more general approach is presented in the following section.
 
-	\subsection{Removing redundancy}
+	\subsection{Removing redundant constraints}
+
+		The first two following sections contain well-known results of feasibility analysis.
+		The third one is a new result based on the FPDIT and the last section contains a general
+		but heavy method for removing constraints redundancies.
 
 		\subsubsection{Job arrival and deadline}
 			Consider an interval $[t_1, t_2]$. If $t_2$ is an instant without any job
@@ -621,7 +612,7 @@ $$
 $$
 This time, the C-space only contains 8 points: $(1, 1)$, $(2, 1)$, $(3, 1)$, $(4, 1)$, $(5, 1)$, $(1, 2)$, $(2, 2)$, $(3, 2)$.
 
-Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane.
+Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark grey region is the C-space of the synchronous system and the light grey region is the surface gain given by the asynchronous system.
 
 \begin{figure}[h]
 \begin{center}
@@ -633,21 +624,22 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane.
 
 
 \section{Experimental C-space size gain of asynchronous systems}
+\label{sct:expCspaceGain}
 	One of the advantages of asynchronous systems over synchronous systems in the
 	context of periodic tasks is that the critical instants of asynchronous systems
-	cannot be more constraining for the C-space than synchronous instants. For this
-	reason, it has long been known that modifying task offsets when possible during
-	the design of a real-time system is a useful trick to fit a heavy but periodic task set
+	are at most as constraining for the C-space as a synchronous instant. For this
+	reason, modifying task offsets when possible during
+	the design of a real-time system is a useful trick to fit a heavy periodic task set
 	into a given platform.
-	
+
 	In Fig.~\ref{fig:sizeRatio} a number of feasible asynchronous task sets of
 	three tasks without synchronous instants were generated. The size of their
-	C-space was calculated and compared with the size of the C-space of the same
-	task sets with all task offsets set to zero. In other words, this figure
+	C-space (number of valid WCET vectors) was calculated and compared with that of the same
+	task sets with all offsets set to zero. In other words, this figure
 	evaluates the feasibility gain of adding random offsets to a synchronous task
 	set. It is assumed that a more advanced strategy to assign these offsets
 	would yield a greater difference.
-	
+
 	\begin{figure}[h]
 		\begin{center}
 			\includegraphics[width=0.5\textwidth]{figs/sizeRatio.png}
@@ -656,7 +648,7 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane.
 			\label{fig:sizeRatio}
 		\end{center}
 	\end{figure}
-	
+
 	The ratio between the size of the synchronous and asynchronous C-spaces of
 	these systems roughly range from 0.95 in the worst case (high utilization, high
 	CDF) to 0.85 in the best case (low utilization, low CDF). Note that the value
@@ -664,17 +656,17 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane.
 	utilization, but less so when the CDF is lower. It is also important to note
 	that even though a 0.95 ratio may not seem much, the synchronous C-spaces of
 	the systems contain many dominated WCET vectors, and only those that are
-	pareto-optimal (i.e. non-dominated) actually matter to the system's engineer.
+	pareto-optimal (i.e. non-dominated) actually matter to the designer of the system.
 	Using the asynchronous C-space instead will relax some constraints and therefore add new acceptable
-	solutions that will dominate solutions that were previous non-dominated,
+	solutions that will dominate solutions that were previously non-dominated,
 	increasing the quality of the WCET pareto-front.
-	
-	
+
+
 \section{Conclusion}
 
-In this paper, we presented a general approach to define the C-space of a constrained periodic task set for EDF on uniform platform. Possible future works includes an extension to multiprocessor platforms or including preemption costs, in which case EDF is no longer an optimal algorithm, meaning that another algorithm could be studied.
+In this paper, we presented a general approach to define the C-space of a constrained periodic task set for EDF on uniform platform. Possible future works includes an extension to the study of systems with preemption costs or running on multiprocessor platforms, as the value of the DIT does not depend on preemptions or the number of processors.
 
-(...)
+Future works could also study the shape of the C-space and how it is affected by some factors. An interesting path would be the effect of the CDF on the number of constraints describing the C-space, as we know that in the implicit case this description is simple ($U_{tot} \leqslant 1$). While we quantified the feasibility gain by looking at the ratio between sizes of C-space, another approach would be to look at the ratio between the minimal distance of the pareto front of the C-space, which would give a lower bound of the gain given by the offsets.
 
 % conference papers do not normally have an appendix
 
@@ -712,11 +704,8 @@ In this paper, we presented a general approach to define the C-space of a constr
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
 % \nocite{*}
-\bibliographystyle{IEEEtran}
+\bibliographystyle{plain}
 \bibliography{dit-paper}
-
-
-
 
 
 % that's all folks
