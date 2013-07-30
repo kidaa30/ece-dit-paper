@@ -36,8 +36,9 @@ if __name__ == "__main__":
 		results.append(resCdf)
 	
 	pylab.figure()
+	markers = ['s','*','o','D']
 	for cnt,cdf in enumerate(CDF_BINS):
-		pylab.plot(UTIL_BINS, results[cnt], label="CDF " + str(cdf))
+		pylab.plot(UTIL_BINS, results[cnt], label="CDF " + str(cdf), marker=markers[cnt], markersize=7.0, linewidth=1.5)
 	pylab.xlabel("system utilization")
 	pylab.ylabel("size ratio")
 	pylab.title("synchronous/asynchronous C-space size (" + str(NUMBER_OF_SYSTEMS) + " systems)")
