@@ -23,11 +23,11 @@ def testSystem(tau, maxCstrcnt=1000):
 
 	if len(tau_cspace) <= maxCstrcnt:
 		twoPassStart = time.clock()
-		cspacePruned = cspace.removeRedundancy(tau_cspace)
+		cspacePruned = tau_cspace.removeRedundancy()
 		twoPassStop = time.clock()
 
 		onePassStart = time.clock()
-		cspacepruned_onePass = cspace.removeRedundancy(tau_cspace, firstPass=False)
+		cspacepruned_onePass = tau_cspace.removeRedundancy(firstPass=False)
 		onePassStop = time.clock()
 
 		print "#cstr of cspace in 2 passes ", len(cspacePruned), "(time", twoPassStop - twoPassStart, ")"

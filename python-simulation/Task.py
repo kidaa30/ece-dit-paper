@@ -58,7 +58,7 @@ class TaskSystem(object):
 		return u
 
 	def omax(self):
-		return reduce(max,[task.O for task in self.tasks])
+		return max([task.O for task in self.tasks])
 
 	def util(self):
 		return self.systemUtilization()

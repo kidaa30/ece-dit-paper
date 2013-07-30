@@ -75,7 +75,7 @@
 \newcommand{\dbf}[1]{\operatorname{dbf}(#1)}
 
 \algsetup{
-  indent=2em,
+  indent=1em,
   linenosize=\small,
   linenodelimiter=\
 }
@@ -120,7 +120,6 @@ synchronous system.
 % For peerreview papers, this IEEEtran command inserts a page break and
 % creates the second title. It will be ignored for other modes.
 %\IEEEpeerreviewmaketitle
-
 
 \section{Introduction}
 
@@ -384,22 +383,60 @@ synchronous system.
 		no FPDIT (and no other DIT than $t=0$).
 
 	\subsection{Solving the modular system}
-		Finding the FPDIT of a system is similar to finding at least one synchronous
-		instant (an instant at which all tasks release a job simultaneously) out of a
-		collection of systems with different offsets. The existence conditions can
-		directly be used to calculate the value of the FPDIT (if there is one),
-		because for a given set of $a_i$ values they are very similar to an instance
-		of the Chinese Remainder Problem (CRP), which is easily solved using Gauss's
-		CRP solving method for non-coprime $T_i$ \cite{gauss1965disquisitiones}.
+		The existence conditions of	Section~\ref{sct:FPDITexist} can directly be used to calculate the value of
+		the FPDIT (if any), because for a given set of $a_i$ values they are
+		very similar to an instance of the Chinese Remainder Problem (CRP), which is
+		easily solved using Gauss's CRP solving method for non-coprime moduli
+		\cite{gauss1965disquisitiones}.
 
 		However this is very inefficient as there are exponentially many different
-		combinations of $a_i$ values in the number of tasks. A better method for finding the FPDIT consists in splitting Gauss's
-		algorithm into two separate parts. Its global structure is simply a sum of
-		factors, each term being dependent on which $a_i$ value is chosen. A major speedup can
-		be achieved by first computing all possible terms for each task then creating all
-		possible DIT values by summing the terms in all possible ways. The number of results is still
-		exponential in the number of tasks, but the only operation that is repeated
-		exponentially many times is now a sum.
+		combinations of $a_i$ values in the number of tasks, and resolving
+		exponentially many CRP is prohibitively slow. A better method for finding the
+		FPDIT consists in splitting Gauss's algorithm into two separate parts, as
+		shown in Algorithm~\ref{alg:multiACRP} (note that $x^{-1} \; (mod \; y)$
+		means the modular inverse of $x$ in the naturals modulo $y$).
+
+		\begin{algorithm}
+			\caption{Modified Gauss Algorithm}
+			\label{alg:multiACRP}
+			\begin{algorithmic}[1]
+				\REQUIRE $A$ is a list of the sets of possible $a_i$ per task
+				\REQUIRE $H$ is the hyperperiod of the system
+
+				\STATE $sumchunks \leftarrow \text{empty list}$
+				\FORALL{$\tau_j \in \tau$}
+					\STATE $taskTerms \leftarrow \text{empty list}$
+					\STATE $Mj \leftarrow \frac{H}{T_j}$
+					\STATE $invMj \leftarrow Mj^{-1} (mod \; T_j)$
+					\FORALL{$a_i \in A(\tau_j)$}
+						\STATE $\text{append} \; (a_i \cdot Mj \cdot invMj) \; \text{to} \; taskTerms$
+					\ENDFOR
+					\STATE $\text{append} \; taskTerms \; \text{to} \; sumchunks$
+				\ENDFOR
+
+				\STATE $results \leftarrow \text{empty list}$
+				\STATE append $0$ to $results$
+				\FORALL{$\tau_j \in \tau$}
+					\STATE $newresults \leftarrow \text{empty list}$
+					\FORALL{$a_i \in A(\tau_j)$}
+						\FORALL{$r \in results$}
+							\STATE $\text{append} \; (r + sumchunks(\tau_j,i)) \; \text{to} \; newresults$
+						\ENDFOR
+					\ENDFOR
+					\STATE $results \leftarrow newresults$
+				\ENDFOR
+				\RETURN $r \; (mod \; H)$ for all $r \in results$
+			\end{algorithmic}
+		\end{algorithm}
+
+		The global structure of the original algorithm is simply a sum of factors, each term being dependent on which $a_i$ value is chosen. A major
+		speedup is achieved by first computing all possible terms for each task
+		then creating all possible DIT values by summing the terms in all possible
+		ways. The number of results is still exponential in the number of tasks, but
+		the only operation that is repeated exponentially many times is now a sum.
+		This allows us to profit from a high chance of having DITs when the deadlines
+		are close to the WCETs (and far from the periods), but with only a slight
+		increase in computation time as the sizes of the $[D_i, T_i]$ intervals grow.
 
 	\subsection{Simulation}
 	\label{sct:noFPDITsimu}
@@ -422,13 +459,17 @@ synchronous system.
 
 	\begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=0.5\textwidth]{python-simulation/plots/nofpdit_3.eps}
+		\includegraphics[width=0.5\textwidth]{python-simulation/plots/nofpdit_3.png}
 	\end{center}
 	\caption{Evolution of the existence of FPDIT with the CDF}
 	\label{fig:noFPDIT}
 	\end{figure}
 
-	We observe that the more we are close to the implicit deadline case ($CDF = 0$), the less systems have FPDIT. This is easily explained by the fact that a lower CDF means more idle instant for each task, and thus more opportunities for DITs to happen. Similarly, as all tasks must be synchronized for a DIT to happen, a higher number of tasks results in a decrease in FPDIT density.
+	We observe that the closer we are to the implicit deadline case ($CDF =
+	0$), the fewer systems have a FPDIT. This is easily explained by the fact that
+	a lower CDF means more idle instants for each task, and thus more opportunities
+	for DITs to happen. Similarly, as all tasks must be synchronized for a DIT to
+	happen, a higher number of tasks results in a decrease in FPDIT density.
 
 \section{C-space of asynchronous systems}
 \label{sct:asyncCspace}
@@ -454,12 +495,12 @@ synchronous system.
 		but heavy method for removing constraints redundancies.
 
 		\subsubsection{Job arrival and deadline}
-			Consider an interval $[t_1, t_2]$. If $t_2$ is an instant without any job
-			deadline, then by definition the value of $\dbf{t_1, t_2}$ will be equal to
+			Consider a time interval $[t_1, t_2]$. If $t_2$ is an instant without any
+			job deadline, then by definition the value of $\dbf{t_1, t_2}$ will be equal to
 			$\dbf{t_1, t_2^*}$, where $t_2^*$ is the latest deadline before $t_2$.
 
 			A similar argument can be made if $t_1$ is an instant without any job arrival
-			(and $t_1^*$ is the earliest arrival after $t_1$). We can thus restricts
+			(and $t_1^*$ is the earliest arrival after $t_1$). We can thus restrict
 			ourselves to intervals where $t_1$ is an instant with at least one job
 			arrival, and $t_2$ is an instant with at least one job deadline.
 
@@ -470,7 +511,7 @@ synchronous system.
 			\begin{figure}[h]
 				\[
 					\begin{array}{r||c|c|c|l}
-									& \text{Incomplete} & \text{Transitive} & \text{Stationary} & \cdots \\
+									& \text{Incomplete} & \text{Transient}	& \text{Stationary} & \cdots \\
 						\text{Name} & \text{period} 	& \text{period} 	& \text{period}  	& \\ \hline
 						\text{size} & O_{max} 			& H 				& H 				& \cdots \\ \hline
 						t \geqslant & 0 				& O_{max} 			& O_{max} + H 		& \cdots
@@ -482,7 +523,16 @@ synchronous system.
 				\end{center}
 			\end{figure}
 
-As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the \emph{incomplete period}, where all tasks are not in the system. Then, after $O_{max}$ time units, every tasks is in the system and the \emph{transitive period} begins. Then, after $O_{max} + H$ time units, the system is faced with the same pattern of arrival as in $O_{max}$. However, because in $O_{max} + H$ every task is in the system and in $O_{max}$ some were missing, the state of the system will be different. The \emph{stationary period} then begins. It is only after $O_{max} + 2H$ time units that the system comes back into a state in which we can be sure it has been before.
+			As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the
+			\emph{incomplete period}, where all tasks are not in the system. Then, after
+			$O_{max}$ time units, every tasks is in the system and the \emph{transient
+			period} begins. Then, after $O_{max} + H$ time units, the system is faced
+			with the same pattern of arrival as in $O_{max}$. However, because in
+			$O_{max} + H$ every task is in the system and in $O_{max}$ some were missing,
+			the state of the system will be different. The \emph{stationary period} then
+			begins. At instant $O_{max} + 2H$ it is guaranteed that the system is in the
+			exact same situation it was at instant $O_{max} + H$ (however it may be
+			possible to find earlier intervals with the same property).
 
 For this reason, as explained in \cite{leung1982complexity}, it is sufficient to check for intervals included in the interval $[O_{max}, O_{max} + 2H]$, which has an exponential length in the number of tasks.
 
@@ -648,14 +698,16 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 
 	The ratio between the size of the synchronous and asynchronous C-spaces of
 	these systems roughly range from 0.95 in the worst case (high utilization, high
-	CDF) to 0.85 in the best case (low utilization, low CDF). Note that the value
-	of the CDF has a greater influence on this ratio than the system's total
-	utilization, but less so when the CDF is lower. It is also important to note
-	that even though a 0.95 ratio may not seem much, the synchronous C-spaces of
-	the systems contain many dominated WCET vectors, and only those that are
-	in the border (i.e. non-dominated) actually matter to the designer of the system.
-	Using the asynchronous C-space instead will relax some constraints and therefore add new acceptable
-	solutions that will dominate solutions that were previously non-dominated,
+	CDF) to 0.85 in the best case (low utilization, low CDF). As calculating those
+	sizes is rather long, the number of systems used to obtain average
+	results was rather low (1000), which is the likely cause of the spikes in the
+	data. Note that the value of the CDF has a greater influence on this ratio than
+	the system's total utilization, but less so when the CDF is lower. It is also
+	important to note that even though a 0.95 ratio may not seem much, the
+	synchronous C-spaces of the systems contain many dominated WCET vectors, and
+	only those that are in the border (i.e. non-dominated) actually matter to the
+	designer of the system. Using the asynchronous C-space instead will relax some
+	constraints and therefore add new acceptable solutions that will dominate solutions that were previously non-dominated,
 	increasing the quality of the C-space border.
 
 

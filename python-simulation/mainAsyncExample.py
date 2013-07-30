@@ -25,11 +25,11 @@ def testSystem(tau):
 	print "#cstr of big cspace", len(tau_big_cspace)
 
 	smallStart = time.clock()
-	cspacePruned = cspace.removeRedundancy(tau_cspace)
+	cspacePruned = tau_cspace.removeRedundancy()
 	smallStop = time.clock()
 
 	bigStart = time.clock()
-	big_cspacepruned = cspace.removeRedundancy(tau_big_cspace)
+	big_cspacepruned = tau_big_cspace.removeRedundancy()
 	bigStop = time.clock()
 
 	print "#cstr of cspace after pruning ", len(cspacePruned), "(time", smallStop - smallStart, ")"
@@ -74,4 +74,4 @@ if __name__ == '__main__':
 			synchrTasks.append(Task.Task(0, task.C, task.D, task.T))
 		synchrTau = Task.TaskSystem(synchrTasks)
 		sizeSynchr = testSystem(synchrTau)
-		assert sizeSynchr == sizeAsynchr
+		assert sizeSynchr <= sizeAsynchr
