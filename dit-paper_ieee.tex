@@ -75,7 +75,7 @@
 \newcommand{\dbf}[1]{\operatorname{dbf}(#1)}
 
 \algsetup{
-  indent=2em,
+  indent=1em,
   linenosize=\small,
   linenodelimiter=\
 }
@@ -391,22 +391,58 @@ synchronous system.
 		no FPDIT (and no other DIT than $t=0$).
 
 	\subsection{Solving the modular system}
-		Finding the FPDIT of a system is similar to finding at least one synchronous
-		instant (an instant at which all tasks release a job simultaneously) out of a
-		collection of systems with different offsets. The existence conditions can
-		directly be used to calculate the value of the FPDIT (if there is one),
-		because for a given set of $a_i$ values they are very similar to an instance
-		of the Chinese Remainder Problem (CRP), which is easily solved using Gauss's
-		CRP solving method for non-coprime $T_i$ \cite{gauss1965disquisitiones}.
+		The existence conditions of	Section~\ref{sct:FPDITexist} can directly be used to calculate the value of
+		the FPDIT (if there is one), because for a given set of $a_i$ values they are
+		very similar to an instance of the Chinese Remainder Problem (CRP), which is
+		easily solved using Gauss's CRP solving method for non-coprime moduli
+		\cite{gauss1965disquisitiones}.
 
 		However this is very inefficient as there are exponentially many different
-		combinations of $a_i$ values in the number of tasks. A better method for finding the FPDIT consists in splitting Gauss's
-		algorithm into two separate parts. Its global structure is simply a sum of
-		factors, each term being dependent on which $a_i$ value is chosen. A major speedup can
-		be achieved by first computing all possible terms for each task then creating all
-		possible DIT values by summing the terms in all possible ways. The number of results is still
-		exponential in the number of tasks, but the only operation that is repeated
-		exponentially many times is now a sum.
+		combinations of $a_i$ values in the number of tasks, and resolving
+		exponentially many CRP is prohibitively slow. A better method for finding the
+		FPDIT consists in splitting Gauss's algorithm into two separate parts, as
+		shown in Algorithm~\ref{alg:multiACRP}. 
+		
+		\begin{algorithm}
+			\caption{Modified Gauss Algorithm}
+			\label{alg:multiACRP}
+			\begin{algorithmic}[1]
+				\REQUIRE $A$ is a list of the sets of possible $a_i$ per task
+				\REQUIRE $H$ is the hyperperiod of the system
+				
+				\STATE $sumchunks \leftarrow \text{empty list}$
+				\FORALL{$\tau_j \in \tau$}
+					\STATE $taskTerms \leftarrow \text{empty list}$ 
+					\STATE $Mj \leftarrow \frac{H}{T_j}$
+					\STATE $invMj \leftarrow Mj^{-1} (mod \; T_j)$
+					\FORALL{$a_i \in A(\tau_j)$}
+						\STATE $\text{append} \; (a_i \cdot Mj \cdot invMj) \; \text{to} \; taskTerms$
+					\ENDFOR
+					\STATE $\text{append} \; taskTerms \; \text{to} \; sumchunks$
+				\ENDFOR
+				
+				\STATE $results \leftarrow \text{empty list}$
+				\STATE append $0$ to $results$
+				\FORALL{$\tau_j \in \tau$}
+					\STATE $newresults \leftarrow \text{empty list}$
+					\FORALL{$a_i \in A(\tau_j)$}
+						\FORALL{$r \in results$}
+							\STATE $\text{append} \; (r + sumchunks(\tau_j,i)) \; \text{to} \; newresults$
+						\ENDFOR
+					\ENDFOR
+					\STATE $results \leftarrow newresults$
+				\ENDFOR
+				\RETURN $r \; (mod \; H)$ for all $r \in results$
+			\end{algorithmic}
+		\end{algorithm}
+		
+		The global structure of the original algorithm is simply a sum of factors, each term being dependent on which $a_i$ value is chosen. A major
+		speedup is achieved by first computing all possible terms for each task
+		then creating all possible DIT values by summing the terms in all possible
+		ways. The number of results is still exponential in the number of tasks, but
+		the only operation that is repeated exponentially many times is now a sum.
+		This allows us to profit from the high chance of having DITs when the CDF
+		factor is close to one, but with only a slight increase in computation time as the sizes of the $[D_i, T_i]$ intervals grow.
 
 	\subsection{Simulation}
 
