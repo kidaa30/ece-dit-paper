@@ -421,7 +421,7 @@ synchronous system.
 		\end{itemize}
 		\item Choosing the $T_i$ uniformly between 5 and 20, which also gives us the $C_i = \lfloor U_i \, T_i \rfloor$
 		\item Choosing the $O_i$ with a normal distribution of mean $T_{min}$ and standard deviation $\frac{T_{max} - T_{min}}{2}$
-		\item Choosing the $D_i$ uniformly in the interval $[T_i - \frac{T_i - C_i}{CDF}, T_i]$, where the $CDF$ is called \emph{Constrained Deadline Factor}.
+		\item Choosing the $D_i$ uniformly in the interval $[T_i - CDF(T_i - C_i), T_i]$, where $CDF$ varies between 0 and 1 and is called the \emph{Constrained Deadline Factor}. It allows us to generate systems where the deadlines are closer to the period.
 	\end{itemize}
 
 	The number of tasks and the constrained Deadline Factor is shown to have a direct influence on the density of FPDIT. Indeed, Fig~\ref{fig:noFPDIT} show the percentage of systems having no FPDIT for different values of CDF.
