@@ -124,20 +124,17 @@ synchronous system.
 \section{Introduction}
 
 	Abstract models for real-time systems often require the determination of the
-	(worst-case) execution time of a job (WCET), a value highly dependent on the
-	platform on which the application is deployed.
-
-	Feasibility conditions are sufficient (and sometimes necessary) conditions to
-	decide whether a system can be scheduled correctly, i.e. without violating any
-	timeliness constraint. This paper aims to derive feasibility conditions that do
-	not depend on the execution times.
+	worst-case execution time of a job (WCET), a value highly dependent on the
+	platform on which the application is deployed. Feasibility conditions allow to
+	decide whether a system can be scheduled correctly (i.e. without violating any
+	timeliness constraint) based on task parameters, including the WCET.
 
 	The \emph{C-space} of a real-time system is, intuitively,
 	the set of WCET values for which this system would be feasible. A
-	precise and efficient description of its C-space would allow to quickly decide
-	whether or not a system is feasible on a given platform.
+	precise and efficient description of the C-space of a system would allow to quickly decide
+	whether or not it is feasible on a given platform.
 
-    In section~\ref{sct:relatedWorks}, the description of the C-space of synchronous
+	In section~\ref{sct:relatedWorks}, the description of the C-space of synchronous
 	constrained systems, which has been mostly covered by \cite{george2009characterization}, is revisited.
 	This description is based on the DBF feasibility condition described in
 	\cite{baruah1999generalized,baruah1990algorithms} and is found with exponential complexity using
@@ -145,15 +142,15 @@ synchronous system.
 
 	In section~\ref{sct:asyncDIT}, we present an extension of the concept of DIT adapted to the
 	asynchronous case called first periodic DIT
-    ($t_d$) along with an algorithm to determine its existence and value for any system,
-    then we show the influence of some factors on its existence.
+	($t_d$) along with an algorithm to determine its existence and value for any system,
+	then we show the influence of some factors on its existence.
 
-    In Section~\ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous
-    system based on the DBF test, we show why the interval $[t_d, t_d + H]$ is
-    sometimes sufficient to consider and we give a numerical example.
+	In Section~\ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous
+	system based on the DBF test, we show why the interval $[t_d, t_d + H]$ is
+	sometimes sufficient to consider and we give a numerical example.
 
-    Finally, in section~\ref{sct:expCspaceGain}, we use a simulation to quantify the feasibility
-    gain of asynchronous system in terms of volume of the C-space.
+	Finally, in section~\ref{sct:expCspaceGain}, we use a simulation to quantify the feasibility
+	gain of asynchronous system in terms of volume of the C-space.
 
 \section{Related works}
 \label{sct:relatedWorks}
@@ -534,16 +531,25 @@ synchronous system.
 			$O_{max} + H$ every task is in the system and in $O_{max}$ some were missing,
 			the state of the system will be different. The \emph{stationary period} then
 			begins. At instant $O_{max} + 2H$ it is guaranteed that the system is in the
-			exact same situation it was at instant $O_{max} + H$ (however it may be
-			possible to find earlier intervals with the same property).
+			exact same situation it was at instant $O_{max} + H$.
 
-For this reason, as explained in \cite{leung1982complexity}, it is sufficient to check for intervals included in the interval $[O_{max}, O_{max} + 2H]$, which has an exponential length in the number of tasks.
+			For this reason, as shown by \cite{leung1982complexity}, it is sufficient (but pessimistic) to
+			check for
+			intervals included in the interval $[O_{max}, O_{max} + 2H]$, which has an exponential length
+			in the number of tasks. A better interval is given in \cite{choquet2004minimal} using the
+			notion of cyclic idle times (denoted $t_c$), which are dependent of the execution
+			time and therefore cannot be used directly. The interval is $[0, t_c + H]$ and is valid for
+			every $t_c$.
+
+			In the following section, we extend the latter interval using the previously defined notion
+			of periodic DIT, a particular case of cyclic idle times which does not depend on the execution
+			times.
 
 \subsubsection{Using the first periodic DIT}
 
-The FPDIT, if it exists, must occur in the transitive period. Indeed, it cannot occur in the incomplete period by definition ($t_d > O_{max}$) and if it occurred in the $k^{th}$ stationary period, another DIT should have occurred in the transitive period at instant $t_d - k H$ (a contradiction).
+The FPDIT, if it exists, must occur in the transient period. Indeed, it cannot occur in the incomplete period by definition ($t_d > O_{max}$) and if it occurred in the $k^{th}$ stationary period, another DIT should have occurred in the transient period at instant $t_d - k H$ (a contradiction).
 
-As the FPDIT happens when all tasks are in the system, we know that the system will arrive in the exact same state one hyperperiod later ($t_d + H$). We can thus restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$, if the FPDIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.
+As the FPDIT happens when all tasks are in the system, we know that the system will arrive in the exact same state one hyperperiod later ($t_d + H$) (A rigorous proof is given in \cite{choquet2004minimal} for any cyclic idle time). We can thus restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$ if the FPDIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.
 
 \subsubsection{Redundancy as an integer linear problem}
 
@@ -700,7 +706,7 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 
 	\begin{figure}[h]
 		\begin{center}
-			\includegraphics[width=0.5\textwidth]{figs/sizeRatio.png}
+			\includegraphics[width=0.5\textwidth]{figs/sizeratio.png}
 			\caption{C-space size ratio between asynchronous and equivalent synchronous
 			systems}
 			\label{fig:sizeRatio}
