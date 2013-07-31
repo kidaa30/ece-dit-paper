@@ -71,26 +71,16 @@ def findBusyPeriod(tau):
 		assert wOld > wNew, "findBusyPeriod: wOld <= wNew. Old:" + str(wOld) + ", new:" + str(wNew)
 		for task in tau.tasks:
 			wNew += int(math.ceil(wOld*1.0 / task.T)*task.C)
-
 	return wNew
 
-
 def dbf_synchr(tau, t):
-	return dbf(tau, 0, t)
-
+	return tau.dbf(0, t)
 
 def dbf(tau, t1, t2):
-	dbfSum = 0
-	for task in tau.tasks:
-		dbfSum += completedJobCount(task, t1, t2) * task.C
-	return dbfSum
-
+	return tau.dbf(t1, t2)
 
 def completedJobCount(task, t1, t2):
-	jobBeforeT2 = int(math.floor(1.0 * (t2 - task.O - task.D) / task.T))
-	jobBeforeT1 = int(math.ceil(1.0 * (t1 - task.O) / task.T))
-	return max(0, jobBeforeT2 - jobBeforeT1 + 1)
-
+	return task.completedJobCount(t1, t2)
 
 def dbfTest(tau, firstDIT=None):
 	# TODO : add lowerLimit (already present in all subfunctions)
