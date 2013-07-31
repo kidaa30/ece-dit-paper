@@ -8,7 +8,7 @@ import time
 if __name__ == "__main__":
 	UTIL_BINS = [f/10.0 for f in range(1,11)]
 	CDF_BINS = [e/1.0 for e in range(1,5)]
-	NUMBER_OF_SYSTEMS = 1000
+	NUMBER_OF_SYSTEMS = 10
 	results = []
 	for cdf in CDF_BINS:
 		resCdf = []
@@ -23,10 +23,10 @@ if __name__ == "__main__":
 				tSync = tau.firstSynchronousInstant()
 				if not tSync:
 					asyncCSpace = cspace.Cspace(tau)
-					asyncCSpaceSize = cspace.CspaceSize(tau,asyncCSpace)
+					asyncCSpaceSize = asyncCSpace.size(tau)
 					if asyncCSpaceSize > 0:
 						syncTau = tau.synchronousEquivalent()
-						syncCSpaceSize = cspace.CspaceSize(syncTau)
+						syncCSpaceSize = syncTau.cSpaceSize()
 						resUtil += float(syncCSpaceSize)/asyncCSpaceSize
 						trueAsyncCnt += 1
 			if(trueAsyncCnt > 0):

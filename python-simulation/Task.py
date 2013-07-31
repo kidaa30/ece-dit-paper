@@ -1,5 +1,6 @@
 import math
 import myAlgebra
+import cspace
 
 import array
 import heapq
@@ -129,6 +130,12 @@ class TaskSystem(object):
 			if not self.isSynchronous() and nextArrival + task.D <= upperLimit:
 				heapTuple = (nextArrival, task)
 				heapq.heappush(arrivals, heapTuple)
+				
+	
+	def cSpaceSize(self, acspace=None):
+		if acspace is None:
+			acspace = cspace.Cspace(self)
+		return acspace.size(self)
 
 
 import unittest
