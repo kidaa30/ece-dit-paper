@@ -32,7 +32,7 @@ def testSystem(tau, maxCstrcnt=1000):
 
 		print "#cstr of cspace in 2 passes ", len(cspacePruned), "(time", twoPassStop - twoPassStart, ")"
 		print "#cstr of cspace in 1 pass ", len(cspacepruned_onePass), "(time", onePassStop - onePassStart, ")"
-		print "comparison of sizes", cspace.CspaceSize(tau, cspacepruned_onePass), "|", cspace.CspaceSize(tau, cspacePruned)
+		print "comparison of sizes", cspacepruned_onePass.size(tau), "|", cspacePruned.size(tau)
 		return len(tau_cspace), twoPassStop - twoPassStart, onePassStop - onePassStart
 	else:
 		return None

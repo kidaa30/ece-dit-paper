@@ -102,7 +102,7 @@ class TaskSystem(object):
 	def dbf(self, t1, t2):
 		dbfSum = 0
 		for task in self.tasks:
-			dbfSum += completedJobCount(task, t1, t2) * task.C
+			dbfSum += task.completedJobCount(t1, t2) * task.C
 		return dbfSum
 
 	def dbf_intervals(self, lowerLimit, upperLimit):
@@ -146,7 +146,6 @@ class TaskSystem(object):
 		if acspace is None:
 			acspace = cspace.Cspace(self)
 		return acspace.size(self)
-
 
 import unittest
 
