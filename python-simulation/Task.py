@@ -29,6 +29,11 @@ class Task(object):
 
 	def utilization(self):
 		return (1.0*self.C)/self.T
+	
+	def completedJobCount(self, t1, t2):
+		jobBeforeT2 = int(math.floor(1.0 * (t2 - self.O - self.D) / self.T))
+		jobBeforeT1 = int(math.ceil(1.0 * (t1 - self.O) / self.T))
+		return max(0, jobBeforeT2 - jobBeforeT1 + 1)
 
 
 class TaskSystem(object):
@@ -94,6 +99,12 @@ class TaskSystem(object):
 					tSync += H
 			return tSync
 
+	def dbf(self, t1, t2):
+		dbfSum = 0
+		for task in self.tasks:
+			dbfSum += completedJobCount(task, t1, t2) * task.C
+		return dbfSum
+
 	def dbf_intervals(self, lowerLimit, upperLimit):
 		starts = {}  # will contain all tasks first arrival
 		for task in self.tasks:
@@ -130,7 +141,6 @@ class TaskSystem(object):
 			if not self.isSynchronous() and nextArrival + task.D <= upperLimit:
 				heapTuple = (nextArrival, task)
 				heapq.heappush(arrivals, heapTuple)
-				
 	
 	def cSpaceSize(self, acspace=None):
 		if acspace is None:
