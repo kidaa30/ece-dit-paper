@@ -1,6 +1,5 @@
 import math
-import myAlgebra
-import cspace
+from Helper import myAlgebra
 
 import array
 import heapq
@@ -29,7 +28,7 @@ class Task(object):
 
 	def utilization(self):
 		return (1.0*self.C)/self.T
-	
+
 	def completedJobCount(self, t1, t2):
 		jobBeforeT2 = int(math.floor(1.0 * (t2 - self.O - self.D) / self.T))
 		jobBeforeT1 = int(math.ceil(1.0 * (t1 - self.O) / self.T))
@@ -141,10 +140,10 @@ class TaskSystem(object):
 			if not self.isSynchronous() and nextArrival + task.D <= upperLimit:
 				heapTuple = (nextArrival, task)
 				heapq.heappush(arrivals, heapTuple)
-	
-	def cSpaceSize(self, acspace=None):
-		if acspace is None:
-			acspace = cspace.Cspace(self)
+
+	def cSpaceSize(self, acspace):
+		# if acspace is None:
+		# 	acspace = cspace.Cspace(self)
 		return acspace.size(self)
 
 import unittest

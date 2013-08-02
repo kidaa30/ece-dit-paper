@@ -1,7 +1,7 @@
-import Task
-import TaskGenerator
-import algorithms
-import cspace
+from Model import Task
+from Model import TaskGenerator
+from Model import algorithms
+from Model import cspace
 
 import random
 import time
@@ -35,8 +35,8 @@ def testSystem(tau):
 	print "#cstr of cspace after pruning ", len(cspacePruned), "(time", smallStop - smallStart, ")"
 	print "#cstr of big cspace after pruning ", len(big_cspacepruned), "time", bigStop - bigStart
 	# print "size :", cspace.CspaceSize(tau, cspacePruned)
-	print "comparison of sizes", cspace.CspaceSize(tau, tau_cspace), "|", cspace.CspaceSize(tau, cspacePruned)
-	return cspace.CspaceSize(tau, cspacePruned)
+	print "comparison of sizes", tau.cSpaceSize(tau_cspace), "|", tau.cSpaceSize(cspacePruned)
+	return tau.cSpaceSize(cspacePruned)
 
 
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):

@@ -1,7 +1,7 @@
-import Task
-import TaskGenerator
-import algorithms
-import cspace
+from Model import Task
+from Model import TaskGenerator
+from Model import algorithms
+from Model import cspace
 
 import pylab
 

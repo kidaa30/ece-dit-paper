@@ -15,13 +15,13 @@ class Cspace(object):
 		# cst_1 * C_1 + cst_2 * C_2 + ... + cst_n * C_n <= CST
 		# encoded as a list
 		# [cst_1, cst_2, ..., cst_n, CST]
-		
+
 		if fromList:
 			self.constraints = tau
-		else:		
+		else:
 			Omax = tau.omax()
 			isSynchronous = (Omax == 0)
-		
+
 			if upperLimit == "def":
 				firstDIT = algorithms.findFirstDIT(tau)
 				if isSynchronous:
@@ -34,14 +34,14 @@ class Cspace(object):
 					else:
 						upperLimit = Omax + 2 * tau.hyperPeriod()
 						lowerLimit = Omax
-		
+
 			# for each arrival and each deadline, create an equation
 			self.constraints = []
 			for a, d in tau.dbf_intervals(lowerLimit, upperLimit):
 				constraint = CSpaceConstraint([algorithms.completedJobCount(t, a, d) for t in tau.tasks], d - a)
 				self.constraints.append(constraint)
-		
-			
+
+
 	def __getitem__(self,key):
 		return self.constraints.__getitem__(key)
 
@@ -52,8 +52,8 @@ class Cspace(object):
 
 	def __delitem__(self,key):
 		return self.constraints.__getitem__(key)
-	
-	
+
+
 	def __len__(self):
 		return self.constraints.__len__()
 
@@ -62,10 +62,10 @@ class Cspace(object):
 # 	# cst_1 * C_1 + cst_2 * C_2 + ... + cst_n * C_n <= CST
 # 	# encoded as a list
 # 	# [cst_1, cst_2, ..., cst_n, CST]
-# 
+#
 # 	Omax = max([task.O for task in tau.tasks])
 # 	isSynchronous = (Omax == 0)
-# 
+#
 # 	if upperLimit == "def":
 # 		firstDIT = algorithms.findFirstDIT(tau)
 # 		if isSynchronous:
@@ -78,12 +78,12 @@ class Cspace(object):
 # 			else:
 # 				upperLimit = Omax + 2 * tau.hyperPeriod()
 # 				lowerLimit = Omax
-# 
+#
 # 	# for each arrival and each deadline, create an equation
 # 	constraints = []
 # 	for a, d in tau.dbf_intervals(lowerLimit, upperLimit):
 # 		constraints.append([algorithms.completedJobCount(t, a, d) for t in tau.tasks] + [d - a])
-# 
+#
 # 	return constraints
 
 
@@ -92,7 +92,7 @@ class Cspace(object):
 		# start with an empty list of cstr,
 		# add each cstr only if it is not redundant
 		# THEN test every remaining cstr against the others
-	
+
 		# first pass - filter against previous cstr
 		newCspace = []
 		if firstPass:
@@ -102,7 +102,7 @@ class Cspace(object):
 					newCspace.append(cstr)
 		else:
 			newCspace.extend(self)
-	
+
 		# second pass - filter against all cstr
 		# Note that the number of cstr should be small
 		i = 0
@@ -113,14 +113,14 @@ class Cspace(object):
 				i += 1
 			elif verbose:
 				print "\t", cstr, "was redundant against", newCspace
-	
+
 		return Cspace(newCspace,fromList=True)
-	
-	
+
+
 	def numTasks(self):
 		return len(self.constraints[0])
-	
-	
+
+
 	def calculateBoundingBox(self):
 		boxLimits = []
 		numTasks = self.numTasks()
@@ -131,7 +131,7 @@ class Cspace(object):
 			boxLimits.append(cvector[i])
 		return boxLimits
 
-	
+
 	def size(self, tau=None):
 		cValues = []
 		if tau:
@@ -140,9 +140,9 @@ class Cspace(object):
 		else:
 			boxLimits = self.calculateBoundingBox()
 			for limit in boxLimits:
-				cValues.append([c for c in range(1, limit)])		
+				cValues.append([c for c in range(1, limit)])
 		return len(filter(lambda cvector: testCVector(self, cvector), itertools.product(*cValues)))
-		
+
 
 # def CspaceSize(tau, cspace=None):
 # 	if cspace is None:
@@ -194,8 +194,8 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
 		reprStr = "+ ".join([str(a) + "*x" + str(i+1) + '\t' for i, a in enumerate(self.coeffs)])
 		reprStr += " <= " + str(self.t)
 		return reprStr
-	
-	
+
+
 	def isRedundant(self, cspace):
 		# cspace descibes constraints A X <= B
 		# cstr is another C X <= d
@@ -214,8 +214,8 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
 		reRes = re.search(r".*?Display\ statement\ at\ line\ 28.*?(?P<number>[0-9]+).*", output, re.DOTALL)
 		resultMaximization = int(reRes.group('number'))
 		return resultMaximization <= self.t
-	
-	
+
+
 	def writeRedundancyGLPSOLData(self, cspace, filename):
 		assert len(cspace) >= 1
 		assert len(cspace[0]) >= 1
@@ -224,7 +224,7 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
 			taskN = len(cspace[0])
 			f.write("param constrK := " + str(constrK) + ";\n")
 			f.write("param taskN := " + str(taskN) + ";\n")
-	
+
 			f.write("param nJob: ")
 			for i in range(taskN):
 				f.write(str(i + 1) + " ")
@@ -236,7 +236,7 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
 				if i == constrK - 1:
 					f.write(";")
 				f.write("\n")
-	
+
 			f.write("param tk := \n")
 			for i, eq in enumerate(cspace):
 				f.write(str(i + 1) + "\t")
@@ -245,7 +245,7 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
 					f.write(",\n")
 				else:
 					f.write(";\n")
-	
+
 			f.write("param nJobNew := \n")
 			for i, nJobNew in enumerate(self.coeffs):
 				f.write(str(i + 1) + "\t" + str(nJobNew))
@@ -253,13 +253,13 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
 					f.write(",\n")
 				else:
 					f.write(";\n")
-	
+
 			f.write("param tkNew := ")
 			f.write(str(self.t))
 			f.write(";\n")
 
-		
-	
+
+
 	def __getitem__(self,key):
 		return self.coeffs.__getitem__(key)
 
@@ -270,8 +270,8 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
 
 	def __delitem__(self,key):
 		return self.coeffs.__getitem__(key)
-	
-	
+
+
 	def __len__(self):
 		return self.coeffs.__len__()
 
@@ -286,12 +286,12 @@ if __name__ == '__main__':
 	print tau
 	tau_Cspace = Cspace(tau)
 	tau_Cspace_noredun = tau_Cspace.removeRedundancy()
-	
+
 	print "FINAL CSPACE"
 	for cstr in tau_Cspace_noredun:
 		print cstr
 	print len(tau_Cspace), "=>", len(tau_Cspace_noredun), "constraints left"
-	
+
  	tasks = []
  	#                      0, C, D, T
  	tasks.append(Task.Task(5, 1, 1, 3))
@@ -299,9 +299,9 @@ if __name__ == '__main__':
  	tau = Task.TaskSystem(tasks)
  	tau_Cspace = Cspace(tau)
  	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is False
- 	
+
  	# "TEST2"
- 	
+
  	tasks = []
  	tasks.append(Task.Task(0, 1, 73, 154))
  	tasks.append(Task.Task(0, 1, 381, 825))
@@ -311,7 +311,7 @@ if __name__ == '__main__':
  	assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
  	tau_Cspace_noredun = tau_Cspace.removeRedundancy()
  	assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
- 	
+
  	# RANDOM TEST
  	NUMBER_OF_SYSTEMS = 10
  	systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, 1)

@@ -2,10 +2,10 @@ import random
 import time
 import pylab
 
-import algorithms
-import cspace
-import Task
-import TaskGenerator
+from Model import algorithms
+from Model import cspace
+from Model import Task
+from Model import TaskGenerator
 
 
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, tasksCnt, verbose=False):

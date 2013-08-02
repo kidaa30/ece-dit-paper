@@ -1,10 +1,9 @@
-import myAlgebra
-import algorithms
+from Helper import myAlgebra
+
 import math
-import Task
-import TaskGenerator
 import heapq
 import array
+
 
 def newChineseRemainder(a, n):
 	'''
@@ -43,10 +42,10 @@ def removeBadChineseRemainderResults(results,a,n):
 			if len(filter(None,[r % i == aValue for aValue in a[cnt]])) == 0:
 				badResults.append(r)
 				break
-			
+
 	for badR in badResults:
 		results.remove(badR)
-		
+
 	return results
 
 def isGoodResult(res,a,n):
@@ -127,28 +126,28 @@ def newFindFirstPeriodicDIT(tau):
   		for j in range(len(intervals[i])):
   			intervals[i][j] += task.O
   			intervals[i][j] %= task.T
- 
+
 	T = [task.T for task in tau.tasks]
 	Omax = max([task.O for task in tau.tasks])
 
 	# Pre-processing for our congruence algorithm
 	primalSystem_T = myAlgebra.toPrimalPowerSystem(T)
  	allResults = newCongruencePrimalPower(primalSystem_T, intervals)
- 	
+
  	if not allResults:
  		return None
- 	
+
  	idles = zip(allResults,[False for i in range(len(allResults))])
  	heapq.heapify(idles)
  	idleTuple = heapq.heappop(idles)
  	tIdle = idleTuple[0]
- 	
+
  	while(not isGoodResult(tIdle,intervals,T)):
   		if not idles:
   			return None
   		idleTuple = heapq.heappop(idles)
   		tIdle = idleTuple[0]
- 
+
  	while(tIdle <= Omax):
  		heapq.heappush(idles,(tIdle+tau.hyperPeriod(),True))
  		idleTuple = heapq.heappop(idles)
@@ -160,7 +159,7 @@ def newFindFirstPeriodicDIT(tau):
  	  		idleTuple = heapq.heappop(idles)
  	 		tIdle = idleTuple[0]
   	 		alreadyTested = idleTuple[1]
-		
+
 	return tIdle
 
 import cProfile
@@ -172,7 +171,7 @@ def benchmark_main():
 	oldL = oldCRLoop(systems)
 	for n,o in zip(newL,oldL):
 		assert(n == o)
-	
+
 def newCRLoop(systems):
 	l = list()
 	for s in systems:
@@ -187,16 +186,16 @@ def oldCRLoop(systems):
 
 def benchmarkNewChineseRemainder():
 # 	systems = [Task.TaskSystem(TaskGenerator.generateTasks(1, 3, 554400, 2, 7, False)) for i in range(1000)]
-	
+
 	cProfile.run('benchmark_main()','CRstats')
-	
+
 	p = pstats.Stats('CRstats')
 	p.strip_dirs()
 	p.sort_stats('cumulative')
-	p.print_stats()	
+	p.print_stats()
 	p.print_callees('newFindFirstPeriodicDIT()')
 	p.print_callees('newCongruencePrimalPower()')
-	
+
 if __name__ == '__main__' :
 # 	print (array.array('i',[0])*10)
   	benchmarkNewChineseRemainder()

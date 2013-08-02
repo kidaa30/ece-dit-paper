@@ -2,10 +2,9 @@ import random
 import time
 import pylab
 
-import algorithms
-import cspace
-import Task
-import TaskGenerator
+from Model import algorithms
+from Model import Task
+from Model import TaskGenerator
 
 
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
@@ -28,7 +27,7 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 	return systemArray
 
 if __name__ == '__main__':
-	NUMBER_OF_SYSTEMS = 10000
+	NUMBER_OF_SYSTEMS = 10
 	for constrDeadlineFactor in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
 		print "CONSTR DEAD FACTOR", constrDeadlineFactor
 		systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor)

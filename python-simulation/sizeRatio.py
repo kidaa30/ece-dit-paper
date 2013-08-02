@@ -1,6 +1,6 @@
-import TaskGenerator
-import Task
-import cspace
+from Model import TaskGenerator
+from Model import Task
+from Model import cspace
 
 import pylab
 import time

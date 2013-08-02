@@ -2,7 +2,7 @@ import heapq
 import itertools
 import math
 
-import myAlgebra
+from Helper import myAlgebra
 import newChineseRemainder
 
 
