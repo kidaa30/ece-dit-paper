@@ -1,7 +1,7 @@
 # http://stackoverflow.com/questions/1061283/lt-instead-of-cmp
 
 
-class ComparableMixin:
+class ComparableMixin(object):
     def __eq__(self, other):
         return not self < other and not other < self
 

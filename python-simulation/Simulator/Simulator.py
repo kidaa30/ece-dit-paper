@@ -1,6 +1,9 @@
 from heapq import heapify, heappop, heappush
-from Helper.ComparableMixin import ComparableMixin
-from Model import Task
+from Helper import ComparableMixin
+from Model.Task import Task
+from Model.CPU import CPU
+from Scheduler import EDF
+from Model.Job import Job
 
 import Image as img
 import ImageDraw as draw
@@ -172,56 +175,3 @@ class Simulator(object):  # Global FJP only
 				else:
 					f.write(" ")
 
-
-class CPU(object, ComparableMixin):
-	def __init__(self):
-		self.job = None
-		self.preemptionTimeLeft = 0
-
-	def isIdle(self):
-		return self.job is None
-
-	def priority(self):
-		return self.job.priority
-
-	def __lt__(self, other):
-		return self.job < other.job
-
-
-class Job(object, ComparableMixin):
-	def __init__(self, task, arrival):
-		self.task = task
-		self.arrival = arrival
-		self.deadline = arrival + task.D
-		self.computation = 0
-		self.priority = None  # maintained by the simulator
-		self.preempted = False
-
-	def isFinished(self):
-		assert 0 <= self.computation <= self.task.C
-		return self.computation == self.task.C
-
-	def __lt__(self, other):
-		return other is not None and (self.priority, id(self.task)) < (other.priority, id(other.task))
-
-	def __repr__(self):
-		return "(" + ", ".join([str(self.task), str(self.arrival), str(self.deadline), str(self.computation)]) + ")"
-
-
-class SchedulerFJP(object):
-	def __init__(self, tau):
-		self.system = tau
-
-	def priority(self, job):
-		pass
-
-	def maxPriority(self, jobs):
-		return max([self.priority(job) for job in jobs])
-
-	def minPriority(self, jobs):
-		return min([self.priority(job) for job in jobs])
-
-
-class EDF(SchedulerFJP):
-	def priority(self, job):
-		return 1.0/job.deadline
