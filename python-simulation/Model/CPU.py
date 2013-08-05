@@ -11,3 +11,6 @@ class CPU(object):
 
 	def __lt__(self, other):
 		return self.job < other.job
+
+	def __str__(self):
+		return "CPU " + str(id(self)) + " containing " + str(self.job)

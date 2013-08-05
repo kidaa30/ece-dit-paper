@@ -14,11 +14,12 @@ def heappeek(heap):
 
 
 class Simulator(object):  # Global FJP only
-	def __init__(self, tau, stop, preempTime, m, schedulerName):
+	def __init__(self, tau, stop, preempTime, m, schedulerName, abortAndRestart):
 		self.system = tau
 		self.m = m
 		self.alpha = preempTime
-		self.stop = stop
+		self.AR = abortAndRestart
+		self.stop = stop + 1  # I just solved every OBOE in the world
 
 		# CPUs are accessible via either
 		# - CPUs : a list with fixed ordering
@@ -60,23 +61,26 @@ class Simulator(object):  # Global FJP only
 			if cpu.job and cpu.job.isFinished():
 				cpu.job = None
 		# check for deadline miss
-		for job in self.activeJobsHeap + filter(None, [cpu.job for cpu in self.CPUs]):
+		for activeJobsTuple in self.activeJobsHeap + filter(lambda tupl: tupl[1] is not None, [(None, cpu.job) for cpu in self.CPUs]):
+			job = activeJobsTuple[1]
+			assert job, str(self.activeJobsHeap  + filter(None, [(None, cpu.job) for cpu in self.CPUs]))
 			if self.t > job.deadline:
 				self.deadlineMisses.append((self.t, job))
 		# check for job arrival
 		for task in self.system.tasks:
-			if self.t % task.T == task.O:
+			if self.t >= task.O and self.t % task.T == task.O % task.T:
 				newJob = Job(task, self.t)
 				if verbose: print "\tarrival of job:", newJob
 				newJob.priority = self.scheduler.priority(newJob)
-				heappush(self.activeJobsHeap, newJob)
+				heappush(self.activeJobsHeap, (-1 * newJob.priority, newJob))
 		# preemptions
-		mostPrioritaryJob = heappeek(self.activeJobsHeap)
+		mostPrioritaryJob = heappeek(self.activeJobsHeap)[1] if len(self.activeJobsHeap) > 0 else None
 		lessPrioritaryCPU = heappeek(self.activeCPUsHeap)
 		existIdleCPUs = len(filter(lambda cpu: cpu.isIdle(), self.CPUs)) > 0
+		if verbose: print "\t", mostPrioritaryJob, "vs.", lessPrioritaryCPU
 		while mostPrioritaryJob and lessPrioritaryCPU and (existIdleCPUs or mostPrioritaryJob.priority > lessPrioritaryCPU.priority()):
-			if verbose: print "\tjob", mostPrioritaryJob, "preempted", lessPrioritaryCPU.job
-			preemptiveJob = heappop(self.activeJobsHeap)
+			if verbose: print "\tpremption!"
+			preemptiveJob = heappop(self.activeJobsHeap)[1]
 			preemptedCPU = heappop(self.activeCPUsHeap)
 			preemptedJob = preemptedCPU.job
 
@@ -85,7 +89,6 @@ class Simulator(object):  # Global FJP only
 			if preemptiveJob.preempted:
 				preemptiveJob.preempted = False
 				preemptedCPU.preemptionTimeLeft = self.alpha
-				# For AR Model : use preemptedJob.computation
 				self.preemptedCPUs.add(preemptedCPU)
 			else:
 				heappush(self.activeCPUsHeap, preemptedCPU)
@@ -93,11 +96,15 @@ class Simulator(object):  # Global FJP only
 			# put the preempted job back in the active job heap
 			if (preemptedJob):
 				preemptedJob.preempted = True
-				heappush(self.activeJobsHeap, preemptedJob)
+				if self.AR:
+					preemptedJob.computation = 0
+					self.drawer.drawAbort(preemptedJob.task, self.t)
+				heappush(self.activeJobsHeap, (-1 * preemptedJob.priority, preemptedJob))
 
-			mostPrioritaryJob = heappeek(self.activeJobsHeap)
+			mostPrioritaryJob = heappeek(self.activeJobsHeap)[1] if len(self.activeJobsHeap) > 1 else None
 			lessPrioritaryCPU = heappeek(self.activeCPUsHeap)
 			existIdleCPUs = len(filter(lambda cpu: cpu.isIdle(), self.CPUs)) > 0
+			if verbose: print "\t", mostPrioritaryJob, "vs.", lessPrioritaryCPU
 
 		# activate CPUs whose preemption is finished
 		self.activateCPUs()
@@ -114,27 +121,17 @@ class Simulator(object):  # Global FJP only
 				if cpu in self.preemptedCPUs:
 					print "\t(preempt)", cpu.preemptionTimeLeft
 
-	def run(self):
+	def run(self, verbose=False):
 
 		# outImg, outDraw = self.prepareImage(stop)
 		# outImg.show()
 
 		while(self.t < self.stop):
-			self.incrementTime(verbose=True)
-
-			self.drawer.drawInstant(self.t)
-
+			self.incrementTime(verbose=verbose)
 			if len(self.deadlineMisses) > 0:
 				miss = self.deadlineMisses[0]
-				print "DEADLINE MISS at", miss[0], "for job", miss[1]
+				print "DEADLINE MISS at t=", (miss[0] - 1), "for job", miss[1]
 				break
-		# with open("out", "w") as f:
-		# 	for o in self.output:
-		# 		f.write(o + "\n")
-		# 	# timeline
-		# 	for i in range(len(self.output[0])):
-		# 		if i % 10 == 0:
-		# 			f.write(".")
-		# 		else:
-		# 			f.write(" ")
+			self.drawer.drawInstant(self.t)
+		self.drawer.drawArrivalsAndDeadlines()
 
