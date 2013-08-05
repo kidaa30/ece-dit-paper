@@ -97,11 +97,15 @@ tchapeau@ulb.ac.be, paurodri@ulb.ac.be}
 \IEEEauthorblockN{Laurent George}
 \IEEEauthorblockA{ECE Paris\\
 lgeorge@ece.fr}
+\and
+\IEEEauthorblockN{Jo\e"l Goossens}
+\IEEEauthorblockA{Universit\'{e} Libre de Bruxelles\\
+joel.goossens@ulb.ac.be}
 }
 \maketitle
 
 \begin{abstract}
-Sensitivity analysis for real-time systems provides for efficient methods to determine feasibility
+Sensitivity analysis for real-time systems provides efficient methods to determine feasibility
 conditions  in the case of small changes in task parameters, such as when porting a system to a
 different platform. The C-space, presented in \cite{bini2004schedulability,george2009characterization}, describes the
 set of execution times for which a system is feasible. This paper extends previous works to
@@ -313,7 +317,7 @@ synchronous system.
   To summarize, we reduced the description of the C-space from an infinite number
   of constraints to only those where $t_1 = 0$, $t_2 \leqslant t_d$ and
   values of $t_2$ correspond to job deadlines. Note that the number of
-  constraints is still exponential in the number of tasks.
+  constraints is still exponential in the number of tasks in the worst-case ($t_d = H$).
 
 \section{DIT in asynchronous systems}
   \label{sct:asyncDIT}
@@ -553,7 +557,7 @@ As the FPDIT happens when all tasks are in the system, we know that the system w
 
 \subsubsection{Redundancy as an integer linear problem}
 
-The general problem of redundancy of a new linear constraint $C \, X \leq d$ w.r.t. a set of previous linear constraints $A \, X \leq B$ in an ILP can itself be written as the following ILP:
+The general problem of redundancy of a new linear constraint $C \, X \leq d$ w.r.t. a set of previous linear constraints $A \, X \leq B$ in an ILP can itself be written as the ILP presented in Fig.~\ref{fig:redILP}.
 
 \begin{figure}[h]
 $$z = \max C \, X$$
@@ -575,6 +579,7 @@ with
   \end{array}
 \]
 \caption{Redundancy of $CX \leq d$ w.r.t. $A X \leq B$ as an ILP}
+\label{fig:redILP}
 \end{figure}
 
 Indeed, if the maximization returns $z=d+1$, it means that there are some integer values accessible with the previous constraints that the new constraint forbids. On the other hands, if the maximization returns $z \leq d$, it means that the limitation expressed in the new constraint is already enforced by the previous constraints. Therefore $z \leq d$ is a necessary and sufficient condition of redundancy of the new constraint.
