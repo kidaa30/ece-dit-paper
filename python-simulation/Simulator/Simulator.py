@@ -4,11 +4,7 @@ from Model.Task import Task
 from Model.CPU import CPU
 from Scheduler import EDF
 from Model.Job import Job
-
-import Image as img
-import ImageDraw as draw
-import random
-
+import Drawer
 
 
 def heappeek(heap):
@@ -18,9 +14,11 @@ def heappeek(heap):
 
 
 class Simulator(object):  # Global FJP only
-	def __init__(self, tau, preempTime, m, schedulerName):
+	def __init__(self, tau, stop, preempTime, m, schedulerName):
 		self.system = tau
+		self.m = m
 		self.alpha = preempTime
+		self.stop = stop
 
 		# CPUs are accessible via either
 		# - CPUs : a list with fixed ordering
@@ -42,7 +40,7 @@ class Simulator(object):  # Global FJP only
 		self.activeJobsHeap = []
 		heapify(self.activeJobsHeap)
 
-		self.output = ["" for task in tau.tasks]
+		self.drawer = Drawer.Drawer(self, stop)
 
 	def activateCPUs(self):
 	# move active CPU from preemptedCPUs to activeCPUsHeap
@@ -57,6 +55,10 @@ class Simulator(object):  # Global FJP only
 	def incrementTime(self, verbose=True):
 		self.t += 1
 		if verbose: print "t=", self.t
+		# remove finished job from CPUs
+		for cpu in self.activeCPUsHeap:
+			if cpu.job and cpu.job.isFinished():
+				cpu.job = None
 		# check for deadline miss
 		for job in self.activeJobsHeap + filter(None, [cpu.job for cpu in self.CPUs]):
 			if self.t > job.deadline:
@@ -103,10 +105,6 @@ class Simulator(object):  # Global FJP only
 		for cpu in self.activeCPUsHeap:
 			if cpu.job:
 				cpu.job.computation += 1
-		# remove finished job from CPUs
-		for cpu in self.activeCPUsHeap:
-			if cpu.job and cpu.job.isFinished():
-				cpu.job = None
 		# compute preemptions
 		for cpu in self.preemptedCPUs:
 			cpu.preemptionTimeLeft -= 1
@@ -116,62 +114,27 @@ class Simulator(object):  # Global FJP only
 				if cpu in self.preemptedCPUs:
 					print "\t(preempt)", cpu.preemptionTimeLeft
 
-	def prepareImage(self, stop):
-		instantWidth = 20
-		widthMargin = 20
-		taskHeight = 100
-		heightMargin = 20
-		width = stop*instantWidth + 2 * widthMargin
-		height = len(self.system.tasks) * taskHeight + 2 * heightMargin
-		outImg = img.new("RGB", (width, height), "white")
-
-		outDraw = draw.Draw(outImg)
-		outDraw.line([widthMargin, height - heightMargin, widthMargin + instantWidth * stop, height - heightMargin], fill="black", width=3)
-		# grid
-		# - horizontal lines for tasks
-		for i, task in enumerate(self.system.tasks):
-			outDraw.line([widthMargin, height - heightMargin - (i + 1) * taskHeight, widthMargin + instantWidth * stop, height - heightMargin - (i + 1) * taskHeight], fill=128)
-		# - vertical liens for instants
-		for i in range(stop):
-			outDraw.line([widthMargin + i * instantWidth, heightMargin, widthMargin + i * instantWidth, height - heightMargin], fill=64)
-		return outImg, outDraw
-
-	def run(self, stop):
+	def run(self):
 
 		# outImg, outDraw = self.prepareImage(stop)
 		# outImg.show()
 
-		# # 1 random color per cpu
-		# colors = ["rgb(" + ",".join([random.randint(255) for i in range(3)]) + ")" for j in range(m)]
+		while(self.t < self.stop):
+			self.incrementTime(verbose=True)
 
-		while(self.t < stop):
-			self.incrementTime(verbose=False)
-
-			# write output
-			for i, task in enumerate(self.system.tasks):
-				foundTask = False
-				for j, cpu in enumerate(self.CPUs):
-					if cpu.job and cpu.job.task is task:
-						foundTask = True
-						if cpu in self.preemptedCPUs:
-							self.output[i] += 'P'
-						else:
-							self.output[i] += str(j)
-				if not foundTask:
-					self.output[i] += " "
-				assert len(self.output[i]) == self.t + 1
+			self.drawer.drawInstant(self.t)
 
 			if len(self.deadlineMisses) > 0:
 				miss = self.deadlineMisses[0]
 				print "DEADLINE MISS at", miss[0], "for job", miss[1]
 				break
-		with open("out", "w") as f:
-			for o in self.output:
-				f.write(o + "\n")
-			# timeline
-			for i in range(len(self.output[0])):
-				if i % 10 == 0:
-					f.write(".")
-				else:
-					f.write(" ")
+		# with open("out", "w") as f:
+		# 	for o in self.output:
+		# 		f.write(o + "\n")
+		# 	# timeline
+		# 	for i in range(len(self.output[0])):
+		# 		if i % 10 == 0:
+		# 			f.write(".")
+		# 		else:
+		# 			f.write(" ")
 
