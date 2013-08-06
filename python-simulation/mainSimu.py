@@ -34,12 +34,15 @@ tasks = []
 # tasks.append(Task.Task(3, 4, 10, 10))
 # tau = Task.TaskSystem(tasks)
 
-# # exemple from Wong/Burns paper (Improved Priority Assignment for the Abort-and-Restart (AR) Model)
-# tasks.append(Task.Task(0, 4, 15, 15))
-# tasks.append(Task.Task(3, 3, 11, 11))
-# tau = Task.TaskSystem(tasks)
+# exemple from Wong/Burns paper (Improved Priority Assignment for the Abort-and-Restart (AR) Model)
+tasks.append(Task.Task(0, 6, 60, 60))
+tasks.append(Task.Task(0, 4, 32, 32))
+tasks.append(Task.Task(0, 3, 25, 25))
+tasks.append(Task.Task(0, 5, 50, 50))
+tasks.append(Task.Task(0, 2, 100, 100))
+tau = Task.TaskSystem(tasks)
 
-tau = generateSystemArray(1, 1)[0]
+# tau = generateSystemArray(1, 1)[0]
 
 # exemple of non-optimality of EDF with preemptions
 # tasks.append(Task.Task(0, 3, 6, 6))
@@ -64,18 +67,21 @@ print "stop", stop
 
 # scheduler = Scheduler.EDF(tau)
 # scheduler = Scheduler.FixedPriority(tau, [2, 1])
-scheduler = Scheduler.ExhaustiveFixedPriority(tau, 2, 1, False)
+# !!! exhaustive: set the parameters right !!!
+scheduler = Scheduler.ExhaustiveFixedPriority(tau, 0, 1, True)
 if scheduler.foundFeasible:
 	print "found feasible priorities :", scheduler.prioArray
 else:
 	print "No feasible priorities found ! This will end badly"
 
-simu = Simulator.Simulator(tau, stop=stop, preempTime=2, m=1, scheduler=scheduler, abortAndRestart=False)
+simu = Simulator.Simulator(tau, stop=stop, preempTime=0, m=1, scheduler=scheduler, abortAndRestart=True)
 
 try:
 	simu.run(stopAtDeadlineMiss=True, verbose=False)
 	if simu.success():
 		print "No deadline misses."
+	else:
+		print "Deadline miss at t=", simu.t
 except AssertionError:
 	print "Something went wrong ! Close the image preview to see the callback"
 	simu.drawer.outImg.show()
