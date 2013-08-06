@@ -1,3 +1,5 @@
+from Model import algorithms
+
 import Image as img
 import ImageFont
 import ImageDraw as draw
@@ -34,15 +36,16 @@ class Drawer(object):
 			if i % 5 == 0:
 				self.outDraw.text((x, y), str(i), font=self.fontRoboto, fill="black")
 		# special timeline markers - Omax + k H
-		omax = simu.system.omax()
 		H = simu.system.hyperPeriod()
 		y = self.height - self.heightMargin
-		i = 0
-		while omax + i * H < stop:
-			x = self.widthMargin + (omax + i * H) * self.instantWidth
-			self.outDraw.line([x, self.heightMargin, x, y], fill="black")
-			self.outDraw.text((x, y + 10), "Omax + " + str(i) + " H", font=self.fontRoboto, fill="black")
-			i += 1
+		specialDict = {'omax': simu.system.omax(), 'fpdit': algorithms.findFirstDIT(simu.system)}
+		for specialName, specialTime in specialDict.items():
+			i = 0
+			while specialTime and specialTime + i * H < stop:
+				x = self.widthMargin + (specialTime + i * H) * self.instantWidth
+				self.outDraw.line([x, self.heightMargin, x, y], fill="black")
+				self.outDraw.text((x, y + 10), specialName + " + " + str(i) + " H", font=self.fontRoboto, fill="black")
+				i += 1
 
 	def drawOneExecutionUnit(self, taskNbr, CPUnbr, t, preemp):
 		color = self.colors[CPUnbr]
