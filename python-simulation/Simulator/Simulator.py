@@ -1,7 +1,8 @@
 from heapq import heapify, heappop, heappush
-from Helper import ComparableMixin
+
 from Model.Task import Task
 from Model.CPU import CPU
+from Model import algorithms
 from Scheduler import EDF
 from Scheduler import RM
 from Model.Job import Job
@@ -15,11 +16,18 @@ def heappeek(heap):
 
 
 class Simulator(object):  # Global FJP only
-	def __init__(self, tau, stop, preempTime, m, schedulerName, abortAndRestart):
+	def __init__(self, tau, stop, preempTime, m, scheduler, abortAndRestart):
+		"""stop can be set to None for default value"""
 		self.system = tau
 		self.m = m
 		self.alpha = preempTime
 		self.AR = abortAndRestart
+		if stop is None:
+			fpdit = algorithms.findFirstDIT(tau)
+			if fpdit:
+				stop = fpdit + tau.hyperPeriod()
+			else:
+				stop = tau.omax() + tau.hyperPeriod()
 		self.stop = stop + 1  # I just solved every OBOE in the world
 
 		# CPUs are accessible via either
@@ -32,12 +40,7 @@ class Simulator(object):  # Global FJP only
 			heappush(self.activeCPUsHeap, cpu)
 		self.preemptedCPUs = set()
 
-		if schedulerName == "EDF":
-			self.scheduler = EDF(tau)
-		elif schedulerName == "RM":
-			self.scheduler = RM(tau)
-		else:
-			raise ValueError("schedulerName " + str(schedulerName) + " is unknown")
+		self.scheduler = scheduler
 
 		self.t = -1
 		self.deadlineMisses = []
@@ -68,7 +71,8 @@ class Simulator(object):  # Global FJP only
 		for activeJobsTuple in self.activeJobsHeap + filter(lambda tupl: tupl[1] is not None, [(None, cpu.job) for cpu in self.CPUs]):
 			job = activeJobsTuple[1]
 			assert job, str(self.activeJobsHeap  + filter(lambda tupl: tupl[1] is not None, [(None, cpu.job) for cpu in self.CPUs]))
-			if self.t > job.deadline:
+			if self.t >= job.deadline:
+				assert job.computation < job.task.C
 				self.deadlineMisses.append((self.t, job))
 		# check for job arrival
 		for task in self.system.tasks:
@@ -107,14 +111,13 @@ class Simulator(object):  # Global FJP only
 
 			mostPrioritaryJob = heappeek(self.activeJobsHeap)[1] if len(self.activeJobsHeap) > 0 else None
 			lessPrioritaryCPU = heappeek(self.activeCPUsHeap)
-			if verbose: print "\t", mostPrioritaryJob, "(", str(mostPrioritaryJob.priority if mostPrioritaryJob else None), ") vs.", lessPrioritaryCPU, "(", str(lessPrioritaryCPU.priority()), ")"
+			if verbose: print "\t", mostPrioritaryJob, "(", str(mostPrioritaryJob.priority if mostPrioritaryJob else None), ") vs.", lessPrioritaryCPU, "(", str(lessPrioritaryCPU.priority() if lessPrioritaryCPU else None), ")"
 
 		# activate CPUs whose preemption is finished
 		self.activateCPUs()
 		# compute tasks in active CPU
 		for cpu in self.activeCPUsHeap:
 			if cpu.job:
-				print "\t", cpu, "computes one unit"
 				cpu.job.computation += 1
 		# compute preemptions
 		for cpu in self.preemptedCPUs:
@@ -125,13 +128,20 @@ class Simulator(object):  # Global FJP only
 				if cpu in self.preemptedCPUs:
 					print "\t(preempt)", cpu.preemptionTimeLeft, "left"
 
-	def run(self, verbose=False):
+	def run(self, stopAtDeadlineMiss=True, verbose=False):
 		while(self.t < self.stop):
 			self.incrementTime(verbose=verbose)
+
+			for miss in self.deadlineMisses:
+				if verbose: print "DEADLINE MISS at t=", (miss[0] - 1), "for job", miss[1]
 			if len(self.deadlineMisses) > 0:
-				miss = self.deadlineMisses[0]
-				print "DEADLINE MISS at t=", (miss[0] - 1), "for job", miss[1]
-				break
-			self.drawer.drawInstant(self.t)
+				if stopAtDeadlineMiss:
+					break
+			else:
+				self.deadlineMisses = []
+				self.drawer.drawInstant(self.t)
 		self.drawer.drawArrivalsAndDeadlines()
 
+	def success(self):
+		assert self.t >= 0, "Simulator.success: call run() first"
+		return self.t == self.stop

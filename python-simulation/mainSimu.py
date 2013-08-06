@@ -2,6 +2,7 @@ from Model import Task
 from Model import TaskGenerator
 from Model import algorithms
 from Simulator import Simulator
+from Simulator import Scheduler
 
 import random
 
@@ -25,7 +26,8 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 	return systemArray
 
 
-# tasks = []
+tasks = []
+
 # # exemple from Patrick Meumeu's thesis pp. 128 (Fig. 4.13)
 # tasks.append(Task.Task(0, 3, 7, 15))
 # tasks.append(Task.Task(5, 2, 6, 6))
@@ -38,6 +40,11 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 # tau = Task.TaskSystem(tasks)
 
 tau = generateSystemArray(1, 1)[0]
+
+# exemple of non-optimality of EDF with preemptions
+# tasks.append(Task.Task(0, 3, 6, 6))
+# tasks.append(Task.Task(1, 2, 4, 4))
+# tau = Task.TaskSystem(tasks)
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -55,10 +62,20 @@ if fpdit:
 
 print "stop", stop
 
-simu = Simulator.Simulator(tau, stop=stop, preempTime=1, m=3, schedulerName="EDF", abortAndRestart=False)
+# scheduler = Scheduler.EDF(tau)
+# scheduler = Scheduler.FixedPriority(tau, [2, 1])
+scheduler = Scheduler.ExhaustiveFixedPriority(tau, 2, 1, False)
+if scheduler.foundFeasible:
+	print "found feasible priorities :", scheduler.prioArray
+else:
+	print "No feasible priorities found ! This will end badly"
+
+simu = Simulator.Simulator(tau, stop=stop, preempTime=2, m=1, scheduler=scheduler, abortAndRestart=False)
 
 try:
-	simu.run(verbose=True)
+	simu.run(stopAtDeadlineMiss=True, verbose=False)
+	if simu.success():
+		print "No deadline misses."
 except AssertionError:
 	print "Something went wrong ! Close the image preview to see the callback"
 	simu.drawer.outImg.show()
