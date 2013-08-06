@@ -8,7 +8,7 @@ import re
 class Drawer(object):
 	def __init__(self, simu, stop):
 		self.simu = simu
-		self.instantWidth = 20
+		self.instantWidth = 15
 		self.widthMargin = 20
 		self.taskHeight = 50
 		self.heightMargin = 20
@@ -17,21 +17,32 @@ class Drawer(object):
 		self.colors = ["rgb(" + ",".join([str(random.randint(0, 255)) for i in range(3)]) + ")" for j in range(self.simu.m)] + ["black"]  # black: preemption
 
 		self.outImg = img.new("RGB", (self.width, self.height), "white")
-		self.fontRoboto = ImageFont.truetype("Simulator/Roboto-Thin.ttf", 9)
+		self.fontRoboto = ImageFont.truetype("res/Roboto-Medium.ttf", 9)
 		self.outDraw = draw.Draw(self.outImg)
 
 		self.outDraw.line([self.widthMargin, self.height - self.heightMargin, self.widthMargin + self.instantWidth * stop, self.height - self.heightMargin], fill="black")
 		# grid
 		# - horizontal lines to separate tasks
 		for i, task in enumerate(simu.system.tasks):
-			self.outDraw.line([self.widthMargin, self.height - self.heightMargin - (i + 1) * self.taskHeight, self.widthMargin + self.instantWidth * stop, self.height - self.heightMargin - (i + 1) * self.taskHeight], fill=128)
+			self.outDraw.line([self.widthMargin, self.height - self.heightMargin - (i + 1) * self.taskHeight, self.widthMargin + self.instantWidth * stop, self.height - self.heightMargin - (i + 1) * self.taskHeight], fill="black")
 		# - vertical lines to separate instants
 		for i in range(stop):
 			x = self.widthMargin + i * self.instantWidth
 			y = self.height - self.heightMargin
-			self.outDraw.line([x, self.heightMargin, x, y], fill=64)
+			self.outDraw.line([x, self.heightMargin, x, y], fill="gray")
+			# timeline markers
 			if i % 5 == 0:
 				self.outDraw.text((x, y), str(i), font=self.fontRoboto, fill="black")
+		# special timeline markers - Omax + k H
+		omax = simu.system.omax()
+		H = simu.system.hyperPeriod()
+		y = self.height - self.heightMargin
+		i = 0
+		while omax + i * H < stop:
+			x = self.widthMargin + (omax + i * H) * self.instantWidth
+			self.outDraw.line([x, self.heightMargin, x, y], fill="black")
+			self.outDraw.text((x, y + 10), "Omax + " + str(i) + " H", font=self.fontRoboto, fill="black")
+			i += 1
 
 	def drawOneExecutionUnit(self, taskNbr, CPUnbr, t, preemp):
 		color = self.colors[CPUnbr]

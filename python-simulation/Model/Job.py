@@ -8,7 +8,7 @@ class Job(object):
 		self.preempted = False
 
 	def isFinished(self):
-		assert 0 <= self.computation <= self.task.C
+		assert 0 <= self.computation <= self.task.C, str(self)
 		return self.computation == self.task.C
 
 	def __lt__(self, other):

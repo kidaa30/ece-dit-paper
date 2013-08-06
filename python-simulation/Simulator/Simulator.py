@@ -3,6 +3,7 @@ from Helper import ComparableMixin
 from Model.Task import Task
 from Model.CPU import CPU
 from Scheduler import EDF
+from Scheduler import RM
 from Model.Job import Job
 import Drawer
 
@@ -33,6 +34,8 @@ class Simulator(object):  # Global FJP only
 
 		if schedulerName == "EDF":
 			self.scheduler = EDF(tau)
+		elif schedulerName == "RM":
+			self.scheduler = RM(tau)
 		else:
 			raise ValueError("schedulerName " + str(schedulerName) + " is unknown")
 
@@ -60,10 +63,11 @@ class Simulator(object):  # Global FJP only
 		for cpu in self.activeCPUsHeap:
 			if cpu.job and cpu.job.isFinished():
 				cpu.job = None
+		heapify(self.activeCPUsHeap)  # need to re-heapify after update
 		# check for deadline miss
 		for activeJobsTuple in self.activeJobsHeap + filter(lambda tupl: tupl[1] is not None, [(None, cpu.job) for cpu in self.CPUs]):
 			job = activeJobsTuple[1]
-			assert job, str(self.activeJobsHeap  + filter(None, [(None, cpu.job) for cpu in self.CPUs]))
+			assert job, str(self.activeJobsHeap  + filter(lambda tupl: tupl[1] is not None, [(None, cpu.job) for cpu in self.CPUs]))
 			if self.t > job.deadline:
 				self.deadlineMisses.append((self.t, job))
 		# check for job arrival
@@ -76,9 +80,9 @@ class Simulator(object):  # Global FJP only
 		# preemptions
 		mostPrioritaryJob = heappeek(self.activeJobsHeap)[1] if len(self.activeJobsHeap) > 0 else None
 		lessPrioritaryCPU = heappeek(self.activeCPUsHeap)
-		existIdleCPUs = len(filter(lambda cpu: cpu.isIdle(), self.CPUs)) > 0
-		if verbose: print "\t", mostPrioritaryJob, "vs.", lessPrioritaryCPU
-		while mostPrioritaryJob and lessPrioritaryCPU and (existIdleCPUs or mostPrioritaryJob.priority > lessPrioritaryCPU.priority()):
+		if verbose: print "\tactiveCPUsHeap (", ",".join([str(cpu) for cpu in self.activeCPUsHeap]), ")"
+		if verbose: print "\t", mostPrioritaryJob, "(", str(mostPrioritaryJob.priority if mostPrioritaryJob else None), ") vs.", lessPrioritaryCPU, "(", str(lessPrioritaryCPU.priority() if lessPrioritaryCPU else None), ")"
+		while mostPrioritaryJob and lessPrioritaryCPU and mostPrioritaryJob.priority > lessPrioritaryCPU.priority():
 			if verbose: print "\tpremption!"
 			preemptiveJob = heappop(self.activeJobsHeap)[1]
 			preemptedCPU = heappop(self.activeCPUsHeap)
@@ -94,38 +98,34 @@ class Simulator(object):  # Global FJP only
 				heappush(self.activeCPUsHeap, preemptedCPU)
 
 			# put the preempted job back in the active job heap
-			if (preemptedJob):
+			if preemptedJob:
 				preemptedJob.preempted = True
 				if self.AR:
 					preemptedJob.computation = 0
 					self.drawer.drawAbort(preemptedJob.task, self.t)
 				heappush(self.activeJobsHeap, (-1 * preemptedJob.priority, preemptedJob))
 
-			mostPrioritaryJob = heappeek(self.activeJobsHeap)[1] if len(self.activeJobsHeap) > 1 else None
+			mostPrioritaryJob = heappeek(self.activeJobsHeap)[1] if len(self.activeJobsHeap) > 0 else None
 			lessPrioritaryCPU = heappeek(self.activeCPUsHeap)
-			existIdleCPUs = len(filter(lambda cpu: cpu.isIdle(), self.CPUs)) > 0
-			if verbose: print "\t", mostPrioritaryJob, "vs.", lessPrioritaryCPU
+			if verbose: print "\t", mostPrioritaryJob, "(", str(mostPrioritaryJob.priority if mostPrioritaryJob else None), ") vs.", lessPrioritaryCPU, "(", str(lessPrioritaryCPU.priority()), ")"
 
 		# activate CPUs whose preemption is finished
 		self.activateCPUs()
 		# compute tasks in active CPU
 		for cpu in self.activeCPUsHeap:
 			if cpu.job:
+				print "\t", cpu, "computes one unit"
 				cpu.job.computation += 1
 		# compute preemptions
 		for cpu in self.preemptedCPUs:
 			cpu.preemptionTimeLeft -= 1
 		if verbose:
 			for i, cpu in enumerate(self.CPUs):
-				print "\tCPU", i, ":", cpu.job
+				print "\t", i, cpu
 				if cpu in self.preemptedCPUs:
-					print "\t(preempt)", cpu.preemptionTimeLeft
+					print "\t(preempt)", cpu.preemptionTimeLeft, "left"
 
 	def run(self, verbose=False):
-
-		# outImg, outDraw = self.prepareImage(stop)
-		# outImg.show()
-
 		while(self.t < self.stop):
 			self.incrementTime(verbose=verbose)
 			if len(self.deadlineMisses) > 0:
