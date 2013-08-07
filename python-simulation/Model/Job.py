@@ -4,7 +4,7 @@ class Job(object):
 		self.arrival = arrival
 		self.deadline = arrival + task.D
 		self.computation = 0
-		self.priority = None  # maintained by the simulator
+		self.priority = None  # maintained by the Scheduler Class
 		self.preempted = False
 
 	def isFinished(self):
