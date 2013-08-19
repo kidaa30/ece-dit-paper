@@ -1,7 +1,7 @@
 import time
 import random
 
-import pylab # http://matplotlib.org/
+import pylab  # http://matplotlib.org/
 
 import Task
 import TaskGenerator
@@ -26,6 +26,7 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 					print "\t", task
 		systemArray.append(Task.TaskSystem(tasks))
 	return systemArray
+
 
 def test(numberOfSystems, constrDeadlineFactor):
 	systemArray = generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False)

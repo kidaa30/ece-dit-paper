@@ -21,7 +21,18 @@ class ChooseKeepEDF(SchedulerDP):
 		return len(filter(lambda cpu: cpu.job is None, simu.CPUs))
 
 	def earliestPreempArrival(self, job, simu):
-		raise NotImplementedError, "This is wrinkling my brain"
+		# return earliest time at which job will be preempted if it is chosen now
+		t = simu.t
+		# if job is selected, it will have priority jobP and end at jobEnd
+		jobP = 1.0/(job.deadline - simu.alpha)
+		# test against priority of next arrival of each task
+		candidate = None
+		for task in simu.system.tasks:
+			nextArrival = t + (task.T - t % task.T)
+			prio = 1.0/(nextArrival + task.D)
+			if candidate is None or (prio > jobP and nextArrival < candidate):
+				candidate = nextArrival
+		return candidate
 
 	def finishTime(self, job, simu):
 		finish = simu.t
@@ -35,22 +46,22 @@ class ChooseKeepEDF(SchedulerDP):
 			epa = {}  # earliest preemptive arrival
 			finishTime = {}
 			# compute epa and finishTime
-			waitingJobs = simu.allCurentJobs(busyJobs=False)
+			waitingJobs = simu.allCurrentJobs(busyJobs=False)
 			if job not in waitingJobs:
 				# busy job (while there are idle CPU), maximal priority
 				return float('inf')
 			for job in waitingJobs:
-				epa[job] = self.earliestPreempArrival(job)
-				finishTime[job] = self.finishTime(job)
+				epa[job] = self.earliestPreempArrival(job, simu)
+				finishTime[job] = self.finishTime(job, simu)
 			# if there are easy jobs (jobs which can be computed entirely without being
 			# preempted), there is surely no need to have idle times
-			easyJobs = filter(lambda job: finishtime[job] <= epa[job], waitingJobs)
+			easyJobs = filter(lambda job: epa[job] and finishTime[job] <= epa[job], waitingJobs)
 			if len(easyJobs) > 0:
 				self.idlePriority = None
 				if job in easyJobs:
-					return 1.0/(job.deadline - simu.t)
+					return 1.0/(job.deadline)
 				else:
-					return 1.0/(job.deadline - simu.t + simu.alpha)  # I'm not sure this works
+					return 1.0/(job.deadline + simu.alpha)  # I'm not sure this works
 			else:
 				self.idlePriority = 0
 				return epa[job] - simu.alpha
