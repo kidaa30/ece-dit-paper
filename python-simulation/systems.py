@@ -63,3 +63,10 @@ tasks.append(Task.Task(0, 6, 9, 11))
 tasks.append(Task.Task(0, 2, 11, 11))
 tasks.append(Task.Task(3, 2, 2, 11))
 PreemptNoIdle = Task.TaskSystem(tasks)
+
+# # Must Idle (preemptTime = 2)
+tasks = []
+tasks.append(Task.Task(0, 3, 8, 8))
+tasks.append(Task.Task(0, 3, 5, 8))
+tasks.append(Task.Task(1, 1, 1, 8))
+MustIdle = Task.TaskSystem(tasks)
