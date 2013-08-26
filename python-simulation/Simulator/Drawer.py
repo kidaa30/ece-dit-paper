@@ -10,7 +10,7 @@ import re
 class Drawer(object):
 	def __init__(self, simu, stop):
 		self.simu = simu
-		self.instantWidth = 15
+		self.instantWidth = 20
 		self.widthMargin = 20
 		self.taskHeight = 50
 		self.heightMargin = 20

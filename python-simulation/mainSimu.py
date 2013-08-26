@@ -4,8 +4,7 @@ from Simulator import Scheduler
 import systems
 
 # tau = systems.generateSystemArray(1, 1)[0]
-# tau = systems.SpotlightEDFNonOptimal
-tau = systems.MustIdle
+tau = systems.DPOnly2
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -32,7 +31,7 @@ scheduler = Scheduler.ChooseKeepEDF(tau, prioOffset=10)
 # else:
 # 	print "No feasible priorities found ! This will end badly"
 
-simu = Simulator.Simulator(tau, stop=stop, preempTime=2, m=1, scheduler=scheduler, abortAndRestart=False)
+simu = Simulator.Simulator(tau, stop=stop, preempTime=1, m=1, scheduler=scheduler, abortAndRestart=False)
 
 try:
 	simu.run(stopAtDeadlineMiss=True, verbose=True)
