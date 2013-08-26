@@ -6,6 +6,7 @@ import itertools
 class SchedulerDP(object):
 	def __init__(self, tau):
 		self.simu = None
+		self.idlePriority = None  # leave to None for non-idling
 		pass
 
 	def priority(self, job, simu):
@@ -15,7 +16,6 @@ class SchedulerDP(object):
 class ChooseKeepEDF(SchedulerDP):
 	def __init__(self, tau):
 		self.spotlight = SpotlightEDF(tau)
-		self.idlePriority = None
 
 	def idleCPUsCount(self, simu):
 		return len(filter(lambda cpu: cpu.job is None, simu.CPUs))
@@ -44,11 +44,10 @@ class ChooseKeepEDF(SchedulerDP):
 	def priority(self, job, simu):
 		if self.idleCPUsCount(simu) > 0:
 			epa = {}  # earliest preemptive arrival
-			finishTime = {}
-			# compute epa and finishTime
+			finishTime = {}  # t + remaining time of job
 			waitingJobs = simu.allCurrentJobs(busyJobs=False)
 			if job not in waitingJobs:
-				# busy job (while there are idle CPU), maximal priority
+				# job in a CPU (while others are idle), maximal priority
 				return float('inf')
 			for job in waitingJobs:
 				epa[job] = self.earliestPreempArrival(job, simu)
