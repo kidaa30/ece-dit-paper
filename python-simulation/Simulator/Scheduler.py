@@ -1,12 +1,16 @@
 import Simulator
 
 import itertools
+import pdb
 
 
 class SchedulerDP(object):
 	def __init__(self, tau):
 		self.simu = None
-		self.idlePriority = None  # leave to None for non-idling
+		pass
+
+	def initInstant(self):
+		# called at the start of each instant (when time is incremented)
 		pass
 
 	def priority(self, job, simu):
@@ -14,8 +18,10 @@ class SchedulerDP(object):
 
 
 class ChooseKeepEDF(SchedulerDP):
-	def __init__(self, tau):
-		self.spotlight = SpotlightEDF(tau)
+	def __init__(self, tau, prioOffset=0):
+		super(ChooseKeepEDF, self).__init__(tau)
+		self.spotlight = SpotlightEDF(tau, prioOffset=prioOffset)
+		self.prioOffset = prioOffset
 
 	def idleCPUsCount(self, simu):
 		return len(filter(lambda cpu: cpu.job is None, simu.CPUs))
@@ -23,14 +29,16 @@ class ChooseKeepEDF(SchedulerDP):
 	def earliestPreempArrival(self, job, simu):
 		# return earliest time at which job will be preempted if it is chosen now
 		t = simu.t
-		# if job is selected, it will have priority jobP and end at jobEnd
-		jobP = 1.0/(job.deadline - simu.alpha)
+		jobP = 1.0/(self.prioOffset + job.deadline - simu.alpha)
 		# test against priority of next arrival of each task
 		candidate = None
 		for task in simu.system.tasks:
-			nextArrival = t + (task.T - t % task.T)
-			prio = 1.0/(nextArrival + task.D)
-			if candidate is None or (prio > jobP and nextArrival < candidate):
+			if t < task.O:
+				nextArrival = task.O
+			else:
+				nextArrival = (t - task.O) + (task.T - (t - task.O) % task.T)
+			prio = 1.0/(self.prioOffset + nextArrival + task.D)
+			if candidate is None or (prio >= jobP and nextArrival < candidate):
 				candidate = nextArrival
 		return candidate
 
@@ -43,32 +51,29 @@ class ChooseKeepEDF(SchedulerDP):
 
 	def priority(self, job, simu):
 		if self.idleCPUsCount(simu) > 0:
-			epa = {}  # earliest preemptive arrival
-			finishTime = {}  # t + remaining time of job
-			waitingJobs = simu.allCurrentJobs(busyJobs=False)
-			if job not in waitingJobs:
-				# job in a CPU (while others are idle), maximal priority
-				return float('inf')
-			for job in waitingJobs:
-				epa[job] = self.earliestPreempArrival(job, simu)
-				finishTime[job] = self.finishTime(job, simu)
-			# if there are easy jobs (jobs which can be computed entirely without being
-			# preempted), there is surely no need to have idle times
-			easyJobs = filter(lambda job: epa[job] and finishTime[job] <= epa[job], waitingJobs)
-			if len(easyJobs) > 0:
-				self.idlePriority = None
-				if job in easyJobs:
-					return 1.0/(job.deadline)
-				else:
-					return 1.0/(job.deadline + simu.alpha)  # I'm not sure this works
+			busyJobs = simu.getCurrentJobs(getWaitingJobs=False)
+			if job in busyJobs:
+				return 1.0/(self.prioOffset + job.deadline + simu.alpha)
+			epa = self.earliestPreempArrival(job, simu)
+			finishTime = self.finishTime(job, simu)
+			if epa - simu.t < simu.alpha:  # better to idle
+				return -1 * float("inf")
 			else:
-				self.idlePriority = 0
-				return epa[job] - simu.alpha
+				if finishTime <= epa:
+					return 1.0/(self.prioOffset + job.deadline)
+				else:
+					return 1.0/(self.prioOffset + job.deadline + simu.alpha)
 		else:
 			return self.spotlight.priority(job, simu)
 
 
 class SpotlightEDF(SchedulerDP):
+	def __init__(self, tau, prioOffset=0):
+		""" Non-optimal algorithm taking preemption cost into account.
+		prioOffset should be set to the maximal preemption cost value"""
+		super(SpotlightEDF, self).__init__(tau)
+		self.prioOffset = prioOffset
+
 	def isJobExecuting(self, job, simu):
 		for cpu in simu.CPUs:
 			if cpu.job is job:
@@ -77,15 +82,12 @@ class SpotlightEDF(SchedulerDP):
 
 	def priority(self, job, simu):
 		if self.isJobExecuting(job, simu):
-			return 1.0/(job.deadline - simu.alpha)
+			return 1.0/(self.prioOffset + job.deadline - simu.alpha)
 		else:
-			return 1.0/job.deadline
+			return 1.0/(self.prioOffset + job.deadline)
 
 
 class SchedulerFJP(SchedulerDP):
-	def __init__(self, tau):
-		pass
-
 	def priority(self, job, simu):
 		if job.priority is not None:
 			return job.priority
@@ -99,6 +101,7 @@ class EDF(SchedulerFJP):
 
 class SchedulerFTP(SchedulerFJP):
 	def __init__(self, tau):
+		super(SchedulerFTP, self).__init__(tau)
 		self.priorities = self.orderPriorities(tau.tasks)
 
 	def orderPriorities(self, taskArray):
@@ -106,7 +109,7 @@ class SchedulerFTP(SchedulerFJP):
 		pass
 
 	def priority(self, job, simu):
-		super(SchedulerFJP, self).priority(job, simu)
+		super(SchedulerFTP, self).priority(job, simu)
 		for i, task in enumerate(reversed(self.priorities)):  # priorities is decreasing
 			if job.task is task:
 				return i + 1  # prio = 0 is for idle cpu
