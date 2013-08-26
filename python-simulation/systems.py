@@ -57,7 +57,7 @@ tasks.append(Task.Task(0, 2, 7, 7))
 tasks.append(Task.Task(2, 1, 1, 7))
 SpotlightEDFNonOptimal = Task.TaskSystem(tasks)
 
-# # PreemptNoIdle
+# # PreemptNoIdle (preemptTime = 1)
 tasks = []
 tasks.append(Task.Task(0, 6, 9, 11))
 tasks.append(Task.Task(0, 2, 11, 11))
@@ -70,3 +70,25 @@ tasks.append(Task.Task(0, 3, 8, 8))
 tasks.append(Task.Task(0, 3, 5, 8))
 tasks.append(Task.Task(1, 1, 1, 8))
 MustIdle = Task.TaskSystem(tasks)
+
+# DPOnly (preemptTime = 1)
+tasks = []
+tasks.append(Task.Task(0, 4, 8, 8))
+tasks.append(Task.Task(0, 1, 5, 8))
+tasks.append(Task.Task(3, 1, 1, 8))
+tasks.append(Task.Task(5, 1, 1, 8))
+DPOnly = Task.TaskSystem(tasks)
+
+# DPOnly2 (preemptTime = 1) (not DP only but whatever)
+tasks = []
+tasks.append(Task.Task(0, 4, 9, 9))
+tasks.append(Task.Task(0, 1, 5, 9))
+tasks.append(Task.Task(3, 1, 1, 9))
+tasks.append(Task.Task(5, 1, 1, 9))
+DPOnly2 = Task.TaskSystem(tasks)
+
+# Meat Grinder (unfeasible for preemptTime > 0 although U = ~0.5)
+tasks = []
+tasks.append(Task.Task(0, 2, 100, 100))
+tasks.append(Task.Task(1, 1, 1, 2))
+MeatGrinder = Task.TaskSystem(tasks)
