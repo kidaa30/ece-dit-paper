@@ -55,12 +55,14 @@ class Simulator(object):  # Global FJP only
 			self.preemptedCPUs.remove(cpu)
 			heappush(self.activeCPUsHeap, cpu)
 
-	def allCurrentJobs(self, busyJobs=True):
-		allTuples = self.activeJobsHeap
-		if busyJobs:
-			busyTuples = filter(lambda tupl: tupl[1] is not None, [(None, cpu.job) for cpu in self.CPUs])
-			allTuples = allTuples + busyTuples
-		return [b for (a, b) in allTuples]
+	def getCurrentJobs(self, getWaitingJobs=True, getBusyJobs=True):
+		waitingJobs = []
+		busyJobs = []
+		if getWaitingJobs:
+			waitingJobs = [job for prio, job in self.activeJobsHeap]
+		if getBusyJobs:
+			busyJobs = filter(None, [cpu.job for cpu in self.CPUs])
+		return waitingJobs + busyJobs
 
 	def updateHeaps(self):
 		# possible bottleneck : job heap is reconstructed (2 times) at each t
@@ -80,13 +82,15 @@ class Simulator(object):  # Global FJP only
 	def incrementTime(self, verbose=True):
 		self.t += 1
 		if verbose: print "t=", self.t
+		# Initialize scheduler
+		self.scheduler.initInstant()
 		# remove finished job from CPUs
 		for cpu in self.activeCPUsHeap:
 			if cpu.job and cpu.job.isFinished():
 				cpu.job = None
 		self.updateHeaps()
 		# check for deadline miss
-		for job in self.allCurrentJobs():
+		for job in self.getCurrentJobs():
 			assert job
 			if self.t >= job.deadline:
 				assert job.computation < job.task.C
@@ -104,7 +108,7 @@ class Simulator(object):  # Global FJP only
 		# TODO : deal with idle times scheduling
 		while True:
 			# update priorities (DP)
-			for job in self.allCurrentJobs():
+			for job in self.getCurrentJobs():
 				job.priority = self.scheduler.priority(job, self)
 				if verbose:
 					print "prio of ", job, "is now", job.priority

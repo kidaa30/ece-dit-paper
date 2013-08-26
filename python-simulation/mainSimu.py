@@ -23,7 +23,7 @@ print "stop", stop
 
 # scheduler = Scheduler.EDF(tau)
 # scheduler = Scheduler.SpotlightEDF(tau)
-scheduler = Scheduler.ChooseKeepEDF(tau)
+scheduler = Scheduler.ChooseKeepEDF(tau, prioOffset=10)
 # scheduler = Scheduler.FixedPriority(tau, [3, 1, 2])
 # !!! exhaustive: set the parameters right !!!
 # scheduler = Scheduler.ExhaustiveFixedPriority(tau, preempTime=2, m=1, abortAndRestart=False)
@@ -32,7 +32,7 @@ scheduler = Scheduler.ChooseKeepEDF(tau)
 # else:
 # 	print "No feasible priorities found ! This will end badly"
 
-simu = Simulator.Simulator(tau, stop=stop, preempTime=1, m=1, scheduler=scheduler, abortAndRestart=False)
+simu = Simulator.Simulator(tau, stop=stop, preempTime=2, m=1, scheduler=scheduler, abortAndRestart=False)
 
 try:
 	simu.run(stopAtDeadlineMiss=True, verbose=True)
