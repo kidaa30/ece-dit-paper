@@ -1,18 +1,14 @@
 from heapq import heapify, heappop, heappush
+import pdb
 
-from Model.Task import Task
 from Model.CPU import CPU
 from Model import algorithms
-from Scheduler import EDF
-from Scheduler import RM
 from Model.Job import Job
 import Drawer
 
 
 def heappeek(heap):
-	if len(heap) == 0:
-		return None
-	return heap[0]
+	return heap[0] if len(heap) > 0 else None
 
 
 class Simulator(object):  # Global FJP only
@@ -60,12 +56,20 @@ class Simulator(object):  # Global FJP only
 			heappush(self.activeCPUsHeap, cpu)
 
 	def allCurrentJobs(self, busyJobs=True):
-		print "allcurentjobs", self.activeJobsHeap, [str(cpu) for cpu in self.CPUs]
 		allTuples = self.activeJobsHeap
 		if busyJobs:
 			busyTuples = filter(lambda tupl: tupl[1] is not None, [(None, cpu.job) for cpu in self.CPUs])
 			allTuples = allTuples + busyTuples
 		return [b for (a, b) in allTuples]
+
+	def updateHeaps(self):
+		# possible bottleneck : job heap is reconstructed (2 times) at each t
+		newJobHeap = []
+		for prio, job in self.activeJobsHeap:
+			newJobHeap.append((-1 * job.priority, job))
+		self.activeJobsHeap = newJobHeap
+		heapify(self.activeCPUsHeap)
+		heapify(self.activeJobsHeap)
 
 	def mostPrioritaryJob(self):
 		return heappeek(self.activeJobsHeap)[1] if len(self.activeJobsHeap) > 0 else None
@@ -80,7 +84,7 @@ class Simulator(object):  # Global FJP only
 		for cpu in self.activeCPUsHeap:
 			if cpu.job and cpu.job.isFinished():
 				cpu.job = None
-		heapify(self.activeCPUsHeap)  # need to re-heapify after update
+		self.updateHeaps()
 		# check for deadline miss
 		for job in self.allCurrentJobs():
 			assert job
@@ -93,19 +97,21 @@ class Simulator(object):  # Global FJP only
 				newJob = Job(task, self.t)
 				if verbose: print "\tarrival of job:", newJob
 				newJob.priority = self.scheduler.priority(newJob, self)
+				print "prio of ", newJob, "is", newJob.priority
 				heappush(self.activeJobsHeap, (-1 * newJob.priority, newJob))
 
 		# preemptions
 		# TODO : deal with idle times scheduling
-		if verbose:
-			print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.lessPrioritaryCPU(), "(", str(self.lessPrioritaryCPU().priority() if self.lessPrioritaryCPU() else None), ")"
 		while True:
-			# update priorities
+			# update priorities (DP)
 			for job in self.allCurrentJobs():
 				job.priority = self.scheduler.priority(job, self)
-			heapify(self.activeCPUsHeap)
-			heapify(self.activeJobsHeap)
+				if verbose:
+					print "prio of ", job, "is now", job.priority
+			self.updateHeaps()
 			# check for preemptions
+			if verbose:
+				print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.lessPrioritaryCPU(), "(", str(self.lessPrioritaryCPU().priority() if self.lessPrioritaryCPU() else None), ")"
 			if self.mostPrioritaryJob() and self.lessPrioritaryCPU() and self.mostPrioritaryJob().priority > self.lessPrioritaryCPU().priority():
 				if verbose:
 					print "\tpremption!"
