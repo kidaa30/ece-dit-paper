@@ -36,7 +36,7 @@ class ChooseKeepEDF(SchedulerDP):
 			if t < task.O:
 				nextArrival = task.O
 			else:
-				nextArrival = (t - task.O) + (task.T - (t - task.O) % task.T)
+				nextArrival = (t - task.O) + (task.T - (t - task.O) % task.T) + task.O
 			prio = 1.0/(self.prioOffset + nextArrival + task.D)
 			if candidate is None or (prio >= jobP and nextArrival < candidate):
 				candidate = nextArrival
@@ -50,27 +50,24 @@ class ChooseKeepEDF(SchedulerDP):
 		return finish
 
 	def priority(self, job, simu):
-		if self.idleCPUsCount(simu) > 0:
-			busyJobs = simu.getCurrentJobs(getWaitingJobs=False)
-			if job in busyJobs:
-				return 1.0/(self.prioOffset + job.deadline + simu.alpha)
-			epa = self.earliestPreempArrival(job, simu)
-			finishTime = self.finishTime(job, simu)
-			if epa - simu.t < simu.alpha:  # better to idle
-				return -1 * float("inf")
-			else:
-				if finishTime <= epa:
-					return 1.0/(self.prioOffset + job.deadline)
-				else:
-					return 1.0/(self.prioOffset + job.deadline + simu.alpha)
+		busyJobs = simu.getCurrentJobs(getWaitingJobs=False)
+		if job in busyJobs:
+			return 1.0/(self.prioOffset + job.deadline + simu.alpha)
+		epa = self.earliestPreempArrival(job, simu)
+		finishTime = self.finishTime(job, simu)
+		if epa - simu.t < simu.alpha:  # better to idle
+			return -1 * float("inf")
 		else:
-			return self.spotlight.priority(job, simu)
+			if finishTime <= epa:
+				return 1.0/(self.prioOffset + job.deadline)
+			else:
+				return 1.0/(self.prioOffset + job.deadline + simu.alpha)
 
 
 class SpotlightEDF(SchedulerDP):
 	def __init__(self, tau, prioOffset=0):
 		""" Non-optimal algorithm taking preemption cost into account.
-		prioOffset should be set to the maximal preemption cost value"""
+		prioOffset should be bigger than the maximal preemption cost value"""
 		super(SpotlightEDF, self).__init__(tau)
 		self.prioOffset = prioOffset
 
