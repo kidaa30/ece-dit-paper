@@ -79,13 +79,13 @@ tasks.append(Task.Task(3, 1, 1, 8))
 tasks.append(Task.Task(5, 1, 1, 8))
 DPOnly = Task.TaskSystem(tasks)
 
-# DPOnly2 (preemptTime = 1) (not DP only but whatever)
+# CKEDF non-optimal
 tasks = []
 tasks.append(Task.Task(0, 4, 9, 9))
 tasks.append(Task.Task(0, 1, 5, 9))
 tasks.append(Task.Task(3, 1, 1, 9))
 tasks.append(Task.Task(5, 1, 1, 9))
-DPOnly2 = Task.TaskSystem(tasks)
+CKEDFNonOptimal = Task.TaskSystem(tasks)
 
 # Meat Grinder (unfeasible for preemptTime > 0 although U = ~0.5)
 tasks = []
