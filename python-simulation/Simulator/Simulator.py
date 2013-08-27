@@ -115,6 +115,7 @@ class Simulator(object):  # Global FJP only
             if verbose:
                 print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.lessPrioritaryCPU(), "(", str(self.lessPrioritaryCPU().priority() if self.lessPrioritaryCPU() else None), ")"
             if self.mostPrioritaryJob() and self.lessPrioritaryCPU() and self.mostPrioritaryJob().priority > self.lessPrioritaryCPU().priority():
+                # The above inequality MUST BE STRICT in the case of preemptions cost
                 if verbose:
                     print "\tpremption!"
                 preemptiveJob = heappop(self.activeJobsHeap)[1]
