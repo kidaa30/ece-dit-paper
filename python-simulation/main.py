@@ -3,9 +3,8 @@ import random
 
 import pylab  # http://matplotlib.org/
 
-import Task
-import TaskGenerator
-import algorithms
+from Task import Task, TaskGenerator
+from Model import algorithms
 
 
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):

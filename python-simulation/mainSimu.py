@@ -6,7 +6,7 @@ import systems
 import subprocess
 
 # tau = systems.generateSystemArray(1, 1)[0]
-tau = systems.SpotlightEDFNonOptimal
+tau = systems.test
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -31,12 +31,12 @@ scheduler = Scheduler.ChooseKeepEDF(tau)
 # if scheduler.foundFeasible:
 #   print "found feasible priorities :", scheduler.prioArray
 # else:
-#   print "No feasible priorities found ! This will end badly"
+#   print "No feasible priorities found !"
 
 simu = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False)
 
 try:
-    simu.run(stopAtDeadlineMiss=True, verbose=False)
+    simu.run(stopAtDeadlineMiss=True, verbose=True)
     if simu.success():
         print "No deadline misses."
     else:

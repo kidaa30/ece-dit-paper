@@ -2,18 +2,19 @@ import random
 from Model import Task
 from Model import TaskGenerator
 
-def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
+
+def generateSystemArray(numberOfSystems, constrDeadlineFactor, preemptionCost=2, verbose=False):
 	systemArray = []
 	for i in range(numberOfSystems):
-		Umin = 0.75
+		Umin = 0.25
 		Umax = 0.95
 		Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
-		n = 5
-		maxHyperT = 180  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
+		n = 4
+		maxHyperT = 360  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
 		# maxHyperT = -1
-		Tmin = 5
+		Tmin = 3
 		Tmax = 50
-		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
+		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, preemptionCost=preemptionCost, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
 		if (verbose and numberOfSystems <= 10):
 			print "Generated task system # ", i
 			for task in tasks:
@@ -102,3 +103,11 @@ tasks.append(Task.Task(20, 10, 50, 50, alpha=23))
 tasks.append(Task.Task(20, 10, 50, 50, alpha=23))
 LongTransitive = Task.TaskSystem(tasks)
 
+
+# test
+tasks = []
+tasks.append(Task.Task(14, 1, 2, 5, alpha=2))
+tasks.append(Task.Task(0, 1, 5, 5, alpha=2))
+tasks.append(Task.Task(19, 1, 1, 4, alpha=2))
+tasks.append(Task.Task(0, 1, 3, 3, alpha=2))
+test = Task.TaskSystem(tasks)
