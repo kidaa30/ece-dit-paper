@@ -7,11 +7,12 @@ import copy
 
 
 class Task(object):
-	def __init__(self, O, C, D, T):
+	def __init__(self, O, C, D, T, alpha=0):
 		self.O = O
 		self.C = C
 		self.D = D
 		self.T = T
+        self.alpha : 0
 
 	def __repr__(self):
 		reprStr =  ""
