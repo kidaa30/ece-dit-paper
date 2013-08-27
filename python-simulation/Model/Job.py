@@ -14,5 +14,8 @@ class Job(object):
     def __lt__(self, other):
         return other is not None and (self.priority, id(self.task)) < (other.priority, id(other.task))
 
+    def alpha(self):
+        return self.task.alpha
+
     def __repr__(self):
         return "(" + ", ".join([str(self.task), str(self.arrival), str(self.deadline), str(self.computation)]) + ")"

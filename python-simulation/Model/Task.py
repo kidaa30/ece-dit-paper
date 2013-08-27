@@ -12,7 +12,7 @@ class Task(object):
         self.C = C
         self.D = D
         self.T = T
-        self.alpha : 0
+        self.alpha = alpha
 
     def __repr__(self):
         reprStr =  ""
