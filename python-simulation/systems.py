@@ -54,20 +54,21 @@ tasks.append(Task.Task(1, 1, 1, 4, alpha=2))
 Anomaly1 = Task.TaskSystem(tasks)
 
 # # Example of non-optimality of SpotlightEDF
+# TODO: replace this system by another with same property but which does not require idling
 tasks = []
 tasks.append(Task.Task(0, 3, 6, 7, alpha=2))
 tasks.append(Task.Task(0, 2, 7, 7, alpha=2))
 tasks.append(Task.Task(2, 1, 1, 7, alpha=2))
 SpotlightEDFNonOptimal = Task.TaskSystem(tasks)
 
-# # PreemptNoIdle (preemptTime = 1)
+# # PreemptNoIdle
 tasks = []
 tasks.append(Task.Task(0, 6, 9, 11, alpha=1))
 tasks.append(Task.Task(0, 2, 11, 11, alpha=1))
 tasks.append(Task.Task(3, 2, 2, 11, alpha=1))
 PreemptNoIdle = Task.TaskSystem(tasks)
 
-# # Must Idle (preemptTime = 2)
+# # Must Idle
 tasks = []
 tasks.append(Task.Task(0, 3, 8, 8, alpha=2))
 tasks.append(Task.Task(0, 3, 5, 8, alpha=2))
