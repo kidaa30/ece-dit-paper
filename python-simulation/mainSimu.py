@@ -6,7 +6,7 @@ import systems
 import subprocess
 
 # tau = systems.generateSystemArray(1, 1)[0]
-tau = systems.LongTransitive
+tau = systems.SpotlightEDFNonOptimal
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -22,18 +22,18 @@ if fpdit:
 
 print "stop", stop
 
-scheduler = Scheduler.EDF(tau)
+# scheduler = Scheduler.EDF(tau)
 # scheduler = Scheduler.SpotlightEDF(tau)
-# scheduler = Scheduler.ChooseKeepEDF(tau, prioOffset=10)
+scheduler = Scheduler.ChooseKeepEDF(tau)
 # scheduler = Scheduler.FixedPriority(tau, [1, 2, 3])
 # !!! exhaustive: set the parameters right !!!
-# scheduler = Scheduler.ExhaustiveFixedPriority(tau, preempTime=2, m=1, abortAndRestart=False)
+# scheduler = Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False)
 # if scheduler.foundFeasible:
 #   print "found feasible priorities :", scheduler.prioArray
 # else:
 #   print "No feasible priorities found ! This will end badly"
 
-simu = Simulator.Simulator(tau, stop=3450, m=1, scheduler=scheduler, abortAndRestart=False)
+simu = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False)
 
 try:
     simu.run(stopAtDeadlineMiss=True, verbose=False)
@@ -43,8 +43,7 @@ try:
         print "Deadline miss at t=", simu.t
 except AssertionError:
     print "Something went wrong ! Close the image preview to see the callback"
-    simu.drawer.outImg.show()
     raise
-
-simu.drawer.outImg.save("out.png")
-subprocess.Popen(['shotwell', 'out.png'])
+finally:
+    simu.drawer.outImg.save("out.png")
+    subprocess.Popen(['shotwell', 'out.png'])

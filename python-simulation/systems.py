@@ -22,11 +22,11 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 	return systemArray
 
 
-# exemple from Patrick Meumeu's thesis pp. 128 (Fig. 4.13)
+# exemple from Patrick Meumeu's thesis pp. 128 (Fig. 4.13) (alpha???)
 tasks = []
-tasks.append(Task.Task(0, 3, 7, 15))
-tasks.append(Task.Task(5, 2, 6, 6))
-tasks.append(Task.Task(3, 4, 10, 10))
+tasks.append(Task.Task(0, 3, 7, 15, alpha=1))
+tasks.append(Task.Task(5, 2, 6, 6, alpha=1))
+tasks.append(Task.Task(3, 4, 10, 10, alpha=1))
 Meumeu = Task.TaskSystem(tasks)
 
 # exemple from Wong/Burns paper (Improved Priority Assignment for the Abort-and-Restart (AR) Model)
@@ -40,21 +40,23 @@ WongBurns = Task.TaskSystem(tasks)
 
 # exemple of non-optimality of EDF with preemptions
 tasks = []
-tasks.append(Task.Task(0, 3, 6, 6))
-tasks.append(Task.Task(1, 2, 4, 4))
+tasks.append(Task.Task(0, 3, 6, 6, alpha=2))
+tasks.append(Task.Task(1, 2, 4, 4, alpha=2))
 EDFNonOptimal = Task.TaskSystem(tasks)
 
 # Anomaly: removing Task (0,1,2,4) renders the system unfeasible!
+# This is also an example of necessary idle time and non-optimality of EDF/SpotlightEDF
 tasks = []
-tasks.append(Task.Task(0, 2, 4, 4))
-tasks.append(Task.Task(1, 1, 1, 4))
+tasks.append(Task.Task(0, 2, 4, 4, alpha=2))
+#tasks.append(Task.Task(0, 1, 2, 4, alpha=2))
+tasks.append(Task.Task(1, 1, 1, 4, alpha=2))
 Anomaly1 = Task.TaskSystem(tasks)
 
-# # Example of non-optimality of SpotlightEDF (preemptTime=???)
+# # Example of non-optimality of SpotlightEDF
 tasks = []
-tasks.append(Task.Task(0, 3, 6, 7))
-tasks.append(Task.Task(0, 2, 7, 7))
-tasks.append(Task.Task(2, 1, 1, 7))
+tasks.append(Task.Task(0, 3, 6, 7, alpha=2))
+tasks.append(Task.Task(0, 2, 7, 7, alpha=2))
+tasks.append(Task.Task(2, 1, 1, 7, alpha=2))
 SpotlightEDFNonOptimal = Task.TaskSystem(tasks)
 
 # # PreemptNoIdle (preemptTime = 1)
