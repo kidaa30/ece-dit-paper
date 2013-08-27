@@ -29,7 +29,7 @@ class ChooseKeepEDF(SchedulerDP):
 	def earliestPreempArrival(self, job, simu):
 		# return earliest time at which job will be preempted if it is chosen now
 		t = simu.t
-		jobP = 1.0/(self.prioOffset + job.deadline - simu.alpha)
+		jobP = 1.0/(self.prioOffset + job.deadline - job.alpha())
 		# test against priority of next arrival of each task
 		candidate = None
 		for task in simu.system.tasks:
@@ -46,22 +46,22 @@ class ChooseKeepEDF(SchedulerDP):
 		finish = simu.t
 		finish += job.task.C - job.computation
 		if job.preempted:
-			finish += simu.alpha
+			finish += job.alpha()
 		return finish
 
 	def priority(self, job, simu):
 		busyJobs = simu.getCurrentJobs(getWaitingJobs=False)
 		if job in busyJobs:
-			return 1.0/(self.prioOffset + job.deadline + simu.alpha)
+			return 1.0/(self.prioOffset + job.deadline - job.alpha())
 		epa = self.earliestPreempArrival(job, simu)
 		finishTime = self.finishTime(job, simu)
-		if epa - simu.t < simu.alpha:  # better to idle
+		if epa - simu.t < job.alpha():  # better to idle
 			return -1 * float("inf")
 		else:
 			if finishTime <= epa:
 				return 1.0/(self.prioOffset + job.deadline)
 			else:
-				return 1.0/(self.prioOffset + job.deadline + simu.alpha)
+				return 1.0/(self.prioOffset + job.deadline + job.alpha())
 
 
 class SpotlightEDF(SchedulerDP):
@@ -79,7 +79,7 @@ class SpotlightEDF(SchedulerDP):
 
 	def priority(self, job, simu):
 		if self.isJobExecuting(job, simu):
-			return 1.0/(self.prioOffset + job.deadline - simu.alpha)
+			return 1.0/(self.prioOffset + job.deadline - job.alpha())
 		else:
 			return 1.0/(self.prioOffset + job.deadline)
 
