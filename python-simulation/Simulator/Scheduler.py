@@ -37,7 +37,7 @@ class ChooseKeepEDF(SchedulerDP):
             else:
                 nextArrival = (t - task.O) + (task.T - (t - task.O) % task.T) + task.O
             prio = 1.0/(self.prioOffset + nextArrival + task.D)
-            if candidate is None or (prio >= jobP and nextArrival < candidate):
+            if prio > jobP and (candidate is None or nextArrival < candidate):
                 candidate = nextArrival
         return candidate
 
@@ -54,10 +54,10 @@ class ChooseKeepEDF(SchedulerDP):
             return 1.0/(self.prioOffset + job.deadline - job.alpha())
         epa = self.earliestPreempArrival(job, simu)
         finishTime = self.finishTime(job, simu)
-        if epa - simu.t < job.alpha():  # preemption would cost more than execution
-            return -1 * float("inf")
         if finishTime <= epa:
             return 1.0/(self.prioOffset + job.deadline)
+        elif epa and epa - simu.t < job.alpha():  # preemption would cost more than execution
+            return -1 * float("inf")
         else:
             return 1.0/(self.prioOffset + job.deadline + job.alpha())
 
