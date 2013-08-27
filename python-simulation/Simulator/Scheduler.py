@@ -18,10 +18,9 @@ class SchedulerDP(object):
 
 
 class ChooseKeepEDF(SchedulerDP):
-    def __init__(self, tau, prioOffset=0):
+    def __init__(self, tau):
         super(ChooseKeepEDF, self).__init__(tau)
-        self.spotlight = SpotlightEDF(tau, prioOffset=prioOffset)
-        self.prioOffset = prioOffset
+        self.prioOffset = max([task.alpha for task in tau.tasks])
 
     def idleCPUsCount(self, simu):
         return len(filter(lambda cpu: cpu.job is None, simu.CPUs))
@@ -55,21 +54,20 @@ class ChooseKeepEDF(SchedulerDP):
             return 1.0/(self.prioOffset + job.deadline - job.alpha())
         epa = self.earliestPreempArrival(job, simu)
         finishTime = self.finishTime(job, simu)
-        if epa - simu.t < job.alpha():  # better to idle
+        if epa - simu.t < job.alpha():  # preemption would cost more than execution
             return -1 * float("inf")
+        if finishTime <= epa:
+            return 1.0/(self.prioOffset + job.deadline)
         else:
-            if finishTime <= epa:
-                return 1.0/(self.prioOffset + job.deadline)
-            else:
-                return 1.0/(self.prioOffset + job.deadline + job.alpha())
+            return 1.0/(self.prioOffset + job.deadline + job.alpha())
 
 
 class SpotlightEDF(SchedulerDP):
-    def __init__(self, tau, prioOffset=0):
+    def __init__(self, tau):
         """ Non-optimal algorithm taking preemption cost into account.
-        prioOffset should be bigger than the maximal preemption cost value"""
+        prioOffset should be bigger than the maximal preemption cost value or None"""
         super(SpotlightEDF, self).__init__(tau)
-        self.prioOffset = prioOffset
+        self.prioOffset = max([task.alpha for task in tau.tasks])
 
     def isJobExecuting(self, job, simu):
         for cpu in simu.CPUs:
@@ -130,10 +128,9 @@ class FixedPriority(SchedulerFTP):
 
 
 class ExhaustiveFixedPriority(FixedPriority):
-    def __init__(self, tau, preempTime, m, abortAndRestart):
+    def __init__(self, tau, nbrCPUs, abortAndRestart):
         self.tau = tau
-        self.preempTime = preempTime
-        self.m = m
+        self.m = nbrCPUs
         self.abortAndRestart = abortAndRestart
         self.foundFeasible = None
         feasiblePriorities = self.exhaustiveSearch()
@@ -144,7 +141,7 @@ class ExhaustiveFixedPriority(FixedPriority):
         priorities = [i for i in range(0, len(taskArray))]
         self.foundFeasible = False
         for prio in itertools.permutations(priorities):
-            simu = Simulator.Simulator(self.tau, None, self.preempTime, self.m, FixedPriority(self.tau, prio), self.abortAndRestart)
+            simu = Simulator.Simulator(self.tau, None, self.m, FixedPriority(self.tau, prio), self.abortAndRestart)
             simu.run(stopAtDeadlineMiss=True, verbose=False)
             if simu.success():
                 self.foundFeasible = True

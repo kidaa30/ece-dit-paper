@@ -12,10 +12,10 @@ def heappeek(heap):
 
 
 class Simulator(object):  # Global FJP only
-    def __init__(self, tau, stop, m, scheduler, abortAndRestart):
+    def __init__(self, tau, stop, nbrCPUs, scheduler, abortAndRestart):
         """stop can be set to None for default value"""
         self.system = tau
-        self.m = m
+        self.m = nbrCPUs
         self.AR = abortAndRestart
         if stop is None:
             fpdit = algorithms.findFirstDIT(tau)
@@ -28,7 +28,7 @@ class Simulator(object):  # Global FJP only
         # CPUs are accessible via either
         # - CPUs : a list with fixed ordering
         # - activeCPUsHeap and preemptedCPUs : where the ordering is not guaranteed
-        self.CPUs = [CPU() for i in range(m)]
+        self.CPUs = [CPU() for i in range(self.m)]
         self.activeCPUsHeap = []
         heapify(self.activeCPUsHeap)
         for cpu in self.CPUs:
