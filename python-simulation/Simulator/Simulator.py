@@ -100,7 +100,7 @@ class Simulator(object):  # Global FJP only
                 newJob = Job(task, self.t)
                 if verbose: print "\tarrival of job:", newJob
                 newJob.priority = self.scheduler.priority(newJob, self)
-                print "prio of ", newJob, "is", newJob.priority
+                if verbose: print "\t\tprio of ", newJob, "is", newJob.priority
                 heappush(self.activeJobsHeap, (-1 * newJob.priority, newJob))
 
         # preemptions
@@ -119,13 +119,13 @@ class Simulator(object):  # Global FJP only
                     print "\tpremption!"
                 preemptiveJob = heappop(self.activeJobsHeap)[1]
                 preemptedCPU = heappop(self.activeCPUsHeap)
-                preemptedJob = preemptedCPU.job
+                preemptedJob = preemptedCPU.job  # may be None
 
                 # assign preemptive job to the CPU and push CPU in the correct heap
                 preemptedCPU.job = preemptiveJob
                 if preemptiveJob.preempted:
                     preemptiveJob.preempted = False
-                    preemptedCPU.preemptionTimeLeft = self.alpha
+                    preemptedCPU.preemptionTimeLeft = preemptiveJob.alpha()
                     self.preemptedCPUs.add(preemptedCPU)
                 else:
                     heappush(self.activeCPUsHeap, preemptedCPU)
@@ -138,9 +138,10 @@ class Simulator(object):  # Global FJP only
                         self.drawer.drawAbort(preemptedJob.task, self.t)
                     heappush(self.activeJobsHeap, (-1 * preemptedJob.priority, preemptedJob))
 
-                mostPrioritaryJob = heappeek(self.activeJobsHeap)[1] if len(self.activeJobsHeap) > 0 else None
-                lessPrioritaryCPU = heappeek(self.activeCPUsHeap)
-                if verbose: print "\t", mostPrioritaryJob, "(", str(mostPrioritaryJob.priority if mostPrioritaryJob else None), ") vs.", lessPrioritaryCPU, "(", str(lessPrioritaryCPU.priority() if lessPrioritaryCPU else None), ")"
+                if verbose:
+                    print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.lessPrioritaryCPU(), "(", str(self.lessPrioritaryCPU().priority() if self.lessPrioritaryCPU() else None), ")"
+                # if self.t == 20:
+                #     pdb.set_trace()
             else:
                 break
         # activate CPUs whose preemption is finished
