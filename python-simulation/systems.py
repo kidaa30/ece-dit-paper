@@ -50,7 +50,7 @@ tasks.append(Task.Task(0, 2, 4, 4))
 tasks.append(Task.Task(1, 1, 1, 4))
 Anomaly1 = Task.TaskSystem(tasks)
 
-# # Example of non-optimality of SpotlightEDF
+# # Example of non-optimality of SpotlightEDF (preemptTime=???)
 tasks = []
 tasks.append(Task.Task(0, 3, 6, 7))
 tasks.append(Task.Task(0, 2, 7, 7))
@@ -59,36 +59,44 @@ SpotlightEDFNonOptimal = Task.TaskSystem(tasks)
 
 # # PreemptNoIdle (preemptTime = 1)
 tasks = []
-tasks.append(Task.Task(0, 6, 9, 11))
-tasks.append(Task.Task(0, 2, 11, 11))
-tasks.append(Task.Task(3, 2, 2, 11))
+tasks.append(Task.Task(0, 6, 9, 11, alpha=1))
+tasks.append(Task.Task(0, 2, 11, 11, alpha=1))
+tasks.append(Task.Task(3, 2, 2, 11, alpha=1))
 PreemptNoIdle = Task.TaskSystem(tasks)
 
 # # Must Idle (preemptTime = 2)
 tasks = []
-tasks.append(Task.Task(0, 3, 8, 8))
-tasks.append(Task.Task(0, 3, 5, 8))
-tasks.append(Task.Task(1, 1, 1, 8))
+tasks.append(Task.Task(0, 3, 8, 8, alpha=2))
+tasks.append(Task.Task(0, 3, 5, 8, alpha=2))
+tasks.append(Task.Task(1, 1, 1, 8, alpha=2))
 MustIdle = Task.TaskSystem(tasks)
 
 # DPOnly (preemptTime = 1)
 tasks = []
-tasks.append(Task.Task(0, 4, 8, 8))
-tasks.append(Task.Task(0, 1, 5, 8))
-tasks.append(Task.Task(3, 1, 1, 8))
-tasks.append(Task.Task(5, 1, 1, 8))
+tasks.append(Task.Task(0, 4, 8, 8, alpha=1))
+tasks.append(Task.Task(0, 1, 5, 8, alpha=1))
+tasks.append(Task.Task(3, 1, 1, 8, alpha=1))
+tasks.append(Task.Task(5, 1, 1, 8, alpha=1))
 DPOnly = Task.TaskSystem(tasks)
 
 # CKEDF non-optimal
 tasks = []
-tasks.append(Task.Task(0, 4, 9, 9))
-tasks.append(Task.Task(0, 1, 5, 9))
-tasks.append(Task.Task(3, 1, 1, 9))
-tasks.append(Task.Task(5, 1, 1, 9))
+tasks.append(Task.Task(0, 4, 9, 9, alpha=1))
+tasks.append(Task.Task(0, 1, 5, 9, alpha=1))
+tasks.append(Task.Task(3, 1, 1, 9, alpha=1))
+tasks.append(Task.Task(5, 1, 1, 9, alpha=1))
 CKEDFNonOptimal = Task.TaskSystem(tasks)
 
 # Meat Grinder (unfeasible for preemptTime > 0 although U = ~0.5)
 tasks = []
-tasks.append(Task.Task(0, 2, 100, 100))
-tasks.append(Task.Task(1, 1, 1, 2))
+tasks.append(Task.Task(0, 2, 100, 100, alpha=1))
+tasks.append(Task.Task(1, 1, 1, 2, alpha=1))
 MeatGrinder = Task.TaskSystem(tasks)
+
+# LongTransitive
+tasks = []
+tasks.append(Task.Task(0, 45, 150, 150, alpha=23))
+tasks.append(Task.Task(20, 10, 50, 50, alpha=23))
+tasks.append(Task.Task(20, 10, 50, 50, alpha=23))
+LongTransitive = Task.TaskSystem(tasks)
+
