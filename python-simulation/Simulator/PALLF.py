@@ -6,11 +6,9 @@ class PALLF(Scheduler.SchedulerDP):
         super(PALLF, self).__init__(tau)
         self.prioOffset = max([task.alpha for task in tau.tasks]) + 1
 
-    def getLaxity(self, job, simu, atTime=None):
-        if atTime is None:
-            atTime = simu.t
-        compLeft = job.task.T - job.computation
-        lax = job.deadline - (atTime + compLeft)
+    def getLaxity(self, job, simu):
+        compLeft = job.task.C - job.computation
+        lax = job.deadline - (simu.t + compLeft)
         return max(0, lax)
 
     def earliestPreempArrival(self, job, simu):
