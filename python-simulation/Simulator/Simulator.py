@@ -106,11 +106,14 @@ class Simulator(object):  # Global FJP only
         # preemptions
         while True:
             # update priorities (DP)
+            # if self.t == 113:
+            #     pdb.set_trace()
             for job in self.getCurrentJobs():
                 job.priority = self.scheduler.priority(job, self)
                 if verbose:
-                    print "prio of ", job, "is now", job.priority
+                    print "\t\tprio of ", job, "is now", job.priority
             self.updateHeaps()
+
             # check for preemptions
             if verbose:
                 print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.lessPrioritaryCPU(), "(", str(self.lessPrioritaryCPU().priority() if self.lessPrioritaryCPU() else None), ")"
@@ -141,8 +144,6 @@ class Simulator(object):  # Global FJP only
 
                 if verbose:
                     print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.lessPrioritaryCPU(), "(", str(self.lessPrioritaryCPU().priority() if self.lessPrioritaryCPU() else None), ")"
-                # if self.t == 20:
-                #     pdb.set_trace()
             else:
                 break
         # activate CPUs whose preemption is finished

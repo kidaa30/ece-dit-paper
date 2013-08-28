@@ -60,10 +60,9 @@ class ChooseKeepEDF(SchedulerDP):
             if epa - simu.t <= job.alpha():  # preemption would cost more than execution
                 return -1 * float("inf")
             else:
-                return 1.0/(self.prioOffset + job.deadline)
-
+                return 1.0/(self.prioOffset + job.deadline + job.alpha())
         else:
-            return 1.0/(self.prioOffset + job.deadline + job.alpha())
+            return 1.0/(self.prioOffset + job.deadline)
 
 
 class SpotlightEDF(SchedulerDP):
