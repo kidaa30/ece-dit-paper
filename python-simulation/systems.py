@@ -83,13 +83,13 @@ tasks.append(Task.Task(3, 1, 1, 8, alpha=1))
 tasks.append(Task.Task(5, 1, 1, 8, alpha=1))
 DPOnly = Task.TaskSystem(tasks)
 
-# CKEDF non-optimal
+# KeepForLater
 tasks = []
 tasks.append(Task.Task(0, 4, 9, 9, alpha=1))
 tasks.append(Task.Task(0, 1, 5, 9, alpha=1))
 tasks.append(Task.Task(3, 1, 1, 9, alpha=1))
 tasks.append(Task.Task(5, 1, 1, 9, alpha=1))
-CKEDFNonOptimal = Task.TaskSystem(tasks)
+KeepForLater = Task.TaskSystem(tasks)
 
 # Meat Grinder (unfeasible for preemptTime > 0 although U = ~0.5)
 tasks = []
@@ -105,10 +105,18 @@ tasks.append(Task.Task(20, 10, 50, 50, alpha=23))
 LongTransitive = Task.TaskSystem(tasks)
 
 
+# SamePriorityHijinks
+tasks = []
+tasks.append(Task.Task(1, 1, 1, 10, alpha=2))
+tasks.append(Task.Task(0, 2, 4, 10, alpha=2))
+tasks.append(Task.Task(4, 3, 6, 10, alpha=2))
+tasks.append(Task.Task(6, 1, 2, 10, alpha=2))
+SamePriorityHijinks = Task.TaskSystem(tasks)
+
 # test
 tasks = []
-tasks.append(Task.Task(14, 1, 2, 5, alpha=2))
-tasks.append(Task.Task(0, 1, 5, 5, alpha=2))
-tasks.append(Task.Task(19, 1, 1, 4, alpha=2))
-tasks.append(Task.Task(0, 1, 3, 3, alpha=2))
+tasks.append(Task.Task(0, 1, 21, 30, alpha=2))
+tasks.append(Task.Task(29, 1, 4, 12, alpha=2))
+tasks.append(Task.Task(27, 1, 9, 9, alpha=2))
+tasks.append(Task.Task(32, 8, 14, 15, alpha=2))
 test = Task.TaskSystem(tasks)

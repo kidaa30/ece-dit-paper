@@ -6,7 +6,7 @@ import systems
 import subprocess
 
 # tau = systems.generateSystemArray(1, 1)[0]
-tau = systems.CKEDFNonOptimal
+tau = systems.test
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()

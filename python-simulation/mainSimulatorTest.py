@@ -80,8 +80,8 @@ class TestSimulator(unittest.TestCase):
         self.launchSimulator(tau, cak)
         self.assertTrue(self.simulator.success())
 
-    def test_CKEDFNonOptimal(self):
-        tau = systems.CKEDFNonOptimal
+    def test_KeepForLater(self):
+        tau = systems.KeepForLater
         edf = Scheduler.EDF(tau)
         spot = Scheduler.SpotlightEDF(tau)
         cak = Scheduler.ChooseKeepEDF(tau)
@@ -90,7 +90,13 @@ class TestSimulator(unittest.TestCase):
         self.launchSimulator(tau, spot)
         self.assertTrue(not self.simulator.success())
         self.launchSimulator(tau, cak)
-        self.assertTrue(not self.simulator.success())
+        self.assertTrue(self.simulator.success())
+
+    def test_SamePriorityHijinks(self):
+        tau = systems.SamePriorityHijinks
+        cak = Scheduler.ChooseKeepEDF(tau)
+        self.launchSimulator(tau, cak)
+        self.assertTrue(self.simulator.success())
 
 if __name__ == '__main__':
     unittest.main()
