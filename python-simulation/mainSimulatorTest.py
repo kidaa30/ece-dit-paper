@@ -1,10 +1,7 @@
 from Simulator import Simulator, Scheduler
-from Model import Task, TaskGenerator
 from Model import algorithms
 import systems
 
-
-import random
 import unittest
 
 
@@ -97,6 +94,15 @@ class TestSimulator(unittest.TestCase):
         cak = Scheduler.ChooseKeepEDF(tau)
         self.launchSimulator(tau, cak)
         self.assertTrue(self.simulator.success())
+        tau = systems.SamePriorityHijinks2
+        self.launchSimulator(tau, cak)
+        self.assertTrue(self.simulator.success())
+
+    def test_CKEDFKNonOptimal(self):
+        tau = systems.CKEDFNonOptimal
+        cak = Scheduler.ChooseKeepEDF(tau)
+        self.launchSimulator(tau, cak)
+        self.assertTrue(not self.simulator.success())
 
 if __name__ == '__main__':
     unittest.main()

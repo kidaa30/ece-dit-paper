@@ -1,12 +1,12 @@
 from Model import algorithms
 from Simulator import Simulator
-from Simulator import Scheduler
+from Simulator import Scheduler, ChooseKeepEDF, PALLF
 import systems
 
 import subprocess
 
 # tau = systems.generateSystemArray(1, 1)[0]
-tau = systems.test
+tau = systems.MustIdle
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -24,7 +24,8 @@ print "stop", stop
 
 # scheduler = Scheduler.EDF(tau)
 # scheduler = Scheduler.SpotlightEDF(tau)
-scheduler = Scheduler.ChooseKeepEDF(tau)
+# scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
+scheduler = PALLF.PALLF(tau)
 # scheduler = Scheduler.FixedPriority(tau, [1, 2, 3])
 # !!! exhaustive: set the parameters right !!!
 # scheduler = Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False)

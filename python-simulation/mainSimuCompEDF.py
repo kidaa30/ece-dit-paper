@@ -7,6 +7,8 @@ import subprocess
 
 resultsEDF = []
 resultsCK = []
+edfScore = 0
+ckScore = 0
 
 for i in range(1000):
     print i
@@ -30,7 +32,15 @@ for i in range(1000):
     resultsEDF.append(simuEDF.success())
     resultsCK.append(simuCK.success())
 
-    assert (not simuEDF.success()) or simuCK.success(), str(simuEDF.success()) + str(simuCK.success())
+    # assert (not simuEDF.success()) or simuCK.success(), str(simuEDF.success()) + str(simuCK.success())
+    if simuEDF.success() and not simuCK.success():
+        edfScore += 1
+    if simuCK.success() and not simuEDF.success():
+        ckScore += 1
+
 
 print "EDF", len(filter(lambda r: r is True, resultsEDF))
 print "CK", len(filter(lambda r: r is True, resultsCK))
+
+print "EDF > CK", edfScore
+print "CK > EDF", ckScore

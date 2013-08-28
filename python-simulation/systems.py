@@ -113,10 +113,25 @@ tasks.append(Task.Task(4, 3, 6, 10, alpha=2))
 tasks.append(Task.Task(6, 1, 2, 10, alpha=2))
 SamePriorityHijinks = Task.TaskSystem(tasks)
 
+# SamePriorityHijinks2
+tasks = []
+tasks.append(Task.Task(0, 1, 8, 15, alpha=2))
+tasks.append(Task.Task(0, 1, 2, 8, alpha=2))
+tasks.append(Task.Task(20, 1, 35, 36, alpha=2))
+tasks.append(Task.Task(0, 4, 7, 45, alpha=2))
+SamePriorityHijinks2 = Task.TaskSystem(tasks)
+
+# CKEDFNonOptimal
+tasks = []
+tasks.append(Task.Task(0, 3, 9, 9, alpha=2))
+tasks.append(Task.Task(2, 2, 4, 9, alpha=2))
+tasks.append(Task.Task(3, 1, 1, 9, alpha=2))
+tasks.append(Task.Task(7, 1, 1, 9, alpha=2))
+CKEDFNonOptimal = Task.TaskSystem(tasks)
+
 # test
 tasks = []
-tasks.append(Task.Task(0, 1, 21, 30, alpha=2))
-tasks.append(Task.Task(29, 1, 4, 12, alpha=2))
-tasks.append(Task.Task(27, 1, 9, 9, alpha=2))
-tasks.append(Task.Task(32, 8, 14, 15, alpha=2))
+tasks.append(Task.Task(0, 1, 5, 6, alpha=2))
+tasks.append(Task.Task(2, 1, 2, 6, alpha=2))
+tasks.append(Task.Task(0, 3, 5, 6, alpha=2))
 test = Task.TaskSystem(tasks)
