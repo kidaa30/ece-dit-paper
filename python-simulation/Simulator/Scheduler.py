@@ -29,6 +29,7 @@ class ChooseKeepEDF(SchedulerDP):
         # return earliest time at which job will be preempted if it is chosen now
         t = simu.t
         jobP = 1.0/(self.prioOffset + job.deadline - job.alpha())
+        finishTime = self.finishTime(job, simu)
         # test against priority of next arrival of each task
         candidate = None
         for task in simu.system.tasks:
@@ -37,7 +38,7 @@ class ChooseKeepEDF(SchedulerDP):
             else:
                 nextArrival = (t - task.O) + (task.T - (t - task.O) % task.T) + task.O
             prio = 1.0/(self.prioOffset + nextArrival + task.D)
-            if prio > jobP and (candidate is None or nextArrival < candidate):
+            if prio >= jobP and nextArrival < finishTime and (candidate is None or nextArrival < candidate):
                 candidate = nextArrival
         return candidate
 
@@ -49,15 +50,18 @@ class ChooseKeepEDF(SchedulerDP):
         return finish
 
     def priority(self, job, simu):
+        # if simu.t == 2 and job.deadline == 9:
+        #     pdb.set_trace()
         busyJobs = simu.getCurrentJobs(getWaitingJobs=False)
         if job in busyJobs:
             return 1.0/(self.prioOffset + job.deadline - job.alpha())
         epa = self.earliestPreempArrival(job, simu)
-        finishTime = self.finishTime(job, simu)
-        if finishTime <= epa:
-            return 1.0/(self.prioOffset + job.deadline)
-        elif epa and epa - simu.t < job.alpha():  # preemption would cost more than execution
-            return -1 * float("inf")
+        if epa:
+            if epa - simu.t <= job.alpha():  # preemption would cost more than execution
+                return -1 * float("inf")
+            else:
+                return 1.0/(self.prioOffset + job.deadline)
+
         else:
             return 1.0/(self.prioOffset + job.deadline + job.alpha())
 
