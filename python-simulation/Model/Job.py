@@ -11,6 +11,9 @@ class Job(object):
         assert 0 <= self.computation <= self.task.C, str(self)
         return self.computation == self.task.C
 
+    def computationLeft(self):
+        return self.task.C - self.computation
+
     def __lt__(self, other):
         return other is not None and (self.priority, id(self.task)) < (other.priority, id(other.task))
 
