@@ -6,6 +6,9 @@ class PALLF(Scheduler.SchedulerDP):
         super(PALLF, self).__init__(tau)
         self.prioOffset = max([task.alpha for task in tau.tasks]) + 1
 
+    # def preemptEqualPriorities(self):
+    #     return True
+
     def getLaxity(self, job, simu):
         compLeft = job.task.C - job.computation
         lax = job.deadline - (simu.t + compLeft)
@@ -14,18 +17,19 @@ class PALLF(Scheduler.SchedulerDP):
     def earliestPreempArrival(self, job, simu):
         # return earliest time at which job will be preempted if it is chosen now
         t = simu.t
-        lax = self.getLaxity(job, simu)
-        jobP = 1.0/(self.prioOffset + lax - job.alpha())
+        currentLax = self.getLaxity(job, simu)
         finishTime = self.finishTime(job, simu)
-        # test against priority of next arrival of each task
+        # Find next preemptive job arrival amongst tasks
         candidate = None
         for task in simu.system.tasks:
             if t < task.O:
                 nextArrival = task.O
             else:
                 nextArrival = (t - task.O) + (task.T - (t - task.O) % task.T) + task.O
-            prio = 1.0/(self.prioOffset + task.D - task.C)  # laxity
-            if prio >= jobP and nextArrival < finishTime and (candidate is None or nextArrival < candidate):
+            # expected priorities (based on lax)
+            jobExecLeftAtArrival = max(0, finishTime - nextArrival)
+            arrivalLax = task.D - task.C
+            if arrivalLax < jobExecLeftAtArrival and nextArrival < finishTime and (candidate is None or nextArrival < candidate):
                 candidate = nextArrival
         return candidate
 
@@ -33,8 +37,13 @@ class PALLF(Scheduler.SchedulerDP):
         lax = self.getLaxity(job, simu)
         if self.isJobExecuting(job, simu):
             return 1.0/(self.prioOffset + lax - job.alpha())
-        epa = self.earliestPreempArrival(job, simu)
-        if epa and epa - simu.t <= job.alpha():  # execution would cost more than idling
+        if job.alpha() > 1:
+            # If executing now is sure to result in costly preemption, idle
+            epa = self.earliestPreempArrival(job, simu)
+            if epa and epa - simu.t <= job.alpha():
+                return -1 * float("inf")
+        # Is it necessary to preempt the least prioritary busy job?
+        lpbCPU = simu.lessPrioritaryCPU()
+        if lpbCPU and lpbCPU.job and lpbCPU.job.computationLeft() <= lax:
             return -1 * float("inf")
-        else:
-            return 1.0/(self.prioOffset + lax)
+        return 1.0/(self.prioOffset + lax)
