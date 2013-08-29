@@ -85,10 +85,10 @@ DPOnly = Task.TaskSystem(tasks)
 
 # KeepForLater
 tasks = []
-tasks.append(Task.Task(0, 4, 9, 9, alpha=1))
-tasks.append(Task.Task(0, 1, 5, 9, alpha=1))
-tasks.append(Task.Task(3, 1, 1, 9, alpha=1))
-tasks.append(Task.Task(5, 1, 1, 9, alpha=1))
+tasks.append(Task.Task(0, 4, 9, 9, alpha=2))
+tasks.append(Task.Task(0, 1, 5, 9, alpha=2))
+tasks.append(Task.Task(3, 1, 1, 9, alpha=2))
+tasks.append(Task.Task(5, 1, 1, 9, alpha=2))
 KeepForLater = Task.TaskSystem(tasks)
 
 # Meat Grinder (unfeasible for preemptTime > 0 although U = ~0.5)
@@ -112,14 +112,19 @@ tasks.append(Task.Task(0, 2, 4, 10, alpha=2))
 tasks.append(Task.Task(4, 3, 6, 10, alpha=2))
 tasks.append(Task.Task(6, 1, 2, 10, alpha=2))
 SamePriorityHijinks = Task.TaskSystem(tasks)
-
-# SamePriorityHijinks2
+#############################################
 tasks = []
-tasks.append(Task.Task(0, 1, 8, 15, alpha=2))
+#tasks.append(Task.Task(0, 1, 8, 15, alpha=2))
 tasks.append(Task.Task(0, 1, 2, 8, alpha=2))
-tasks.append(Task.Task(20, 1, 35, 36, alpha=2))
+#tasks.append(Task.Task(20, 1, 35, 36, alpha=2))
 tasks.append(Task.Task(0, 4, 7, 45, alpha=2))
 SamePriorityHijinks2 = Task.TaskSystem(tasks)
+#############################################
+tasks = []
+tasks.append(Task.Task(0, 3, 7, 7, alpha=2))
+tasks.append(Task.Task(1, 2, 4, 7, alpha=2))
+tasks.append(Task.Task(5, 2, 2, 7, alpha=2))
+SamePriorityHijinks3 = Task.TaskSystem(tasks)
 
 # CKEDFNonOptimal
 tasks = []
@@ -129,9 +134,17 @@ tasks.append(Task.Task(3, 1, 1, 9, alpha=2))
 tasks.append(Task.Task(7, 1, 1, 9, alpha=2))
 CKEDFNonOptimal = Task.TaskSystem(tasks)
 
+# AtomicPreemptionCost
+tasks = []
+tasks.append(Task.Task(0, 5, 11, 11, alpha=2))
+tasks.append(Task.Task(4, 1, 1, 11, alpha=2))
+tasks.append(Task.Task(6, 1, 2, 11, alpha=2))
+AtomicPreemptionCost = Task.TaskSystem(tasks)
+
+
 # test
 tasks = []
-tasks.append(Task.Task(0, 1, 5, 6, alpha=2))
-tasks.append(Task.Task(2, 1, 2, 6, alpha=2))
 tasks.append(Task.Task(0, 3, 5, 6, alpha=2))
+tasks.append(Task.Task(2, 1, 2, 6, alpha=2))
+tasks.append(Task.Task(3, 2, 3, 6, alpha=2))
 test = Task.TaskSystem(tasks)

@@ -6,7 +6,7 @@ import systems
 import subprocess
 
 # tau = systems.generateSystemArray(1, 1)[0]
-tau = systems.MustIdle
+tau = systems.DPOnly
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -34,10 +34,10 @@ scheduler = PALLF.PALLF(tau)
 # else:
 #   print "No feasible priorities found !"
 
-simu = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False)
+simu = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=True)
 
 try:
-    simu.run(stopAtDeadlineMiss=True, verbose=True)
+    simu.run(stopAtDeadlineMiss=True)
     if simu.success():
         print "No deadline misses."
     else:
