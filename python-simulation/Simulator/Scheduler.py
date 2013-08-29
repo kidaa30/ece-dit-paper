@@ -24,11 +24,7 @@ class SchedulerDP(object):
         return job in [cpu.job for cpu in simu.CPUs]
 
     def finishTime(self, job, simu):
-        finish = simu.t
-        finish += job.task.C - job.computation
-        if job.preempted:
-            finish += job.alpha()
-        return finish
+        return simu.t + job.computationLeft() + (job.alpha() if job.preempted else 0)
 
 
 class SpotlightEDF(SchedulerDP):
