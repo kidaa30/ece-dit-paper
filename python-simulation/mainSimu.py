@@ -6,7 +6,7 @@ import systems
 import subprocess
 
 # tau = systems.generateSystemArray(1, 1)[0]
-tau = systems.DPOnly
+tau = systems.AtomicPreemptionCost
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -22,10 +22,10 @@ if fpdit:
 
 print "stop", stop
 
-# scheduler = Scheduler.EDF(tau)
+scheduler = Scheduler.EDF(tau)
 # scheduler = Scheduler.SpotlightEDF(tau)
 # scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
-scheduler = PALLF.PALLF(tau)
+# scheduler = PALLF.PALLF(tau)
 # scheduler = Scheduler.FixedPriority(tau, [1, 2, 3])
 # !!! exhaustive: set the parameters right !!!
 # scheduler = Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False)

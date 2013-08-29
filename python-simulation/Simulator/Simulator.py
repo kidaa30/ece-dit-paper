@@ -87,7 +87,7 @@ class Simulator(object):  # Global FJP only
     def mostPrioritaryJob(self):
         return heappeek(self.activeJobsHeap)[1] if len(self.activeJobsHeap) > 0 else None
 
-    def lessPrioritaryCPU(self):
+    def leastPrioritaryCPU(self):
         return heappeek(self.activeCPUsHeap)
 
     def incrementTime(self):
@@ -125,10 +125,10 @@ class Simulator(object):  # Global FJP only
             self.updateHeaps()
             # check for preemptions
             if self.verbose:
-                print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.lessPrioritaryCPU(), "(", str(self.lessPrioritaryCPU().priority() if self.lessPrioritaryCPU() else None), ")"
-            if self.mostPrioritaryJob() and self.lessPrioritaryCPU() and self.mostPrioritaryJob().priority >= self.lessPrioritaryCPU().priority():
+                print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.leastPrioritaryCPU(), "(", str(self.leastPrioritaryCPU().priority() if self.leastPrioritaryCPU() else None), ")"
+            if self.mostPrioritaryJob() and self.leastPrioritaryCPU() and self.mostPrioritaryJob().priority >= self.leastPrioritaryCPU().priority():
                 # special case of equal priorities : decided by the scheduler
-                if self.mostPrioritaryJob().priority == self.lessPrioritaryCPU().priority():
+                if self.mostPrioritaryJob().priority == self.leastPrioritaryCPU().priority():
                     if self.verbose:
                         print "equal priority: preemption policy of scheduler :", self.scheduler.preemptEqualPriorities()
                     if not self.scheduler.preemptEqualPriorities():
@@ -158,7 +158,7 @@ class Simulator(object):  # Global FJP only
                     heappush(self.activeJobsHeap, (-1 * preemptedJob.priority, preemptedJob))
 
                 if self.verbose:
-                    print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.lessPrioritaryCPU(), "(", str(self.lessPrioritaryCPU().priority() if self.lessPrioritaryCPU() else None), ")"
+                    print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.leastPrioritaryCPU(), "(", str(self.leastPrioritaryCPU().priority() if self.leastPrioritaryCPU() else None), ")"
             else:
                 break
         # activate CPUs whose preemption is finished

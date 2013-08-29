@@ -43,7 +43,7 @@ class PALLF(Scheduler.SchedulerDP):
             if epa and epa - simu.t <= job.alpha():
                 return -1 * float("inf")
         # Is it necessary to preempt the least prioritary busy job?
-        lpbCPU = simu.lessPrioritaryCPU()
+        lpbCPU = simu.leastPrioritaryCPU()
         if lpbCPU and lpbCPU.job and lpbCPU.job.computationLeft() <= lax:
             return -1 * float("inf")
         return 1.0/(self.prioOffset + lax)
