@@ -21,6 +21,14 @@ class TestSimulator(unittest.TestCase):
         simulator.run()
         self.assertIs(simulator.success(), expectedResult)
 
+    def test_UnfeasibleLongTransitive(self):
+        tau = systems.UnfeasibleLongTransitive
+        self.assertGreater(tau.systemUtilization(), 1)
+        # This system is unfeasible but does not miss any deadline before Omax + 2H
+        self.checkResult(tau, Scheduler.EDF(tau), False)
+        self.checkResult(tau, Scheduler.SpotlightEDF(tau), False)
+        self.checkResult(tau, PALLF.PALLF(tau), False)
+
     def test_AtomicPreemptionCost(self):
         tau = systems.AtomicPreemptionCost
         self.checkResult(tau, Scheduler.EDF(tau), True)
@@ -39,6 +47,7 @@ class TestSimulator(unittest.TestCase):
         self.checkResult(tau, Scheduler.EDF(tau), True)
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), True)
         self.checkResult(tau, PALLF.PALLF(tau), True)
+        self.checkResult(tau, Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False), True)
 
     def test_EDFNonOptimal(self):
         tau = systems.EDFNonOptimal
