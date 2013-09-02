@@ -75,6 +75,13 @@ tasks.append(Task.Task(0, 3, 5, 8, alpha=2))
 tasks.append(Task.Task(1, 1, 1, 8, alpha=2))
 MustIdle = Task.TaskSystem(tasks)
 
+# UnfeasibleLongTransitive
+tasks = []
+tasks.append(Task.Task(0, 6, 10, 10))
+tasks.append(Task.Task(4, 1, 1, 10))
+tasks.append(Task.Task(6, 4, 10, 10))
+UnfeasibleLongTransitive = Task.TaskSystem(tasks)
+
 # DPOnly (preemptTime = 1)
 tasks = []
 tasks.append(Task.Task(0, 4, 8, 8, alpha=1))
@@ -103,6 +110,17 @@ tasks.append(Task.Task(0, 45, 150, 150, alpha=23))
 tasks.append(Task.Task(20, 10, 50, 50, alpha=23))
 tasks.append(Task.Task(20, 10, 50, 50, alpha=23))
 LongTransitive = Task.TaskSystem(tasks)
+tasks = []
+tasks.append(Task.Task(0, 5, 10, 10, alpha=1))
+tasks.append(Task.Task(4, 1, 1, 10))
+tasks.append(Task.Task(6, 4, 10, 10))
+LongTransitive2 = Task.TaskSystem(tasks)
+
+# FailByTransitive
+tasks = []
+tasks.append(Task.Task(0, 3, 5, 5, alpha=2))
+tasks.append(Task.Task(1, 1, 1, 5))
+FailByTransitive = Task.TaskSystem(tasks)
 
 
 # SamePriorityTrap
@@ -169,9 +187,6 @@ tasks.append(Task.Task(2, 3, 8, 18, alpha=2))
 tasks.append(Task.Task(3, 2, 4, 18, alpha=2))
 tasks.append(Task.Task(4, 1, 1, 18, alpha=2))
 CloudAtlas = Task.TaskSystem(tasks)
-
-
-
 
 
 # test
