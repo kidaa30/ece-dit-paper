@@ -1,6 +1,6 @@
 from Model import algorithms
 
-import Image as img
+from PIL import Image as img
 import ImageFont
 import ImageDraw as draw
 
