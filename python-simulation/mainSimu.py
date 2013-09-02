@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 # tau = systems.generateSystemArray(1, 1)[0]
-tau = systems.LongTransitive
+tau = systems.UnfeasibleLongTransitive
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -16,6 +16,7 @@ fpdit = algorithms.findFirstDIT(tau)
 print "Omax", Omax
 print "H", H
 print "fpdit", fpdit
+print "U", tau.systemUtilization()
 
 stop = Omax + 2 * H
 if fpdit:
@@ -35,7 +36,7 @@ scheduler = Scheduler.EDF(tau)
 # else:
 #   print "No feasible priorities found !"
 
-simu = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=True)
+simu = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=False)
 
 try:
     simu.run(stopAtDeadlineMiss=True)

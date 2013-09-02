@@ -11,7 +11,7 @@ def heappeek(heap):
     return heap[0] if len(heap) > 0 else None
 
 
-class Simulator(object):  # Global FJP only
+class Simulator(object):  # Global multiprocessing only
     def __init__(self, tau, stop, nbrCPUs, scheduler, abortAndRestart, verbose=False):
         """stop can be set to None for default value"""
         self.verbose = verbose
@@ -49,7 +49,7 @@ class Simulator(object):  # Global FJP only
     # move active CPU from preemptedCPUs to activeCPUsHeap
         cpuToActivate = []
         for cpu in self.preemptedCPUs:
-            if cpu.preemptionTimeLeft == 0:
+            if cpu.job.preemptionTimeLeft == 0:
                 cpuToActivate.append(cpu)
         for cpu in cpuToActivate:
             self.preemptedCPUs.remove(cpu)
@@ -142,16 +142,17 @@ class Simulator(object):  # Global FJP only
                 # assign preemptive job to the CPU and push CPU in the correct heap
                 self.updatePriorities(job=preemptiveJob)
                 preemptedCPU.job = preemptiveJob
-                if preemptiveJob.preempted:
-                    preemptiveJob.preempted = False
-                    preemptedCPU.preemptionTimeLeft = preemptiveJob.alpha()
+                if preemptiveJob.preempted and preemptiveJob.alpha() > 0:
                     self.preemptedCPUs.add(preemptedCPU)
                 else:
                     heappush(self.activeCPUsHeap, preemptedCPU)
+                if preemptiveJob.preempted:
+                    preemptiveJob.preempted = False
 
                 # put the preempted job back in the active job heap
                 if preemptedJob:
                     preemptedJob.preempted = True
+                    preemptedJob.preemptionTimeLeft = preemptedJob.alpha()
                     if self.AR:
                         preemptedJob.computation = 0
                         self.drawer.drawAbort(preemptedJob.task, self.t)
@@ -169,7 +170,7 @@ class Simulator(object):  # Global FJP only
                 cpu.job.computation += 1
         # compute preemptions
         for cpu in self.preemptedCPUs:
-            cpu.preemptionTimeLeft -= 1
+            cpu.job.preemptionTimeLeft -= 1
         if self.verbose:
             for i, cpu in enumerate(self.CPUs):
                 print "\t", i, cpu

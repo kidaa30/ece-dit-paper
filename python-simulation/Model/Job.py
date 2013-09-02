@@ -1,11 +1,13 @@
 class Job(object):
     def __init__(self, task, arrival):
         self.task = task
+        assert (arrival - task.O) % task.T == 0
         self.arrival = arrival
         self.deadline = arrival + task.D
         self.computation = 0
         self.priority = None  # maintained by the Scheduler Class
         self.preempted = False
+        self.preemptionTimeLeft = 0
 
     def isFinished(self):
         assert 0 <= self.computation <= self.task.C, str(self)

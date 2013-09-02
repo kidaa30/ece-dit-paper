@@ -1,7 +1,6 @@
 class CPU(object):
 	def __init__(self):
 		self.job = None
-		self.preemptionTimeLeft = 0
 
 	def isIdle(self):
 		return self.job is None
