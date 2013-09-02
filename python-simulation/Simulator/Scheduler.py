@@ -103,7 +103,7 @@ class ExhaustiveFixedPriority(FixedPriority):
         self.foundFeasible = False
         for prio in itertools.permutations(priorities):
             simu = Simulator.Simulator(self.tau, None, self.m, FixedPriority(self.tau, prio), self.abortAndRestart)
-            simu.run(stopAtDeadlineMiss=True, verbose=False)
+            simu.run(stopAtDeadlineMiss=True)
             if simu.success():
                 self.foundFeasible = True
                 return prio
