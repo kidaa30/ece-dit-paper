@@ -105,26 +105,26 @@ tasks.append(Task.Task(20, 10, 50, 50, alpha=23))
 LongTransitive = Task.TaskSystem(tasks)
 
 
-# SamePriorityHijinks
+# SamePriorityTrap
 tasks = []
 tasks.append(Task.Task(1, 1, 1, 10, alpha=2))
 tasks.append(Task.Task(0, 2, 4, 10, alpha=2))
 tasks.append(Task.Task(4, 3, 6, 10, alpha=2))
 tasks.append(Task.Task(6, 1, 2, 10, alpha=2))
-SamePriorityHijinks = Task.TaskSystem(tasks)
+SamePriorityTrap = Task.TaskSystem(tasks)
 #############################################
 tasks = []
 #tasks.append(Task.Task(0, 1, 8, 15, alpha=2))
 tasks.append(Task.Task(0, 1, 2, 8, alpha=2))
 #tasks.append(Task.Task(20, 1, 35, 36, alpha=2))
 tasks.append(Task.Task(0, 4, 7, 45, alpha=2))
-SamePriorityHijinks2 = Task.TaskSystem(tasks)
+SamePriorityTrap2 = Task.TaskSystem(tasks)
 #############################################
 tasks = []
 tasks.append(Task.Task(0, 3, 7, 7, alpha=2))
 tasks.append(Task.Task(1, 2, 4, 7, alpha=2))
 tasks.append(Task.Task(5, 2, 2, 7, alpha=2))
-SamePriorityHijinks3 = Task.TaskSystem(tasks)
+SamePriorityTrap3 = Task.TaskSystem(tasks)
 
 # CKEDFNonOptimal
 tasks = []
@@ -140,6 +140,38 @@ tasks.append(Task.Task(0, 5, 11, 11, alpha=2))
 tasks.append(Task.Task(4, 1, 1, 11, alpha=2))
 tasks.append(Task.Task(6, 1, 2, 11, alpha=2))
 AtomicPreemptionCost = Task.TaskSystem(tasks)
+
+
+# HardPreemptionChoice
+tasks = []
+tasks.append(Task.Task(0, 4, 12, 12, alpha=1))
+tasks.append(Task.Task(3, 5, 6, 12, alpha=1))
+tasks.append(Task.Task(8, 1, 1, 12, alpha=1))
+HardPreemptionChoice = Task.TaskSystem(tasks)
+##############################################
+tasks = []
+tasks.append(Task.Task(0, 4, 12, 12, alpha=1))
+tasks.append(Task.Task(3, 5, 6, 12, alpha=1))
+tasks.append(Task.Task(8, 1, 2, 12, alpha=1))
+HardPreemptionChoice2 = Task.TaskSystem(tasks)
+##############################################
+tasks = []
+tasks.append(Task.Task(0, 3, 10, 10, alpha=1))
+tasks.append(Task.Task(1, 3, 6, 10, alpha=1))
+tasks.append(Task.Task(1, 3, 6, 10, alpha=1))
+HardPreemptionChoice3 = Task.TaskSystem(tasks)
+##############################################
+tasks = []
+tasks.append(Task.Task(14, 4, 4, 18, alpha=2))
+tasks.append(Task.Task(0, 4, 18, 18, alpha=2))
+tasks.append(Task.Task(1, 4, 13, 18, alpha=2))
+tasks.append(Task.Task(2, 3, 8, 18, alpha=2))
+tasks.append(Task.Task(3, 2, 4, 18, alpha=2))
+tasks.append(Task.Task(4, 1, 1, 18, alpha=2))
+CloudAtlas = Task.TaskSystem(tasks)
+
+
+
 
 
 # test

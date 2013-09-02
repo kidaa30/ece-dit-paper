@@ -79,22 +79,22 @@ class TestSimulator(unittest.TestCase):
         tau = systems.KeepForLater
         self.checkResult(tau, Scheduler.EDF(tau), False)
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), False)
+        self.checkResult(tau, ChooseKeepEDF.ChooseKeepEDF(tau), False)
+        self.checkResult(tau, PALLF.PALLF(tau), False)
+
+    def test_SamePriorityTrap(self):
+        tau = systems.SamePriorityTrap
         self.checkResult(tau, ChooseKeepEDF.ChooseKeepEDF(tau), True)
         self.checkResult(tau, PALLF.PALLF(tau), True)
 
-    def test_SamePriorityHijinks(self):
-        tau = systems.SamePriorityHijinks
-        self.checkResult(tau, ChooseKeepEDF.ChooseKeepEDF(tau), True)
-        self.checkResult(tau, PALLF.PALLF(tau), True)
-
-    def test_SamePriorityHijinks2(self):
-        tau2 = systems.SamePriorityHijinks2
+    def test_SamePriorityTrap2(self):
+        tau2 = systems.SamePriorityTrap2
         self.checkResult(tau2, ChooseKeepEDF.ChooseKeepEDF(tau2), True)
         self.checkResult(tau2, PALLF.PALLF(tau2), True)
 
-    def test_SamePriorityHijinks3(self):
-        tau3 = systems.SamePriorityHijinks3
-        self.checkResult(tau3, ChooseKeepEDF.ChooseKeepEDF(tau3), True)
+    def test_SamePriorityTrap3(self):
+        tau3 = systems.SamePriorityTrap3
+        self.checkResult(tau3, ChooseKeepEDF.ChooseKeepEDF(tau3), False)
         self.checkResult(tau3, PALLF.PALLF(tau3), True)
 
     def test_CKEDFKNonOptimal(self):

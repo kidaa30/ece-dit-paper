@@ -13,7 +13,7 @@ edfScore = 0
 ckScore = 0
 pallfScore = 0
 
-for i in range(100):
+for i in range(1000):
     print i
     tau = systems.generateSystemArray(1, 1)[0]
     # tau = systems.test
@@ -32,19 +32,20 @@ for i in range(100):
 
     simuEDF.run(stopAtDeadlineMiss=True)
     simuCK.run(stopAtDeadlineMiss=True)
-    simuPALLF.run(stopAtDeadlineMiss=True)
+    # simuPALLF.run(stopAtDeadlineMiss=True)
 
     resultsEDF.append(simuEDF.success())
     resultsCK.append(simuCK.success())
-    resultsPALLF.append(simuPALLF.success())
+    # resultsPALLF.append(simuPALLF.success())
 
     # assert (not simuEDF.success()) or simuCK.success(), str(simuEDF.success()) + str(simuCK.success())
     if simuEDF.success() and not simuCK.success() and not simuPALLF.success():
         edfScore += 1
-    if simuCK.success() and not simuEDF.success() and not simuPALLF.success():
+#    if simuCK.success() and not simuEDF.success() and not simuPALLF.success():
+    if simuCK.success() and not simuEDF.success():
         ckScore += 1
-    if simuPALLF.success() and not simuEDF.success() and not simuCK.success():
-        pallfScore += 1
+    # if simuPALLF.success() and not simuEDF.success() and not simuCK.success():
+    #     pallfScore += 1
 
 
 print "EDF fs", len(filter(lambda r: r is True, resultsEDF))
