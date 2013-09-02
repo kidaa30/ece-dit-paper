@@ -47,9 +47,8 @@ except AssertionError:
     print "Something went wrong ! Close the image preview to see the callback"
     raise
 finally:
-    # simu.drawer.outImg.show()
-    simu.drawer.outImg.save("out.png")
     if "linux" in sys.platform:
+        simu.drawer.outImg.save("out.png")
         subprocess.Popen(['shotwell', 'out.png'])
     elif "win" in sys.platform:
-        subprocess.Popen(["%SystemRoot%\System32\rundll32.exe", "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll", "ImageView_Fullscreen out.png"])
+        simu.drawer.outImg.show()
