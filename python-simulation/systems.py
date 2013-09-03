@@ -195,10 +195,18 @@ tasks.append(Task.Task(3, 2, 4, 18, alpha=2))
 tasks.append(Task.Task(4, 1, 1, 18, alpha=2))
 CloudAtlas = Task.TaskSystem(tasks)
 
+# EDFNonOptimalMultiprocessor
+tasks = []
+tasks.append(Task.Task(0, 5, 7, 13))
+tasks.append(Task.Task(0, 3, 7, 13))
+tasks.append(Task.Task(0, 9, 11, 13))
+EDFNonOptimalMultiprocessor = Task.TaskSystem(tasks)
+
+
 
 # test
 tasks = []
-tasks.append(Task.Task(0, 3, 5, 6, alpha=2))
-tasks.append(Task.Task(2, 1, 2, 6, alpha=2))
-tasks.append(Task.Task(3, 2, 3, 6, alpha=2))
+tasks.append(Task.Task(0, 5, 11, 11, alpha=1))
+tasks.append(Task.Task(4, 1, 1, 11))
+tasks.append(Task.Task(6, 4, 11, 11))
 test = Task.TaskSystem(tasks)
