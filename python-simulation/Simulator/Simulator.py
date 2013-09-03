@@ -53,15 +53,12 @@ class Simulator(object):  # Global multiprocessing only
         self.lastConfig = set()
         for job in jobs:
             self.lastConfig.add(JobConfiguration(job, self.t))
-            print "saved config", self.lastConfig
 
     def checkConfig(self):
         # TODO: adapt for arbitrary deadline (make copy of lastConfig and current jobs and remove pairs)
-        print "checking..."
         assert self.lastConfig is not None, "checkConfig: save config first"
         jobs = self.getCurrentJobs()
         if len(self.lastConfig) != len(jobs):
-            print "size do not match"
             return False
         for jobConfig in self.lastConfig:
             foundJob = False
@@ -77,7 +74,6 @@ class Simulator(object):  # Global multiprocessing only
                 foundJob = True
                 break  # try next job config
             if not foundJob:
-                print "did not find job for config", jobconfig
                 return False
         return True
 
@@ -210,10 +206,8 @@ class Simulator(object):  # Global multiprocessing only
         if self.verbose: print "t=", self.t
         if (self.t - self.system.omax()) % self.system.hyperPeriod() == 0:
             if self.lastConfig is not None and self.checkConfig() is True:
-                print self.t, "is stable"
                 self.isStable = True
             else:
-                print self.t, "is not stable"
                 self.isStable = False
             self.saveConfiguration()
         self.scheduler.initInstant()

@@ -7,6 +7,6 @@ class JobConfiguration(object):
 
     def __repr__(self):
         reprString = "("
-        reprString += ", ".join([self.task, self.activeTime, self.computedTime, self.preemptionTime])
+        reprString += ", ".join([str(self.task), str(self.activeTime), str(self.computedTime), str(self.preemptionTime)])
         reprString += ")"
         return reprString
