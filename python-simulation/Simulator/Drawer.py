@@ -63,7 +63,8 @@ class Drawer(object):
         x = self.widthMargin + t * self.instantWidth
         y1 = self.height - self.heightMargin - (taskNbr + 1) * self.taskHeight
         y2 = self.height - self.heightMargin - taskNbr * self.taskHeight
-        self.outDraw.line([x, y1, x, y2], fill="red")
+        self.outDraw.line([x, y1, x, y2], fill="black", width=5)
+        self.drawnDeadlineMissCount += 1
 
     def drawOneExecutionUnit(self, taskNbr, CPUnbr, t, preemp):
         color = self.colors[CPUnbr]
