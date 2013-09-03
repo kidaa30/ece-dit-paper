@@ -36,7 +36,7 @@ scheduler = Scheduler.EDF(tau)
 # else:
 #   print "No feasible priorities found !"
 
-simu = Simulator.Simulator(tau, stop=100, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=False)
+simu = Simulator.Simulator(tau, stop=200, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=False)
 
 try:
     simu.run(stopAtDeadlineMiss=False, stopAtStableConfig=True)

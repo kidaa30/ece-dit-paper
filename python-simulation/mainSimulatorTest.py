@@ -14,8 +14,6 @@ class TestSimulator(unittest.TestCase):
         H = tau.hyperPeriod()
         fpdit = algorithms.findFirstDIT(tau)
         stop = Omax + 2 * H
-        if fpdit:
-            stop = fpdit + H
 
         simulator = Simulator.Simulator(tau, stop, nbrCPUs=1, scheduler=sched, abortAndRestart=False)
         simulator.run()
