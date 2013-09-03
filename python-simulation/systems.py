@@ -77,10 +77,17 @@ MustIdle = Task.TaskSystem(tasks)
 
 # UnfeasibleLongTransitive
 tasks = []
-tasks.append(Task.Task(0, 6, 10, 10))
-tasks.append(Task.Task(4, 1, 1, 10))
-tasks.append(Task.Task(6, 4, 10, 10))
+tasks.append(Task.Task(0, 7, 11, 11))
+tasks.append(Task.Task(4, 1, 1, 11))
+tasks.append(Task.Task(6, 4, 11, 11))
 UnfeasibleLongTransitive = Task.TaskSystem(tasks)
+
+# EDFFailTransitiveNotPeriodic
+tasks = []
+tasks.append(Task.Task(0, 5, 11, 11, alpha=3))
+tasks.append(Task.Task(4, 1, 1, 11))
+tasks.append(Task.Task(6, 4, 11, 11))
+EDFFailTransitiveNotPeriodic = Task.TaskSystem(tasks)
 
 # DPOnly (preemptTime = 1)
 tasks = []

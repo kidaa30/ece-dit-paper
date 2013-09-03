@@ -5,6 +5,7 @@ from Model.CPU import CPU
 from Model import algorithms
 from Model.Job import Job
 import Drawer
+from JobConfiguration import JobConfiguration
 
 
 def heappeek(heap):
@@ -25,6 +26,7 @@ class Simulator(object):  # Global multiprocessing only
             else:
                 stop = tau.omax() + tau.hyperPeriod()
         self.stop = stop + 1  # I just solved every OBOE in the world
+        self.lastConfig = None
 
         # CPUs are accessible via either
         # - CPUs : a list with fixed ordering
@@ -40,10 +42,44 @@ class Simulator(object):  # Global multiprocessing only
 
         self.t = -1
         self.deadlineMisses = []
+        self.isStable = False  # stable = periodic phase attained
         self.activeJobsHeap = []
         heapify(self.activeJobsHeap)
 
         self.drawer = Drawer.Drawer(self, stop)
+
+    def saveConfiguration(self):
+        jobs = self.getCurrentJobs()
+        self.lastConfig = set()
+        for job in jobs:
+            self.lastConfig.add(JobConfiguration(job, self.t))
+            print "saved config", self.lastConfig
+
+    def checkConfig(self):
+        # TODO: adapt for arbitrary deadline (make copy of lastConfig and current jobs and remove pairs)
+        print "checking..."
+        assert self.lastConfig is not None, "checkConfig: save config first"
+        jobs = self.getCurrentJobs()
+        if len(self.lastConfig) != len(jobs):
+            print "size do not match"
+            return False
+        for jobConfig in self.lastConfig:
+            foundJob = False
+            for job in jobs:
+                if job.task is not jobConfig.task:
+                    continue
+                if self.t - job.arrival != jobConfig.activeTime:
+                    continue
+                if job.computation != jobConfig.computedTime:
+                    continue
+                if job.preemptionTimeLeft != jobConfig.preemptionTime:
+                    continue
+                foundJob = True
+                break  # try next job config
+            if not foundJob:
+                print "did not find job for config", jobconfig
+                return False
+        return True
 
     def activateCPUs(self):
     # move active CPU from preemptedCPUs to activeCPUsHeap
@@ -90,12 +126,7 @@ class Simulator(object):  # Global multiprocessing only
     def leastPrioritaryCPU(self):
         return heappeek(self.activeCPUsHeap)
 
-    def incrementTime(self):
-        self.t += 1
-        if self.verbose: print "t=", self.t
-        # Initialize scheduler
-        self.scheduler.initInstant()
-        # remove finished job from CPUs
+    def cleanFinishedJobs(self):
         self.activateCPUs()
         for cpu in self.activeCPUsHeap:
             if cpu.job and cpu.job.isFinished():
@@ -104,13 +135,15 @@ class Simulator(object):  # Global multiprocessing only
                 cpu.job = None
         self.updatePriorities()
         self.updateHeaps()
-        # check for deadline miss
+
+    def checkDeadlineMiss(self):
         for job in self.getCurrentJobs():
             assert job
             if self.t >= job.deadline:
                 assert job.computation < job.task.C
                 self.deadlineMisses.append((self.t, job))
-        # check for job arrival
+
+    def checkJobArrival(self):
         for task in self.system.tasks:
             if self.t >= task.O and self.t % task.T == task.O % task.T:
                 newJob = Job(task, self.t)
@@ -118,7 +151,7 @@ class Simulator(object):  # Global multiprocessing only
                 if self.verbose: print "\tarrival of job", newJob
                 heappush(self.activeJobsHeap, (-1 * newJob.priority, newJob))
 
-        # preemptions
+    def handlePreemptions(self):
         while True:
             # update priorities
             self.updatePriorities()
@@ -162,35 +195,66 @@ class Simulator(object):  # Global multiprocessing only
                     print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.leastPrioritaryCPU(), "(", str(self.leastPrioritaryCPU().priority() if self.leastPrioritaryCPU() else None), ")"
             else:
                 break
-        # activate CPUs whose preemption is finished
-        self.activateCPUs()
-        # compute tasks in active CPU
+
+    def computeBusyJobs(self):
         for cpu in self.activeCPUsHeap:
             if cpu.job:
                 cpu.job.computation += 1
-        # compute preemptions
+
+    def computePreemptionRecovery(self):
         for cpu in self.preemptedCPUs:
             cpu.job.preemptionTimeLeft -= 1
+
+    def incrementTime(self):
+        self.t += 1
+        if self.verbose: print "t=", self.t
+        if (self.t - self.system.omax()) % self.system.hyperPeriod() == 0:
+            if self.lastConfig is not None and self.checkConfig() is True:
+                print self.t, "is stable"
+                self.isStable = True
+            else:
+                print self.t, "is not stable"
+                self.isStable = False
+            self.saveConfiguration()
+        self.scheduler.initInstant()
+        self.cleanFinishedJobs()  # remove finished job from CPUs
+        self.checkDeadlineMiss()
+        self.checkJobArrival()
+        self.handlePreemptions()
+        self.computeBusyJobs()
+        self.computePreemptionRecovery()
         if self.verbose:
             for i, cpu in enumerate(self.CPUs):
                 print "\t", i, cpu
                 if cpu in self.preemptedCPUs:
-                    print "\t(preempt)", cpu.preemptionTimeLeft, "left"
+                    print "\t(preempt)", cpu.job.preemptionTimeLeft, "left"
 
-    def run(self, stopAtDeadlineMiss=True):
+    def run(self, stopAtDeadlineMiss=True, stopAtStableConfig=True):
         while(self.t < self.stop):
             self.incrementTime()
+            self.drawer.drawInstant(self.t)
 
-            for miss in self.deadlineMisses:
-                if self.verbose: print "DEADLINE MISS at t=", (miss[0] - 1), "for job", miss[1]
-            if len(self.deadlineMisses) > 0:
+            if len(self.deadlineMisses) > self.drawer.drawnDeadlineMissCount:
+                # new deadline miss
+                assert len(self.deadlineMisses) > 0
+                missT, job = self.deadlineMisses[-1]
+                self.drawer.drawDeadlineMiss(self.t, job.task)
+                if self.verbose:
+                    print "DEADLINE MISS at t=", (missT - 1), "for job", job
                 if stopAtDeadlineMiss:
                     break
-            else:
-                self.deadlineMisses = []
-                self.drawer.drawInstant(self.t)
+            if stopAtStableConfig and self.isStable:
+                break
         self.drawer.drawArrivalsAndDeadlines()
 
     def success(self):
         assert self.t >= 0, "Simulator.success: call run() first"
-        return self.t == self.stop
+        if len(self.deadlineMisses) > 0:
+            if self.verbose:
+                print "FAILURE: some deadlines were missed"
+            return False
+        if not self.isStable:
+            if self.verbose:
+                print "FAILURE: stable schedule not attained"
+            return False
+        return True
