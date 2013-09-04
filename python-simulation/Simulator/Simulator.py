@@ -4,8 +4,8 @@ import pdb
 from Model.CPU import CPU
 from Model import algorithms
 from Model.Job import Job
-import Drawer
-from JobConfiguration import JobConfiguration
+from . import Drawer
+from .JobConfiguration import JobConfiguration
 
 
 def heappeek(heap):
@@ -93,7 +93,7 @@ class Simulator(object):  # Global multiprocessing only
         if getWaitingJobs:
             waitingJobs = [job for prio, job in self.activeJobsHeap]
         if getBusyJobs:
-            busyJobs = filter(None, [cpu.job for cpu in self.CPUs])
+            busyJobs = [_f for _f in [cpu.job for cpu in self.CPUs] if _f]
         return waitingJobs + busyJobs
 
     def updatePriorities(self, job="all"):
@@ -105,7 +105,7 @@ class Simulator(object):  # Global multiprocessing only
         for job in jobs:
             job.priority = self.scheduler.priority(job, self)
             if self.verbose:
-                print "\t\tpriority of ", job, "is now", job.priority
+                print("\t\tpriority of ", job, "is now", job.priority)
 
     def updateHeaps(self):
         # possible bottleneck
@@ -127,7 +127,7 @@ class Simulator(object):  # Global multiprocessing only
         for cpu in self.activeCPUsHeap:
             if cpu.job and cpu.job.isFinished():
                 if self.verbose:
-                    print "\tCPU ", cpu, "is finished"
+                    print("\tCPU ", cpu, "is finished")
                 cpu.job = None
         self.updatePriorities()
         self.updateHeaps()
@@ -144,7 +144,7 @@ class Simulator(object):  # Global multiprocessing only
             if self.t >= task.O and self.t % task.T == task.O % task.T:
                 newJob = Job(task, self.t)
                 newJob.priority = self.scheduler.priority(newJob, self)
-                if self.verbose: print "\tarrival of job", newJob
+                if self.verbose: print("\tarrival of job", newJob)
                 heappush(self.activeJobsHeap, (-1 * newJob.priority, newJob))
 
     def handlePreemptions(self):
@@ -154,16 +154,16 @@ class Simulator(object):  # Global multiprocessing only
             self.updateHeaps()
             # check for preemptions
             if self.verbose:
-                print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.leastPrioritaryCPU(), "(", str(self.leastPrioritaryCPU().priority() if self.leastPrioritaryCPU() else None), ")"
+                print("\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.leastPrioritaryCPU(), "(", str(self.leastPrioritaryCPU().priority() if self.leastPrioritaryCPU() else None), ")")
             if self.mostPrioritaryJob() and self.leastPrioritaryCPU() and self.mostPrioritaryJob().priority >= self.leastPrioritaryCPU().priority():
                 # special case of equal priorities : decided by the scheduler
                 if self.mostPrioritaryJob().priority == self.leastPrioritaryCPU().priority():
                     if self.verbose:
-                        print "equal priority: preemption policy of scheduler :", self.scheduler.preemptEqualPriorities()
+                        print("equal priority: preemption policy of scheduler :", self.scheduler.preemptEqualPriorities())
                     if not self.scheduler.preemptEqualPriorities():
                         break
                 if self.verbose:
-                    print "\tpremption!"
+                    print("\tpremption!")
                 preemptiveJob = heappop(self.activeJobsHeap)[1]
                 preemptedCPU = heappop(self.activeCPUsHeap)
                 preemptedJob = preemptedCPU.job  # may be None
@@ -188,7 +188,7 @@ class Simulator(object):  # Global multiprocessing only
                     heappush(self.activeJobsHeap, (-1 * preemptedJob.priority, preemptedJob))
 
                 if self.verbose:
-                    print "\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.leastPrioritaryCPU(), "(", str(self.leastPrioritaryCPU().priority() if self.leastPrioritaryCPU() else None), ")"
+                    print("\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.leastPrioritaryCPU(), "(", str(self.leastPrioritaryCPU().priority() if self.leastPrioritaryCPU() else None), ")")
             else:
                 break
 
@@ -203,7 +203,7 @@ class Simulator(object):  # Global multiprocessing only
 
     def incrementTime(self):
         self.t += 1
-        if self.verbose: print "t=", self.t
+        if self.verbose: print("t=", self.t)
         if (self.t - self.system.omax()) % self.system.hyperPeriod() == 0:
             if self.lastConfig is not None and self.checkConfig() is True:
                 self.isStable = True
@@ -219,9 +219,9 @@ class Simulator(object):  # Global multiprocessing only
         self.computePreemptionRecovery()
         if self.verbose:
             for i, cpu in enumerate(self.CPUs):
-                print "\t", i, cpu
+                print("\t", i, cpu)
                 if cpu in self.preemptedCPUs:
-                    print "\t(preempt)", cpu.job.preemptionTimeLeft, "left"
+                    print("\t(preempt)", cpu.job.preemptionTimeLeft, "left")
 
     def run(self, stopAtDeadlineMiss=True, stopAtStableConfig=True):
         while(self.t < self.stop):
@@ -234,7 +234,7 @@ class Simulator(object):  # Global multiprocessing only
                 missT, job = self.deadlineMisses[-1]
                 self.drawer.drawDeadlineMiss(self.t, job.task)
                 if self.verbose:
-                    print "DEADLINE MISS at t=", (missT - 1), "for job", job
+                    print("DEADLINE MISS at t=", (missT - 1), "for job", job)
                 if stopAtDeadlineMiss:
                     break
             if stopAtStableConfig and self.isStable:
@@ -245,10 +245,10 @@ class Simulator(object):  # Global multiprocessing only
         assert self.t >= 0, "Simulator.success: call run() first"
         if len(self.deadlineMisses) > 0:
             if self.verbose:
-                print "FAILURE: some deadlines were missed"
+                print("FAILURE: some deadlines were missed")
             return False
         if not self.isStable:
             if self.verbose:
-                print "FAILURE: stable schedule not attained"
+                print("FAILURE: stable schedule not attained")
             return False
         return True

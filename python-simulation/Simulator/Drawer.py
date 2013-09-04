@@ -1,8 +1,8 @@
 from Model import algorithms
 
 from PIL import Image as img
-import ImageFont
-import ImageDraw as draw
+from PIL import ImageFont
+from PIL import ImageDraw as draw
 
 import random
 import re
@@ -50,7 +50,7 @@ class Drawer(object):
         H = self.simu.system.hyperPeriod()
         y = self.height - self.heightMargin
         specialDict = {'omax': self.simu.system.omax(), 'fpdit': algorithms.findFirstDIT(self.simu.system)}
-        for specialName, specialTime in specialDict.items():
+        for specialName, specialTime in list(specialDict.items()):
             i = 0
             while specialTime and specialTime + i * H < stop:
                 x = self.widthMargin + (specialTime + i * H) * self.instantWidth
@@ -81,7 +81,7 @@ class Drawer(object):
         taskNbr = self.getTaskNbr(task)
         assert taskNbr is not None, "drawAbort: task " + str(task) + " was not found in " + str(self.simu.system)
         x1 = self.widthMargin + t * self.instantWidth
-        y1 = self.height - self.heightMargin - taskNbr * self.taskHeight - self.taskHeight/2
+        y1 = self.height - self.heightMargin - taskNbr * self.taskHeight - self.taskHeight // 2
         r = 3
         self.outDraw.ellipse([x1 - r, y1 - r, x1 + r, y1 + r], outline="black", fill="red")
 
@@ -100,19 +100,19 @@ class Drawer(object):
                 x1 = self.widthMargin + t * self.instantWidth
                 y1 = self.height - self.heightMargin - taskNbr * self.taskHeight
                 # arrivals
-                drawArrow(self.outDraw, x1, y1 - (self.taskHeight / 2), x1, y1 - self.taskHeight, "blue")
+                drawArrow(self.outDraw, x1, y1 - (self.taskHeight // 2), x1, y1 - self.taskHeight, "blue")
                 # deadlines
                 t += task.D
                 x2 = self.widthMargin + t * self.instantWidth
-                drawArrow(self.outDraw, x2, y1 - (self.taskHeight)/2, x2, y1 , "red")
+                drawArrow(self.outDraw, x2, y1 - (self.taskHeight) // 2, x2, y1, "red")
 
 
 def greyColor(color):
     colorRe = re.compile('\d+')
     rgb = colorRe.findall(color)
     assert len(rgb) == 3
-    rgb = map(lambda s: int(s), rgb)
-    rgb = [c/2 for c in rgb]
+    rgb = [int(s) for s in rgb]
+    rgb = [c // 2 for c in rgb]
     return "rgb(" + ",".join([str(c) for c in rgb]) + ")"
 
 

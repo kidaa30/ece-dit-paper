@@ -4,6 +4,7 @@ import math
 
 from Helper import myAlgebra
 import newChineseRemainder
+from functools import reduce
 
 
 def findFirstDIT(tau):
@@ -104,7 +105,7 @@ def dbfTest(tau, firstDIT=None):
 	return True
 
 if __name__ == '__main__':
-	import Task
+	from . import Task
 
 	# UNIT TEST 1
 	tasks = []
@@ -170,7 +171,7 @@ if __name__ == '__main__':
 	assert findFirstPeriodicDIT(tau) == 720, "Unit Test FAIL : findFirstDIT (4c); " + "returned: " + str(findFirstDIT(tau))
 	assert findSynchronousInstant(tau) == 720, "Unit Test FAIL : findSynchronousInstant (4c); " + "returned: " + str(findSynchronousInstant(tau))
 
-	print "LONG UNIT TEST (should be less than 2 minutes)....."
+	print("LONG UNIT TEST (should be less than 2 minutes).....")
 
 	tasks = []
 	#                      0, C,  D,  T
@@ -184,10 +185,10 @@ if __name__ == '__main__':
 	assert findSynchronousInstant(tau) == 0, "returned: " + str(findSynchronousInstant(tau))
 	assert dbfTest(tau) is False
 
-	print "(1/3 OK)"
+	print("(1/3 OK)")
 	# random test
 
-	import TaskGenerator
+	from . import TaskGenerator
 	Utot = 0.75
 	n = 5
 	maxHyperT = 554400
@@ -201,10 +202,10 @@ if __name__ == '__main__':
 	assert findSynchronousInstant(tau) == 0, "returned: " + str(findSynchronousInstant(tau))
 	assert dbfTest(tau) or True
 
-	print "(2/3 OK)"
+	print("(2/3 OK)")
 	# random test - asynchr (and other parameters)
 
-	import TaskGenerator
+	from . import TaskGenerator
 	Utot = 1
 	n = 4
 	maxHyperT = 100
@@ -217,4 +218,4 @@ if __name__ == '__main__':
 	assert findSynchronousInstant(tau) or True, "returned: " + str(findSynchronousInstant(tau)) + "\n" + str(tau)
 	assert findFirstPeriodicDIT(tau) or True
 
-	print '3/3 OK'
+	print('3/3 OK')

@@ -21,9 +21,9 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, tasksCnt, verbose
 		Tmax = 20
 		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
 		if (verbose and numberOfSystems <= 10):
-			print("Generated task system # ", i)
+			print(("Generated task system # ", i))
 			for task in tasks:
-					print("\t", task)
+					print(("\t", task))
 		systemArray.append(Task.TaskSystem(tasks))
 	return systemArray
 
@@ -46,11 +46,11 @@ if __name__ == '__main__':
 			firstDITs3.append(algorithms.findFirstPeriodicDIT(tau))
 		for i, tau in enumerate(systemArray4):
 			firstDITs4.append(algorithms.findFirstPeriodicDIT(tau))
-		print("CDF", constrDeadlineFactor)
+		print(("CDF", constrDeadlineFactor))
 		noFPDITpcts2.append((100.0*len([x for x in firstDITs2 if x is None]))/len(firstDITs2))
 		noFPDITpcts3.append((100.0*len([x for x in firstDITs3 if x is None]))/len(firstDITs3))
 		noFPDITpcts4.append((100.0*len([x for x in firstDITs4 if x is None]))/len(firstDITs4))
-		print("Percentage of system with no FPDIT:", noFPDITpcts2[-1], noFPDITpcts3[-1], noFPDITpcts4[-1], "%")
+		print(("Percentage of system with no FPDIT:", noFPDITpcts2[-1], noFPDITpcts3[-1], noFPDITpcts4[-1], "%"))
 		CDFvalues.append(constrDeadlineFactor)
 
 	pylab.figure()

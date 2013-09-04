@@ -133,7 +133,7 @@ class TaskSystem(object):
                 lastArrival = arrival
                 dTuples = [(cnt, d) for cnt, d in enumerate(deadlines[lastDeadlineIndex:]) if d > arrival]
                 if dTuples:
-                    dIndexes, dValues = zip(*dTuples)
+                    dIndexes, dValues = list(zip(*dTuples))
                     lastDeadlineIndex += dIndexes[0]  # add number of skipped deadlines
                     for deadline in dValues:
                         yield arrival, deadline

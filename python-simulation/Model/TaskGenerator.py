@@ -1,6 +1,7 @@
 import math
 import random
-import Task
+from . import Task
+from functools import reduce
 
 
 def UUniSort(n, Utot):
@@ -80,10 +81,10 @@ if __name__ == '__main__':
 
     tasks = generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=True)
     for task in tasks:
-            print task
+            print(task)
 
-    print "UUniSort", UUniSort(5, 1.0)
-    print "UUniFast", UUniFast(5, 1.0)
+    print("UUniSort", UUniSort(5, 1.0))
+    print("UUniFast", UUniFast(5, 1.0))
 
     # check that the function does not generate values of Ci equals to 0
     # and that the total utilization is relatively close to the desired one
@@ -127,7 +128,7 @@ def oldGenerateTasks(Umax, Umin, u_max, u_min, maxHyperT, Tmin, Tmax, lowPPCM=Tr
         cnt += 1
         if cnt > 1000:
             # relax constraints
-            print "did not respect bounds after 1000 steps. Please give more relaxed constraints"
+            print("did not respect bounds after 1000 steps. Please give more relaxed constraints")
             utilization_goal_below = Umin
             utilization_goal_above = Umax
         elif reduceSum(utilizations) <= Umin:

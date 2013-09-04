@@ -1,6 +1,6 @@
-import algorithms
-import Task
-import TaskGenerator
+from . import algorithms
+from . import Task
+from . import TaskGenerator
 
 import random
 import subprocess  # in order to launch GLPSOL
@@ -94,7 +94,7 @@ class Cspace(object):
         if firstPass:
             for i, cstr in enumerate(self):
                 if not cstr.isRedundant(newCspace):
-                    if verbose: print "\tNon-redundant at step ", i, ":", cstr
+                    if verbose: print("\tNon-redundant at step ", i, ":", cstr)
                     newCspace.append(cstr)
         else:
             newCspace.extend(self)
@@ -108,7 +108,7 @@ class Cspace(object):
                 newCspace.insert(i, cstr)
                 i += 1
             elif verbose:
-                print "\t", cstr, "was redundant against", newCspace
+                print("\t", cstr, "was redundant against", newCspace)
         return Cspace(newCspace, fromList=True)
 
     def numTasks(self):
@@ -133,7 +133,7 @@ class Cspace(object):
             boxLimits = self.calculateBoundingBox()
             for limit in boxLimits:
                 cValues.append([c for c in range(1, limit)])
-        return len(filter(lambda cvector: testCVector(self, cvector), itertools.product(*cValues)))
+        return len([cvector for cvector in itertools.product(*cValues) if testCVector(self, cvector)])
 
 
 # def CspaceSize(tau, cspace=None):
@@ -169,9 +169,9 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
         Tmax = 20
         tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
         if (verbose and numberOfSystems <= 10):
-            print "Generated task system # ", i
+            print("Generated task system # ", i)
             for task in tasks:
-                    print "\t", task
+                    print("\t", task)
         systemArray.append(Task.TaskSystem(tasks))
     return systemArray
 
@@ -267,14 +267,14 @@ if __name__ == '__main__':
     tasks.append(Task.Task(0, 1, 7, 11))
     tasks.append(Task.Task(0, 1, 10, 13))
     tau = Task.TaskSystem(tasks)
-    print tau
+    print(tau)
     tau_Cspace = Cspace(tau)
     tau_Cspace_noredun = tau_Cspace.removeRedundancy()
 
-    print "FINAL CSPACE"
+    print("FINAL CSPACE")
     for cstr in tau_Cspace_noredun:
-        print cstr
-    print len(tau_Cspace), "=>", len(tau_Cspace_noredun), "constraints left"
+        print(cstr)
+    print(len(tau_Cspace), "=>", len(tau_Cspace_noredun), "constraints left")
 
     tasks = []
     #                      0, C, D, T
@@ -300,18 +300,18 @@ if __name__ == '__main__':
     NUMBER_OF_SYSTEMS = 10
     systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, 1)
     for tau in systemArray:
-        print tau
-        print "cspace..."
+        print(tau)
+        print("cspace...")
         cspace = Cspace(tau)
-        print "found ", len(cspace), "constraints"
-        print "remove redun..."
+        print("found ", len(cspace), "constraints")
+        print("remove redun...")
         cspace_noredun = cspace.removeRedundancy()
-        print len(cspace), "=>", len(cspace_noredun), "constraints left"
-        print ""
+        print(len(cspace), "=>", len(cspace_noredun), "constraints left")
+        print("")
         resultCSPACE = testCVector(cspace_noredun, [task.C for task in tau.tasks])
         resultCSPACENOREDUN = testCVector(cspace, [task.C for task in tau.tasks])
         resultDBF = algorithms.dbfTest(tau)
         assert resultCSPACE == resultCSPACENOREDUN == resultDBF, str(resultCSPACE) + str(resultCSPACENOREDUN) + str(resultDBF)
-        print "redundancy (necessary) condition ok"
-        print "synchronous instant", algorithms.findSynchronousInstant(tau)
-        print "cspacesize", cspace_noredun.size(tau)
+        print("redundancy (necessary) condition ok")
+        print("synchronous instant", algorithms.findSynchronousInstant(tau))
+        print("cspacesize", cspace_noredun.size(tau))

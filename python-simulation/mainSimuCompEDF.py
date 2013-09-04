@@ -48,10 +48,10 @@ for i in range(1000):
     #     pallfScore += 1
 
 
-print("EDF fs", len([r for r in resultsEDF if r is True]))
-print("CK fs", len([r for r in resultsCK if r is True]))
-print("PALLF fs", len([r for r in resultsPALLF if r is True]))
+print(("EDF fs", len([r for r in resultsEDF if r is True])))
+print(("CK fs", len([r for r in resultsCK if r is True])))
+print(("PALLF fs", len([r for r in resultsPALLF if r is True])))
 
-print("EDF is best", edfScore)
-print("CK is best", ckScore)
-print("PALLF is best", pallfScore)
+print(("EDF is best", edfScore))
+print(("CK is best", ckScore))
+print(("PALLF is best", pallfScore))

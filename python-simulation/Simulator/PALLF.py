@@ -1,4 +1,4 @@
-import Scheduler
+from . import Scheduler
 
 
 class PALLF(Scheduler.SchedulerDP):

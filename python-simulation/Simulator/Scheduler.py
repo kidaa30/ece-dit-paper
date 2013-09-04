@@ -1,4 +1,4 @@
-import Simulator
+from . import Simulator
 
 import itertools
 import pdb

@@ -1,4 +1,5 @@
 import math
+from functools import reduce
 
 
 def egcd_couple(a, b):
@@ -79,7 +80,7 @@ def primesBelow(n):
 		return []
 	sieve = [True] * (n + 1)
 	for x in range(3, int(math.sqrt(n)) + 1, 2):
-		for y in range(3, (n / x) + 1, 2):
+		for y in range(3, (n // x) + 1, 2):
 			sieve[(x * y)] = False
 
 	return [2] + [i for i in range(3, n, 2) if sieve[i]]
@@ -94,7 +95,7 @@ def primeFactors(n, listOfPrimes=None):
 	primes = listOfPrimes
 	if primes is None:
 		primes = primesBelow(n + 1)
-	for p in filter(lambda x: x <= n, primes):
+	for p in [x for x in primes if x <= n]:
 		while n % p == 0:
 			factors.append(p)
 			n /= p
@@ -167,11 +168,11 @@ def congruencePrimalPower(primalSystem, aList):
 	# Group system into subsystems of the same p and solve them separately
 	subX = {}
 	maxB = {}
-	for p in ps.keys():
+	for p in list(ps.keys()):
 		# Check that all values are consistent modulo p^b
 		# For that we check that ai = aj mod p^(b_min(i,j)) for all pairs
 		for bi in ps[p]:  # TODO : verify should we only check for the smallest bi
-			for bj in filter(lambda x: x > bi, primalSystem[p]):
+			for bj in [x for x in primalSystem[p] if x > bi]:
 				ai = ps[p][bi]
 				aj = ps[p][bj]
 				# by construction we know that bi < bj
@@ -189,7 +190,7 @@ def congruencePrimalPower(primalSystem, aList):
 	# Create lists to use as parameters of our CRT function
 	subXList = []
 	pbList = []
-	for p in ps.keys():
+	for p in list(ps.keys()):
 		subXList.append(subX[p])
 		pbList.append(int(math.pow(p, maxB[p])))
 

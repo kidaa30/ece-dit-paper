@@ -1,4 +1,4 @@
-import Scheduler
+from . import Scheduler
 
 
 class ChooseKeepEDF(Scheduler.SchedulerDP):
@@ -7,7 +7,7 @@ class ChooseKeepEDF(Scheduler.SchedulerDP):
         self.prioOffset = max([task.alpha for task in tau.tasks])
 
     def idleCPUsCount(self, simu):
-        return len(filter(lambda cpu: cpu.job is None, simu.CPUs))
+        return len([cpu for cpu in simu.CPUs if cpu.job is None])
 
     def earliestPreempArrival(self, job, simu):
         # return earliest time at which job will be preempted if it is chosen now
