@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 # tau = systems.generateSystemArray(1, 1)[0]
-tau = systems.Meumeu
+tau = systems.ULessThanOneImplicitUnfeasible
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -24,8 +24,8 @@ if fpdit:
 
 print "stop", stop
 
-scheduler = Scheduler.EDF(tau)
-# scheduler = Scheduler.SpotlightEDF(tau)
+# scheduler = Scheduler.EDF(tau)
+scheduler = Scheduler.SpotlightEDF(tau)
 # scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
 # scheduler = PALLF.PALLF(tau)
 # scheduler = Scheduler.FixedPriority(tau, [1, 2, 3])
@@ -36,16 +36,16 @@ scheduler = Scheduler.EDF(tau)
 # else:
 #   print "No feasible priorities found !"
 
-simu = Simulator.Simulator(tau, stop=200, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=False)
+simu = Simulator.Simulator(tau, stop=1000, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=False)
 
 try:
-    simu.run(stopAtDeadlineMiss=False, stopAtStableConfig=True)
+    simu.run(stopAtDeadlineMiss=True, stopAtStableConfig=True)
     if simu.success():
         print "Success."
     else:
         print "Failure."
 except AssertionError:
-    print "Something went wrong ! Close the image preview to see the callback"
+    print "Something went wrong ! Close the image preview to see the stack trace"
     raise
 finally:
     if "linux" in sys.platform:

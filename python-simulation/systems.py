@@ -203,6 +203,21 @@ tasks.append(Task.Task(0, 9, 11, 13))
 EDFNonOptimalMultiprocessor = Task.TaskSystem(tasks)
 
 
+# RequireClairvoyance
+tasks = []
+tasks.append(Task.Task(22, 2, 2, 24, alpha=2))
+tasks.append(Task.Task(0, 5, 12, 12, alpha=2))
+tasks.append(Task.Task(4, 5, 6, 12, alpha=2))
+tasks.append(Task.Task(9, 1, 1, 24, alpha=2))
+RequireClairvoyance = Task.TaskSystem(tasks)
+
+
+# ULessThanOneImplicitUnfeasible
+tasks = []
+tasks.append(Task.Task(0, 7, 10, 10, alpha=1))
+tasks.append(Task.Task(0, 1, 4, 4, alpha=1))
+ULessThanOneImplicitUnfeasible = Task.TaskSystem(tasks)
+
 
 # test
 tasks = []
