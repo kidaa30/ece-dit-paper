@@ -1,4 +1,4 @@
-import main
+from . import main
 import algorithms
 
 import multiprocessing
@@ -44,7 +44,7 @@ class Worker(object):
 			
 	def runSystems(self,numberOfSystems, constrDeadlineFactor):
 		systemArray = main.generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False)
-		print "systems generated"
+		print("systems generated")
 		sys.stdout.flush()
 		verbose = False
 	
@@ -69,14 +69,14 @@ class Worker(object):
  		bpStop = time.clock()
 	
 	
-		print "CDF Index", self.cdfIndex, "starting hyperperiod computation..."
+		print("CDF Index", self.cdfIndex, "starting hyperperiod computation...")
 		sys.stdout.flush()
 		hyperTStart = time.clock()
 		for i, tau in enumerate(systemArray):
 			hyperTs.append(tau.hyperPeriod())
 		hyperTMedium = time.clock()
 		for i, tau in enumerate(systemArray):
-			print "CDF Index", self.cdfIndex, "system", i
+			print("CDF Index", self.cdfIndex, "system", i)
 			sys.stdout.flush()
 			hyperTResults.append(algorithms.dbfTest(tau))
 		hyperTStop = time.clock()
@@ -161,7 +161,7 @@ class ProcessManager(object):
 			
 		for i in range(self.numCdfValues):
 			cdfIndex,res = self.resultsQueue.get()
-			print "Got results for cdf", self.cdf[cdfIndex], [round(r,3) for r in res]
+			print("Got results for cdf", self.cdf[cdfIndex], [round(r,3) for r in res])
 			self.bpValue[cdfIndex] = res[1]
 			self.bpTest[cdfIndex] = res[0]
 			self.bpAll[cdfIndex] = res[0] + res[1]

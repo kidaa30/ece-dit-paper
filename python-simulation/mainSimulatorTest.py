@@ -1,6 +1,6 @@
-from Simulator import Simulator, Scheduler, ChooseKeepEDF, PALLF
-from Model import algorithms
-import systems
+from .Simulator import Simulator, Scheduler, ChooseKeepEDF, PALLF
+from .Model import algorithms
+from . import systems
 
 import unittest
 

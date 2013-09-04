@@ -1,7 +1,7 @@
-from Model import Task
-from Model import TaskGenerator
-from Model import algorithms
-from Model import cspace
+from .Model import Task
+from .Model import TaskGenerator
+from .Model import algorithms
+from .Model import cspace
 
 import pylab
 
@@ -9,17 +9,17 @@ import random
 import time
 
 def testSystem(tau, maxCstrcnt=1000):
-	print "TESTING SYSTEM"
-	print tau
+	print("TESTING SYSTEM")
+	print(tau)
 
 	Omax = max([task.O for task in tau.tasks])
 	fpdit = algorithms.findFirstDIT(tau)
 	H = tau.hyperPeriod()
 	tau_cspace = cspace.Cspace(tau)
 
-	print "firstDIT", fpdit
-	print "H", H
-	print "#cstr of cspace", len(tau_cspace)
+	print("firstDIT", fpdit)
+	print("H", H)
+	print("#cstr of cspace", len(tau_cspace))
 
 	if len(tau_cspace) <= maxCstrcnt:
 		twoPassStart = time.clock()
@@ -30,9 +30,9 @@ def testSystem(tau, maxCstrcnt=1000):
 		cspacepruned_onePass = tau_cspace.removeRedundancy(firstPass=False)
 		onePassStop = time.clock()
 
-		print "#cstr of cspace in 2 passes ", len(cspacePruned), "(time", twoPassStop - twoPassStart, ")"
-		print "#cstr of cspace in 1 pass ", len(cspacepruned_onePass), "(time", onePassStop - onePassStart, ")"
-		print "comparison of sizes", cspacepruned_onePass.size(tau), "|", cspacePruned.size(tau)
+		print("#cstr of cspace in 2 passes ", len(cspacePruned), "(time", twoPassStop - twoPassStart, ")")
+		print("#cstr of cspace in 1 pass ", len(cspacepruned_onePass), "(time", onePassStop - onePassStart, ")")
+		print("comparison of sizes", cspacepruned_onePass.size(tau), "|", cspacePruned.size(tau))
 		return len(tau_cspace), twoPassStop - twoPassStart, onePassStop - onePassStart
 	else:
 		return None
@@ -51,9 +51,9 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 		Tmax = 20
 		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
 		if (verbose and numberOfSystems <= 10):
-			print "Generated task system # ", i
+			print("Generated task system # ", i)
 			for task in tasks:
-					print "\t", task
+					print("\t", task)
 		systemArray.append(Task.TaskSystem(tasks))
 	return systemArray
 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 	oneTimes = []
 
 	for i, tau in enumerate(systemArray):
-		print "TEST NUMBER", i
+		print("TEST NUMBER", i)
 		returnTuple = testSystem(tau, maxCstrcnt=1000)
 		if returnTuple is not None:
 			cstrSize, twoPassTime, onePassTime = returnTuple[0], returnTuple[1], returnTuple[2]

@@ -4,7 +4,8 @@ import random
 import pylab  # http://matplotlib.org/
 
 from Task import Task, TaskGenerator
-from Model import algorithms
+from .Model import algorithms
+from functools import reduce
 
 
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
@@ -20,9 +21,9 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 		Tmax = 25
 		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
 		if (verbose and numberOfSystems <= 10):
-			print "Generated task system # ", i
+			print("Generated task system # ", i)
 			for task in tasks:
-					print "\t", task
+					print("\t", task)
 		systemArray.append(Task.TaskSystem(tasks))
 	return systemArray
 
@@ -42,9 +43,9 @@ def test(numberOfSystems, constrDeadlineFactor):
 
 	# Compare algorithms
 
-	print "start busy period tests..."
+	print("start busy period tests...")
 	bpStart = time.clock()
-	if len(filter(lambda x: not x.isSynchronous(), systemArray)) == 0:
+	if len([x for x in systemArray if not x.isSynchronous()]) == 0:
 		for tau in systemArray:
 			busyPeriods.append(algorithms.findBusyPeriod(tau))
 		bpMedium = time.clock()
@@ -55,44 +56,44 @@ def test(numberOfSystems, constrDeadlineFactor):
 	bpStop = time.clock()
 
 
-	print "Starting hyperT value..."
+	print("Starting hyperT value...")
 	hyperTStart = time.clock()
 	for i, tau in enumerate(systemArray):
 		hyperTs.append(tau.hyperPeriod())
 	hyperTMedium = time.clock()
-	print "Starting hyperT test..."
+	print("Starting hyperT test...")
 	for i, tau in enumerate(systemArray):
 		hyperTResults.append(algorithms.dbfTest(tau))
 	hyperTStop = time.clock()
 
-	print "starting DIT value computation..."
+	print("starting DIT value computation...")
 	ditStart = time.clock()
 	for i, tau in enumerate(systemArray):
 		#print i
 		firstDITs.append(algorithms.findFirstDIT(tau))
 	ditMedium = time.clock()
-	print "starting DIT dbf test..."
+	print("starting DIT dbf test...")
 	for i, tau in enumerate(systemArray):
 		ditResults.append(algorithms.dbfTest(tau, firstDITs[i]))
 	ditStop = time.clock()
-	print "done"
+	print("done")
 
 	for i in range(len(systemArray)):
 		assert ditResults[i] == hyperTResults[i]
 
-	print "== Test Results (on " + str(numberOfSystems) + " tasks system)"
+	print("== Test Results (on " + str(numberOfSystems) + " tasks system)")
 	if (verbose and len(systemArray) <= 10):
 		for i in range(len(systemArray)):
-			print "=== System", i
-			print "\tbusy period:", busyPeriods[i]
-			print "\tfirst DIT:", firstDITs[i]
-			print "\tPPCM:", hyperTs[i]
-	print "\tAlgorithms performance (upper limit computation + dbf test)"
-	print "\t\tTime with busy period:", bpMedium - bpStart, "+", bpStop - bpMedium, " = ", bpStop - bpStart, "s"
-	print "\t\tTime with DIT:", ditMedium - ditStart, "+", ditStop - ditMedium, " = ", ditStop - ditStart, "s"
-	print "\t\tTime with hyperT:", hyperTMedium - hyperTStart, "+", hyperTStop - hyperTMedium, " = ", hyperTStop - hyperTStart, "s"
+			print("=== System", i)
+			print("\tbusy period:", busyPeriods[i])
+			print("\tfirst DIT:", firstDITs[i])
+			print("\tPPCM:", hyperTs[i])
+	print("\tAlgorithms performance (upper limit computation + dbf test)")
+	print("\t\tTime with busy period:", bpMedium - bpStart, "+", bpStop - bpMedium, " = ", bpStop - bpStart, "s")
+	print("\t\tTime with DIT:", ditMedium - ditStart, "+", ditStop - ditMedium, " = ", ditStop - ditStart, "s")
+	print("\t\tTime with hyperT:", hyperTMedium - hyperTStart, "+", hyperTStop - hyperTMedium, " = ", hyperTStop - hyperTStart, "s")
 	feasibleSystemCnt = reduce(lambda x, y: x + (y is True), hyperTResults)
-	print "\tFeasible?", feasibleSystemCnt, ", or about", int(round((feasibleSystemCnt * 100.0)/len(systemArray))), "%"
+	print("\tFeasible?", feasibleSystemCnt, ", or about", int(round((feasibleSystemCnt * 100.0)/len(systemArray))), "%")
 
 	return bpStop - bpMedium, bpMedium - bpStart, ditStop - ditMedium, ditMedium - ditStart, hyperTStop - hyperTMedium, hyperTMedium - hyperTStart
 
@@ -109,7 +110,7 @@ if __name__ == '__main__':
 	hyperTAll = []
 	cdfRange = [f/2.0 for f in range(2, 11)]
 	for constrDeadFactor in cdfRange:
-		print "TEST WITH CONSTR DEAD FACTOR", constrDeadFactor
+		print("TEST WITH CONSTR DEAD FACTOR", constrDeadFactor)
 		result = test(NUMBER_OF_SYSTEMS, constrDeadFactor)
 		bpValue.append(result[1])
 		bpTest.append(result[0])

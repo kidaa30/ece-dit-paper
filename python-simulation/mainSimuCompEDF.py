@@ -1,7 +1,7 @@
-from Model import algorithms
-from Simulator import Simulator
-from Simulator import Scheduler, ChooseKeepEDF, PALLF
-import systems
+from .Model import algorithms
+from .Simulator import Simulator
+from .Simulator import Scheduler, ChooseKeepEDF, PALLF
+from . import systems
 
 import subprocess
 
@@ -14,10 +14,10 @@ ckScore = 0
 pallfScore = 0
 
 for i in range(1000):
-    print i
+    print(i)
     tau = systems.generateSystemArray(1, 1)[0]
     # tau = systems.test
-    print tau
+    print(tau)
 
     Omax = max([task.O for task in tau.tasks])
     H = tau.hyperPeriod()
@@ -48,10 +48,10 @@ for i in range(1000):
     #     pallfScore += 1
 
 
-print "EDF fs", len(filter(lambda r: r is True, resultsEDF))
-print "CK fs", len(filter(lambda r: r is True, resultsCK))
-print "PALLF fs", len(filter(lambda r: r is True, resultsPALLF))
+print("EDF fs", len([r for r in resultsEDF if r is True]))
+print("CK fs", len([r for r in resultsCK if r is True]))
+print("PALLF fs", len([r for r in resultsPALLF if r is True]))
 
-print "EDF is best", edfScore
-print "CK is best", ckScore
-print "PALLF is best", pallfScore
+print("EDF is best", edfScore)
+print("CK is best", ckScore)
+print("PALLF is best", pallfScore)

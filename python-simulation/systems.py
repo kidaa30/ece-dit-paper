@@ -1,6 +1,6 @@
 import random
-from Model import Task
-from Model import TaskGenerator
+from .Model import Task
+from .Model import TaskGenerator
 
 
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, preemptionCost=2, verbose=False):
@@ -16,9 +16,9 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, preemptionCost=2,
 		Tmax = 50
 		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, preemptionCost=preemptionCost, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
 		if (verbose and numberOfSystems <= 10):
-			print "Generated task system # ", i
+			print("Generated task system # ", i)
 			for task in tasks:
-					print "\t", task
+					print("\t", task)
 		systemArray.append(Task.TaskSystem(tasks))
 	return systemArray
 

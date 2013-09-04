@@ -1,14 +1,14 @@
-from Model import Task
-from Model import TaskGenerator
-from Model import algorithms
-from Model import cspace
+from .Model import Task
+from .Model import TaskGenerator
+from .Model import algorithms
+from .Model import cspace
 
 import random
 import time
 
 def testSystem(tau):
-	print "TESTING SYSTEM"
-	print tau
+	print("TESTING SYSTEM")
+	print(tau)
 
 	Omax = max([task.O for task in tau.tasks])
 	fpdit = algorithms.findFirstDIT(tau)
@@ -16,13 +16,13 @@ def testSystem(tau):
 	tau_cspace = cspace.Cspace(tau)
 	tau_big_cspace = cspace.Cspace(tau, Omax + 2 * H)
 
-	print "firstDIT", fpdit
-	print "H", H
-	print "intervals"
+	print("firstDIT", fpdit)
+	print("H", H)
+	print("intervals")
 	for (a, d) in tau.dbf_intervals(fpdit, fpdit + H):
-		print [a,d]
-	print "#cstr of cspace", len(tau_cspace)
-	print "#cstr of big cspace", len(tau_big_cspace)
+		print([a,d])
+	print("#cstr of cspace", len(tau_cspace))
+	print("#cstr of big cspace", len(tau_big_cspace))
 
 	smallStart = time.clock()
 	cspacePruned = tau_cspace.removeRedundancy()
@@ -32,10 +32,10 @@ def testSystem(tau):
 	big_cspacepruned = tau_big_cspace.removeRedundancy()
 	bigStop = time.clock()
 
-	print "#cstr of cspace after pruning ", len(cspacePruned), "(time", smallStop - smallStart, ")"
-	print "#cstr of big cspace after pruning ", len(big_cspacepruned), "time", bigStop - bigStart
+	print("#cstr of cspace after pruning ", len(cspacePruned), "(time", smallStop - smallStart, ")")
+	print("#cstr of big cspace after pruning ", len(big_cspacepruned), "time", bigStop - bigStart)
 	# print "size :", cspace.CspaceSize(tau, cspacePruned)
-	print "comparison of sizes", tau.cSpaceSize(tau_cspace), "|", tau.cSpaceSize(cspacePruned)
+	print("comparison of sizes", tau.cSpaceSize(tau_cspace), "|", tau.cSpaceSize(cspacePruned))
 	return tau.cSpaceSize(cspacePruned)
 
 
@@ -52,9 +52,9 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 		Tmax = 20
 		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
 		if (verbose and numberOfSystems <= 10):
-			print "Generated task system # ", i
+			print("Generated task system # ", i)
 			for task in tasks:
-					print "\t", task
+					print("\t", task)
 		systemArray.append(Task.TaskSystem(tasks))
 	return systemArray
 
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 	#systemArray = generateSystemArray(100, 1)
 
 	for i, tau in enumerate(systemArray):
-		print "TEST NUMBER", i
+		print("TEST NUMBER", i)
 		sizeAsynchr = testSystem(tau)
 		synchrTasks = []
 		for task in tau.tasks:

@@ -1,4 +1,4 @@
-from Helper import myAlgebra
+from .Helper import myAlgebra
 
 import math
 import heapq
@@ -39,7 +39,7 @@ def removeBadChineseRemainderResults(results,a,n):
 	badResults = []
 	for r in results:
 		for cnt,i in enumerate(n):
-			if len(filter(None,[r % i == aValue for aValue in a[cnt]])) == 0:
+			if len([_f for _f in [r % i == aValue for aValue in a[cnt]] if _f]) == 0:
 				badResults.append(r)
 				break
 
@@ -90,7 +90,7 @@ def newCongruencePrimalPower(primalSystem, aList):
 	# Group system into subsystems of the same p and solve them separately
 	subX = {}
 	maxB = {}
-	for p in ps.keys():
+	for p in list(ps.keys()):
 		maxB[p] = max(ps[p].keys())
 		maxA = ps[p][maxB[p]]
  		subX[p] = maxA
@@ -106,7 +106,7 @@ def newCongruencePrimalPower(primalSystem, aList):
 
 	# Create lists to use as parameters of our CRT function
 	subXList = []
-	pbArray = array.array('i',[0])*len(ps.keys())
+	pbArray = array.array('i',[0])*len(list(ps.keys()))
 	for cnt,p in enumerate(ps.keys()):
 		subXList.append(subX[p])
 		pbArray[cnt] = int(math.pow(p, maxB[p]))
@@ -137,7 +137,7 @@ def newFindFirstPeriodicDIT(tau):
  	if not allResults:
  		return None
 
- 	idles = zip(allResults,[False for i in range(len(allResults))])
+ 	idles = list(zip(allResults,[False for i in range(len(allResults))]))
  	heapq.heapify(idles)
  	idleTuple = heapq.heappop(idles)
  	tIdle = idleTuple[0]
