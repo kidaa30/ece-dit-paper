@@ -183,12 +183,12 @@ synchronous system.
 			\item A \emph{busy period} is a time interval between two consecutive idle times in
 			which at least one job is executing.
 			\item The interval between the initial time ($t=0$) and the first
-			idle time is called the \emph{first busy period}.
+			idle time after $t=0$ is called the \emph{first busy period}.
 		\end{itemize}
 
 	\subsection{The DBF feasibility test}
 
-	We recall the necessary and sufficient condition explained in \cite{baruah1999generalized, baruah1990algorithms}, based on the demand-bound function.
+	We recall the necessary and sufficient feasability condition on monoprocessor platform given in \cite{baruah1999generalized, baruah1990algorithms} and based on the demand-bound function.
 
 	\begin{definition}
 		The \textbf{demand-bound function (DBF)}
@@ -201,7 +201,7 @@ synchronous system.
 	\[
 		\dbf{t_1, t_2} = \sum_{i=1}^{n} n_i(t_1, t_2) \, C_i
 	\]
-	where $n_i(t_1, t_2)$ is the number of jobs of task $i$ which arrival times
+	where $n_i(t_1, t_2)$ is the number of jobs of task $\tau_i$ which arrival times
 	and deadlines are both in the closed interval $[t_1, t_2]$.
 
 	The values of the $n_i$ are given by \cite{baruah1999generalized}
@@ -264,7 +264,7 @@ synchronous system.
   of tasks. While it has been shown that constraints that cover intervals ending
   after the end of the first busy period are also redundant, this value depends on the $C_i$ and is
   therefore not usable for the purposes of this paper. The
-  following concept, initially described by \cite{lipariaverage}, is thus introduced. It is similar to the end of the busy period but does not depend on the execution times.
+  following concept, initially described by \cite{lipariaverage}, is thus introduced. It gives an upper bound for to the end of the busy period and does not depend on the execution times.
 
   \begin{definition}
     A \textbf{definitive idle time} (DIT) \cite{lipariaverage} is a time $t$ such that every job
@@ -308,10 +308,8 @@ synchronous system.
   to check the DBF test in intervals $[0, t]$ before the end of the busy period, it is
   slightly more pessimistic but still correct to use the following condition:
   \[
-  	\begin{array}{c}
-  		\dbf{0,t} \leqslant t \; \forall t \leqslant t_d \\
+  		\dbf{0,t} \leqslant t \; \forall t \leqslant t_d
   		\iff \text{The system is feasible}
-  	\end{array}
   \]
 
   To summarize, we reduced the description of the C-space from an infinite number
