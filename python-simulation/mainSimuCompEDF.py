@@ -1,19 +1,20 @@
-from .Model import algorithms
-from .Simulator import Simulator
-from .Simulator import Scheduler, ChooseKeepEDF, PALLF
-from . import systems
+from Model import algorithms
+from Simulator import Simulator
+from Simulator import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
+import systems
 
-import subprocess
+NUMBER_OF_SYSTEMS = 100
 
-resultsEDF = []
-resultsCK = []
-resultsPALLF = []
+# schedulers = [Scheduler.EDF, ChooseKeepEDF.ChooseKeepEDF, PALLF.PALLF]
+schedulers = [Scheduler.EDF, LBLScheduler.LBLEDF]
 
-edfScore = 0
-ckScore = 0
-pallfScore = 0
+results = {}
+scores = {}
+for sched in schedulers:
+    results[sched] = []
+    scores[sched] = 0
 
-for i in range(1000):
+for i in range(NUMBER_OF_SYSTEMS):
     print(i)
     tau = systems.generateSystemArray(1, 1)[0]
     # tau = systems.test
@@ -22,36 +23,28 @@ for i in range(1000):
     Omax = max([task.O for task in tau.tasks])
     H = tau.hyperPeriod()
     fpdit = algorithms.findFirstDIT(tau)
-    stop = Omax + 2 * H
+    stop = Omax + 10 * H  # FIXME
     if fpdit:
         stop = fpdit + H
 
-    simuEDF = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=Scheduler.EDF(tau), abortAndRestart=False)
-    simuCK = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=ChooseKeepEDF.ChooseKeepEDF(tau), abortAndRestart=False)
-    simuPALLF = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=PALLF.PALLF(tau), abortAndRestart=False)
+    for sched in schedulers:
+        simu = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=sched(tau), abortAndRestart=False)
+        simu.run(stopAtDeadlineMiss=True, stopAtStableConfig=True)
+        results[sched].append(simu.success())
 
-    simuEDF.run(stopAtDeadlineMiss=True)
-    simuCK.run(stopAtDeadlineMiss=True)
-    # simuPALLF.run(stopAtDeadlineMiss=True)
-
-    resultsEDF.append(simuEDF.success())
-    resultsCK.append(simuCK.success())
-    # resultsPALLF.append(simuPALLF.success())
-
-    # assert (not simuEDF.success()) or simuCK.success(), str(simuEDF.success()) + str(simuCK.success())
-    if simuEDF.success() and not simuCK.success() and not simuPALLF.success():
-        edfScore += 1
-#    if simuCK.success() and not simuEDF.success() and not simuPALLF.success():
-    if simuCK.success() and not simuEDF.success():
-        ckScore += 1
-    # if simuPALLF.success() and not simuEDF.success() and not simuCK.success():
-    #     pallfScore += 1
+# compute score
+for i in range(NUMBER_OF_SYSTEMS):
+    for sched in schedulers:
+        if results[sched][i]:
+            undefeated = True
+            for otherSched in schedulers:
+                if otherSched is not sched and results[otherSched][i]:
+                    undefeated = False
+                    break
+            if undefeated:
+                scores[sched] += 1
 
 
-print(("EDF fs", len([r for r in resultsEDF if r is True])))
-print(("CK fs", len([r for r in resultsCK if r is True])))
-print(("PALLF fs", len([r for r in resultsPALLF if r is True])))
-
-print(("EDF is best", edfScore))
-print(("CK is best", ckScore))
-print(("PALLF is best", pallfScore))
+for i, sched in enumerate(schedulers):
+    print("Feasable under sched", i, ":", len([r for r in results[sched] if r is True]))
+    print("Scheduler ", i, "score:", scores[sched])

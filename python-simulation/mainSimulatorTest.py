@@ -12,7 +12,7 @@ class TestSimulator(unittest.TestCase):
     def checkResult(self, tau, sched, expectedResult):
         Omax = max([task.O for task in tau.tasks])
         H = tau.hyperPeriod()
-        fpdit = algorithms.findFirstDIT(tau)
+        # fpdit = algorithms.findFirstDIT(tau)
         stop = Omax + 2 * H
 
         simulator = Simulator.Simulator(tau, stop, nbrCPUs=1, scheduler=sched, abortAndRestart=False)

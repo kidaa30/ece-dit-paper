@@ -1,9 +1,8 @@
 from heapq import heapify, heappop, heappush
-import pdb
+# import pdb
 
 from Model.CPU import CPU
 from Model import algorithms
-from Model.Job import Job
 from . import Drawer
 from .JobConfiguration import JobConfiguration
 
@@ -142,9 +141,10 @@ class Simulator(object):  # Global multiprocessing only
     def checkJobArrival(self):
         for task in self.system.tasks:
             if self.t >= task.O and self.t % task.T == task.O % task.T:
-                newJob = Job(task, self.t)
+                newJob = task.getJob(self.t)
                 newJob.priority = self.scheduler.priority(newJob, self)
-                if self.verbose: print("\tarrival of job", newJob)
+                if self.verbose:
+                    print("\tarrival of job", newJob)
                 heappush(self.activeJobsHeap, (-1 * newJob.priority, newJob))
 
     def handlePreemptions(self):
