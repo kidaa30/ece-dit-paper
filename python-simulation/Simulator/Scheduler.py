@@ -41,7 +41,7 @@ class SpotlightEDF(SchedulerDP):
 
 
 class SchedulerFJP(SchedulerDP):
-    def priority(self, job, simu):
+    def priority(self, job, simu=None):
         if job.priority is not None:
             return job.priority
 
@@ -50,9 +50,9 @@ class SchedulerFJP(SchedulerDP):
 
 
 class EDF(SchedulerFJP):
-    def priority(self, job, simu):
+    def priority(self, job, simu=None):
         super(SchedulerFJP, self).priority(job, simu)
-        return 1.0/job.deadline
+        return 1 / job.deadline
 
 
 class SchedulerFTP(SchedulerFJP):
@@ -64,7 +64,7 @@ class SchedulerFTP(SchedulerFJP):
         # return priorities array in priority order (decreasing)
         pass
 
-    def priority(self, job, simu):
+    def priority(self, job, simu=None):
         super(SchedulerFTP, self).priority(job, simu)
         for i, task in enumerate(reversed(self.priorities)):  # priorities is decreasing
             if job.task is task:

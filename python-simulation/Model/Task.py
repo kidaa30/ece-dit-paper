@@ -1,5 +1,6 @@
 import math
 from Helper import myAlgebra
+from Model import Job
 
 import array
 import heapq
@@ -34,6 +35,10 @@ class Task(object):
         jobBeforeT2 = int(math.floor(1.0 * (t2 - self.O - self.D) / self.T))
         jobBeforeT1 = int(math.ceil(1.0 * (t1 - self.O) / self.T))
         return max(0, jobBeforeT2 - jobBeforeT1 + 1)
+
+    def getJob(self, arrival):
+        assert (arrival - self.O) % self.T == 0
+        return Job.Job(self, arrival)
 
 
 class TaskSystem(object):

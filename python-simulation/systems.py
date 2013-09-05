@@ -221,7 +221,8 @@ ULessThanOneImplicitUnfeasible = Task.TaskSystem(tasks)
 
 # test
 tasks = []
-tasks.append(Task.Task(0, 5, 11, 11, alpha=1))
-tasks.append(Task.Task(4, 1, 1, 11))
-tasks.append(Task.Task(6, 4, 11, 11))
+tasks.append(Task.Task(32, 1, 15, 15, alpha = 2))
+tasks.append(Task.Task(0, 1, 20, 45, alpha = 2))
+tasks.append(Task.Task(15, 1, 3, 8, alpha = 2))
+tasks.append(Task.Task(45, 7, 14, 15, alpha = 2))
 test = Task.TaskSystem(tasks)

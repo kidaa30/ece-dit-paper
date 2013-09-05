@@ -1,9 +1,8 @@
 from heapq import heapify, heappop, heappush
-import pdb
+# import pdb
 
 from Model.CPU import CPU
 from Model import algorithms
-from Model.Job import Job
 from . import Drawer
 from .JobConfiguration import JobConfiguration
 
@@ -13,7 +12,7 @@ def heappeek(heap):
 
 
 class Simulator(object):  # Global multiprocessing only
-    def __init__(self, tau, stop, nbrCPUs, scheduler, abortAndRestart, verbose=False):
+    def __init__(self, tau, stop, nbrCPUs, scheduler, abortAndRestart, verbose=False, drawing=True):
         """stop can be set to None for default value"""
         self.verbose = verbose
         self.system = tau
@@ -46,7 +45,10 @@ class Simulator(object):  # Global multiprocessing only
         self.activeJobsHeap = []
         heapify(self.activeJobsHeap)
 
-        self.drawer = Drawer.Drawer(self, stop)
+        if drawing:
+            self.drawer = Drawer.Drawer(self, stop)
+        else:
+            self.drawer = Drawer.EmptyDrawer(self, stop)
 
     def saveConfiguration(self):
         jobs = self.getCurrentJobs()
@@ -142,9 +144,10 @@ class Simulator(object):  # Global multiprocessing only
     def checkJobArrival(self):
         for task in self.system.tasks:
             if self.t >= task.O and self.t % task.T == task.O % task.T:
-                newJob = Job(task, self.t)
+                newJob = task.getJob(self.t)
                 newJob.priority = self.scheduler.priority(newJob, self)
-                if self.verbose: print("\tarrival of job", newJob)
+                if self.verbose:
+                    print("\tarrival of job", newJob)
                 heappush(self.activeJobsHeap, (-1 * newJob.priority, newJob))
 
     def handlePreemptions(self):
@@ -204,9 +207,11 @@ class Simulator(object):  # Global multiprocessing only
     def incrementTime(self):
         self.t += 1
         if self.verbose: print("t=", self.t)
-        if (self.t - self.system.omax()) % self.system.hyperPeriod() == 0:
+        if self.t > self.system.omax() and (self.t - self.system.omax()) % self.system.hyperPeriod() == 0:
             if self.lastConfig is not None and self.checkConfig() is True:
                 self.isStable = True
+                if self.verbose:
+                    print("Stable Config !")
             else:
                 self.isStable = False
             self.saveConfiguration()

@@ -25,7 +25,7 @@ class PALLF(Scheduler.SchedulerDP):
             if t < task.O:
                 nextArrival = task.O
             else:
-                nextArrival = (t - task.O) + (task.T - (t - task.O) % task.T) + task.O
+                nextArrival = t + (task.T - (t - task.O) % task.T)
             # expected priorities (based on lax)
             jobExecLeftAtArrival = max(0, finishTime - nextArrival)
             arrivalLax = task.D - task.C
@@ -36,7 +36,7 @@ class PALLF(Scheduler.SchedulerDP):
     def priority(self, job, simu):
         lax = self.getLaxity(job, simu)
         if self.isJobExecuting(job, simu):
-            return 1.0/(self.prioOffset + lax - job.alpha())
+            return 1/(self.prioOffset + lax - job.alpha())
         if job.alpha() > 1:
             # If executing now is sure to result in costly preemption, idle
             epa = self.earliestPreempArrival(job, simu)
@@ -46,4 +46,4 @@ class PALLF(Scheduler.SchedulerDP):
         lpbCPU = simu.leastPrioritaryCPU()
         if lpbCPU and lpbCPU.job and lpbCPU.job.computationLeft() <= lax:
             return -1 * float("inf")
-        return 1.0/(self.prioOffset + lax)
+        return 1/(self.prioOffset + lax)
