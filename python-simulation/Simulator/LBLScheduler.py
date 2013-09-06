@@ -27,9 +27,11 @@ class LBLScheduler(Scheduler.SchedulerDP):
         return candidate
 
     def priority(self, job, simu):
-        epa = self.earliestPreemptiveArrival(job, simu.t)
-        if epa and epa < simu.t + job.alpha():
-            return float("-inf")
+        if job in simu.getCurrentJobs(getBusyJobs=False):
+            epa = self.earliestPreemptiveArrival(job, simu.t)
+            finishTime = simu.t + job.computationLeft()
+            if epa and epa < finishTime and epa < simu.t + job.alpha():
+                return float("-inf")
         return self.schedFJP.priority(job)
 
 
