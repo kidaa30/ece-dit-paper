@@ -27,6 +27,20 @@ class SchedulerDP(object):
         return simu.t + job.computationLeft() + (job.alpha() if job.preempted else 0)
 
 
+class ArbitraryScheduler(SchedulerDP):
+    """Allow the user to define his own scheduling.
+    format of userSchedule : userSchedule[t][task] = prio
+    if t > len(userSchedule), userSchedule is assumed periodic"""
+    def __init__(self, tau, userSchedule):
+        super(ArbitraryScheduler, self).__init__(tau)
+        self.tau = tau
+        self.userSchedule = userSchedule
+
+    def priority(self, job, simu):
+        assert job.task in self.userSchedule
+        return self.userSchedule[simu.t % len(self.userSchedule)][job.task]
+
+
 class SpotlightEDF(SchedulerDP):
     def __init__(self, tau):
         """ Non-optimal algorithm taking preemption cost into account."""

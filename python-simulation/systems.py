@@ -218,6 +218,23 @@ tasks.append(Task.Task(0, 7, 10, 10, alpha=1))
 tasks.append(Task.Task(0, 1, 4, 4, alpha=1))
 ULessThanOneImplicitUnfeasible = Task.TaskSystem(tasks)
 
+# MustPreemptAtNoArrival
+tasks = []
+t1 = Task.Task(0, 3, 6, 6, alpha=1)
+t2 = Task.Task(3, 1, 1, 6, alpha=1)
+t3 = Task.Task(1, 1, 3, 6, alpha=1)
+tasks.append(t1)
+tasks.append(t2)
+tasks.append(t3)
+MustPreemptAtNoArrival = Task.TaskSystem(tasks)
+mpanaSchedule = []
+mpanaSchedule.append({t1: 3, t2: 2, t3: 1})
+mpanaSchedule.append({t1: 3, t2: 2, t3: 1})
+mpanaSchedule.append({t1: 1, t2: 2, t3: 3})
+mpanaSchedule.append({t1: 1, t2: 3, t3: 2})
+mpanaSchedule.append({t1: 3, t2: 2, t3: 1})
+mpanaSchedule.append({t1: 3, t2: 2, t3: 1})
+
 
 # test
 tasks = []
