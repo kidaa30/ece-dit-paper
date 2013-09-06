@@ -12,7 +12,7 @@ def heappeek(heap):
 
 
 class Simulator(object):  # Global multiprocessing only
-    def __init__(self, tau, stop, nbrCPUs, scheduler, abortAndRestart, verbose=False):
+    def __init__(self, tau, stop, nbrCPUs, scheduler, abortAndRestart, verbose=False, drawing=True):
         """stop can be set to None for default value"""
         self.verbose = verbose
         self.system = tau
@@ -45,7 +45,10 @@ class Simulator(object):  # Global multiprocessing only
         self.activeJobsHeap = []
         heapify(self.activeJobsHeap)
 
-        self.drawer = Drawer.Drawer(self, stop)
+        if drawing:
+            self.drawer = Drawer.Drawer(self, stop)
+        else:
+            self.drawer = Drawer.EmptyDrawer(self, stop)
 
     def saveConfiguration(self):
         jobs = self.getCurrentJobs()
@@ -204,9 +207,11 @@ class Simulator(object):  # Global multiprocessing only
     def incrementTime(self):
         self.t += 1
         if self.verbose: print("t=", self.t)
-        if (self.t - self.system.omax()) % self.system.hyperPeriod() == 0:
+        if self.t > self.system.omax() and (self.t - self.system.omax()) % self.system.hyperPeriod() == 0:
             if self.lastConfig is not None and self.checkConfig() is True:
                 self.isStable = True
+                if self.verbose:
+                    print("Stable Config !")
             else:
                 self.isStable = False
             self.saveConfiguration()
