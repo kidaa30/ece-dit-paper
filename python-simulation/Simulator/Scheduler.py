@@ -29,7 +29,7 @@ class SchedulerDP(object):
 
 class ArbitraryScheduler(SchedulerDP):
     """Allow the user to define his own scheduling.
-    format of userSchedule : userSchedule[t][task] = prio
+    format of userSchedule : userSchedule[t] = task to execute
     if t > len(userSchedule), userSchedule is assumed periodic"""
     def __init__(self, tau, userSchedule):
         super(ArbitraryScheduler, self).__init__(tau)
@@ -37,8 +37,8 @@ class ArbitraryScheduler(SchedulerDP):
         self.userSchedule = userSchedule
 
     def priority(self, job, simu):
-        assert job.task in self.userSchedule
-        return self.userSchedule[simu.t % len(self.userSchedule)][job.task]
+        t = simu.t % len(self.userSchedule)
+        return 1 if job.task is self.userSchedule[t] else 0
 
 
 class SpotlightEDF(SchedulerDP):

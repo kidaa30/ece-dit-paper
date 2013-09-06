@@ -205,11 +205,13 @@ EDFNonOptimalMultiprocessor = Task.TaskSystem(tasks)
 
 # RequireClairvoyance
 tasks = []
-tasks.append(Task.Task(22, 2, 2, 24, alpha=2))
-tasks.append(Task.Task(0, 5, 12, 12, alpha=2))
-tasks.append(Task.Task(4, 5, 6, 12, alpha=2))
-tasks.append(Task.Task(9, 1, 1, 24, alpha=2))
+t1 = Task.Task(22, 2, 2, 24, alpha=1)
+t2 = Task.Task(0, 5, 12, 12, alpha=1)
+t3 = Task.Task(4, 5, 6, 12, alpha=1)
+t4 = Task.Task(9, 1, 1, 24, alpha=1)
+tasks.extend([t1, t2, t3, t4])
 RequireClairvoyance = Task.TaskSystem(tasks)
+clairvoyanceSchedule = [t2, t2, t2, t2, t3, t3, t3, t3, t3, t4, t2, t2, t2, t2, t2, t2, t2, t3, t3, t3, t3, t3, t1, t1]
 
 
 # ULessThanOneImplicitUnfeasible
@@ -228,17 +230,17 @@ tasks.append(t2)
 tasks.append(t3)
 MustPreemptAtNoArrival = Task.TaskSystem(tasks)
 mpanaSchedule = []
-mpanaSchedule.append({t1: 3, t2: 2, t3: 1})
-mpanaSchedule.append({t1: 3, t2: 2, t3: 1})
-mpanaSchedule.append({t1: 1, t2: 2, t3: 3})
-mpanaSchedule.append({t1: 1, t2: 3, t3: 2})
-mpanaSchedule.append({t1: 3, t2: 2, t3: 1})
-mpanaSchedule.append({t1: 3, t2: 2, t3: 1})
-
+mpanaSchedule.append(t1)
+mpanaSchedule.append(t1)
+mpanaSchedule.append(t3)
+mpanaSchedule.append(t2)
+mpanaSchedule.append(t1)
+mpanaSchedule.append(t1)
 
 # test
 tasks = []
-tasks.append(Task.Task(0, 5, 11, 11, alpha=1))
-tasks.append(Task.Task(4, 1, 1, 11))
-tasks.append(Task.Task(6, 4, 11, 11))
+tasks.append(Task.Task(32, 1, 15, 15, alpha = 2))
+tasks.append(Task.Task(0, 1, 20, 45, alpha = 2))
+tasks.append(Task.Task(15, 1, 3, 8, alpha = 2))
+tasks.append(Task.Task(45, 7, 14, 15, alpha = 2))
 test = Task.TaskSystem(tasks)
