@@ -15,5 +15,13 @@
                 ".project"
             ]
         }
+    ],
+    "build_systems":
+    [
+        {
+            "name": "Python3",
+            "cmd": ["python3", "-u", "$file"],
+            "file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)"
+        }
     ]
 }
