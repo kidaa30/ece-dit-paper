@@ -6,7 +6,7 @@ from Model import TaskGenerator
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, preemptionCost=2, verbose=False):
 	systemArray = []
 	for i in range(numberOfSystems):
-		Umin = 0.25
+		Umin = 0.55
 		Umax = 0.95
 		Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
 		n = 4
@@ -239,8 +239,8 @@ mpanaSchedule.append(t1)
 
 # test
 tasks = []
-tasks.append(Task.Task(32, 1, 15, 15, alpha = 2))
-tasks.append(Task.Task(0, 1, 20, 45, alpha = 2))
-tasks.append(Task.Task(15, 1, 3, 8, alpha = 2))
-tasks.append(Task.Task(45, 7, 14, 15, alpha = 2))
+tasks.append(Task.Task(0, 1, 6, 6, alpha=2))
+tasks.append(Task.Task(0, 2, 30, 30, alpha=2))
+tasks.append(Task.Task(19, 10, 45, 45, alpha=2))
+tasks.append(Task.Task(0, 1, 10, 10, alpha=2))
 test = Task.TaskSystem(tasks)

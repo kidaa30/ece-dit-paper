@@ -6,8 +6,12 @@ class PALLF(Scheduler.SchedulerDP):
         super(PALLF, self).__init__(tau)
         self.prioOffset = max([task.alpha for task in tau.tasks]) + 1
 
-    # def preemptEqualPriorities(self):
-    #     return True
+    def preemptEqualPriorities(self):
+        # quick hack to prevent looping in free-preemption systems
+        if self.prioOffset > 1:
+            return True
+        else:
+            return False
 
     def getLaxity(self, job, simu):
         compLeft = job.task.C - job.computation

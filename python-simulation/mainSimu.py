@@ -6,8 +6,8 @@ import systems
 import subprocess
 import sys
 
-# tau = systems.generateSystemArray(1, 1)[0]
-tau = systems.RequireClairvoyance
+# tau = systems.generateSystemArray(1, 0)[0]
+tau = systems.test
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -18,17 +18,17 @@ print(("H", H))
 print(("fpdit", fpdit))
 print(("U", tau.systemUtilization()))
 
-stop = Omax + 2 * H
-if fpdit:
-    stop = fpdit + H
+stop = Omax + 10 * H
+# if fpdit:
+#     stop = fpdit + H
 
 print(("stop", stop))
 
 # scheduler = Scheduler.EDF(tau)
 # scheduler = Scheduler.SpotlightEDF(tau)
-# scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
+scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
 # scheduler = PALLF.PALLF(tau)
-scheduler = Scheduler.ArbitraryScheduler(tau, systems.clairvoyanceSchedule)
+# scheduler = Scheduler.ArbitraryScheduler(tau, systems.mpanaSchedule)
 # scheduler = LBLScheduler.LBLEDF(tau)
 
 # scheduler = Scheduler.FixedPriority(tau, [1, 2, 3])
