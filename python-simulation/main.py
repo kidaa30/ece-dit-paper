@@ -108,7 +108,7 @@ if __name__ == '__main__':
 	hyperTValue = []
 	hyperTTest = []
 	hyperTAll = []
-	cdfRange = [f/2.0 for f in range(2, 11)]
+	cdfRange = [2/f for f in range(2, 11)]
 	for constrDeadFactor in cdfRange:
 		print(("TEST WITH CONSTR DEAD FACTOR", constrDeadFactor))
 		result = test(NUMBER_OF_SYSTEMS, constrDeadFactor)

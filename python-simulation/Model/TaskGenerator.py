@@ -62,7 +62,7 @@ def generateTasksFrom(utilizations, T_LCM, Tmin, Tmax, preemptionCost, synchrono
         O = 0 if synchronous else max(0, int(random.normalvariate(Tmin, (Tmax-Tmin)/2)))
         T = random.randrange(Tmin, Tmax) if T_LCM == -1 else random.choice(divisors)
         C = max(1, int(round(math.floor(u*T))))
-        D = random.randint(int(T-(T-C)/constrDeadlineFactor), T)
+        D = random.randint(int(T-(T-C)*constrDeadlineFactor), T)
         tasks.append(Task.Task(O, C, D, T, alpha=preemptionCost))
 
     # translate offset so that Omin=0
@@ -109,34 +109,34 @@ if __name__ == '__main__':
             assert task.C > 0, str(task)
 
 
-####################################
+# ####################################
 
-def oldGenerateTasks(Umax, Umin, u_max, u_min, maxHyperT, Tmin, Tmax, lowPPCM=True, synchronous=True, Kmax=1, Rmax=1):
+# def oldGenerateTasks(Umax, Umin, u_max, u_min, maxHyperT, Tmin, Tmax, lowPPCM=True, synchronous=True, Kmax=1, Rmax=1):
 
-    # assertions
-    assert 0 < Umin <= Umax <= 1, "Umin or Umax out of bound " + str(Umin) + "|" + str(Umax)
-    assert 0 < u_min <= u_max <= 1, "u_min or u_max out of bound" + str(Umin) + "|" + str(Umax)
-    assert (u_min*Tmin*1.0)/math.pow(Rmax, Kmax) > 1, "Not enough granularity! (u_min, Tmin, Rmax, Kmax)"
+#     # assertions
+#     assert 0 < Umin <= Umax <= 1, "Umin or Umax out of bound " + str(Umin) + "|" + str(Umax)
+#     assert 0 < u_min <= u_max <= 1, "u_min or u_max out of bound" + str(Umin) + "|" + str(Umax)
+#     assert (u_min*Tmin*1.0)/math.pow(Rmax, Kmax) > 1, "Not enough granularity! (u_min, Tmin, Rmax, Kmax)"
 
 
-    # generation of the utilizations
-    # generate a list of values between u_min and u_max
-    # s.t. their sum is between Umin and Umax
-    utilizations = []
-    cnt = 0
-    while reduceSum(utilizations) > Umax or reduceSum(utilizations) < Umin:
-        cnt += 1
-        if cnt > 1000:
-            # relax constraints
-            print("did not respect bounds after 1000 steps. Please give more relaxed constraints")
-            utilization_goal_below = Umin
-            utilization_goal_above = Umax
-        elif reduceSum(utilizations) <= Umin:
-            new_utiliz = random.uniform(u_min, u_max)
-            new_utiliz = round(new_utiliz, 2)
-            utilizations.append(new_utiliz)
-        else:  # reduceSum(utilizations) > Umax
-            utilizations.pop(random.randint(0, len(utilizations) - 1))
+#     # generation of the utilizations
+#     # generate a list of values between u_min and u_max
+#     # s.t. their sum is between Umin and Umax
+#     utilizations = []
+#     cnt = 0
+#     while reduceSum(utilizations) > Umax or reduceSum(utilizations) < Umin:
+#         cnt += 1
+#         if cnt > 1000:
+#             # relax constraints
+#             print("did not respect bounds after 1000 steps. Please give more relaxed constraints")
+#             utilization_goal_below = Umin
+#             utilization_goal_above = Umax
+#         elif reduceSum(utilizations) <= Umin:
+#             new_utiliz = random.uniform(u_min, u_max)
+#             new_utiliz = round(new_utiliz, 2)
+#             utilizations.append(new_utiliz)
+#         else:  # reduceSum(utilizations) > Umax
+#             utilizations.pop(random.randint(0, len(utilizations) - 1))
 
-    tasks = generateTasksFrom(utilizations, maxHyperT, Tmin, Tmax, Kmax, Rmax)
-    return tasks
+#     tasks = generateTasksFrom(utilizations, maxHyperT, Tmin, Tmax, Kmax, Rmax)
+#     return tasks
