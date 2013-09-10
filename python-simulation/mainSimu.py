@@ -26,8 +26,8 @@ print(("stop", stop))
 
 # scheduler = Scheduler.EDF(tau)
 # scheduler = Scheduler.SpotlightEDF(tau)
-scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
-# scheduler = PALLF.PALLF(tau)
+# scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
+scheduler = PALLF.PALLF(tau)
 # scheduler = Scheduler.ArbitraryScheduler(tau, systems.mpanaSchedule)
 # scheduler = LBLScheduler.LBLEDF(tau)
 

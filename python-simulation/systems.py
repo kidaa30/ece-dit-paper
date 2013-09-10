@@ -9,7 +9,7 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, preemptionCost=2,
 		Umin = 0.55
 		Umax = 0.95
 		Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
-		n = 4
+		n = 6
 		maxHyperT = 360  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
 		# maxHyperT = -1
 		Tmin = 3
@@ -239,8 +239,10 @@ mpanaSchedule.append(t1)
 
 # test
 tasks = []
-tasks.append(Task.Task(0, 1, 6, 6, alpha=2))
-tasks.append(Task.Task(0, 2, 30, 30, alpha=2))
-tasks.append(Task.Task(19, 10, 45, 45, alpha=2))
-tasks.append(Task.Task(0, 1, 10, 10, alpha=2))
+tasks.append(Task.Task(36, 1, 6, 6, alpha=2))
+tasks.append(Task.Task(41, 1, 4, 4, alpha=2))
+tasks.append(Task.Task(0, 3, 18, 18, alpha=2))
+tasks.append(Task.Task(0, 1, 9, 9, alpha=2))
+tasks.append(Task.Task(26, 3, 24, 24, alpha=2))
+tasks.append(Task.Task(0, 4, 45, 45, alpha=2))
 test = Task.TaskSystem(tasks)

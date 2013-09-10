@@ -3,11 +3,11 @@ from Simulator import Simulator
 from Simulator import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
 import systems
 
-NUMBER_OF_SYSTEMS = 2000
+NUMBER_OF_SYSTEMS = 10000
 
 schedulers = [Scheduler.EDF, ChooseKeepEDF.ChooseKeepEDF]
 
-interest = []  # system with weird property
+interest = []
 
 results = {}
 scores = {}
