@@ -3,13 +3,12 @@ from Model import Task
 from Model import TaskGenerator
 
 
-def generateSystemArray(numberOfSystems, constrDeadlineFactor, preemptionCost=2, verbose=False):
+def generateSystemArray(numberOfSystems, constrDeadlineFactor, n=4, preemptionCost=2, verbose=False):
 	systemArray = []
 	for i in range(numberOfSystems):
 		Umin = 0.55
 		Umax = 0.95
 		Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
-		n = 6
 		maxHyperT = 360  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
 		# maxHyperT = -1
 		Tmin = 3

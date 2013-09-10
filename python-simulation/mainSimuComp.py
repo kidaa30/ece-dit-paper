@@ -3,59 +3,81 @@ from Simulator import Simulator
 from Simulator import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
 import systems
 
-NUMBER_OF_SYSTEMS = 10000
 
+import pylab
+
+
+domin_scores = {}
+results = {}
+NUMBER_OF_SYSTEMS = 1000
 schedulers = [Scheduler.EDF, ChooseKeepEDF.ChooseKeepEDF]
 
-interest = []
 
-results = {}
-scores = {}
-for sched in schedulers:
-    results[sched] = []
-    scores[sched] = 0
-
-for i in range(NUMBER_OF_SYSTEMS):
-    print(i)
-    tau = systems.generateSystemArray(1, 0)[0]
-    # print(tau)
-
-    Omax = max([task.O for task in tau.tasks])
-    H = tau.hyperPeriod()
-    fpdit = algorithms.findFirstDIT(tau)
-    stop = Omax + 10 * H  # FIXME
-    if fpdit:
-        stop = fpdit + H
-
-    for schedClass in schedulers:
-        if schedClass is Scheduler.ExhaustiveFixedPriority:
-            sched = schedClass(tau, 1, False)
-        else:
-            sched = schedClass(tau)
-        simu = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=sched, abortAndRestart=False, drawing=False)
-        simu.run(stopAtDeadlineMiss=True, stopAtStableConfig=True)
-        results[schedClass].append(simu.success())
-
-    if results[schedulers[0]][-1] and not results[schedulers[1]][-1]:
-        interest.append(tau)
-
-# compute score
-for i in range(NUMBER_OF_SYSTEMS):
+def oneTest(taskCnt):
+    domin_scores[taskCnt] = {}
+    results[taskCnt] = {}
     for sched in schedulers:
-        if results[sched][i]:
-            undefeated = True
-            for otherSched in schedulers:
-                if otherSched is not sched and results[otherSched][i]:
-                    undefeated = False
-                    break
-            if undefeated:
-                scores[sched] += 1
+        results[taskCnt][sched] = []
+        domin_scores[taskCnt][sched] = 0
+
+    for i in range(NUMBER_OF_SYSTEMS):
+        print("n", taskCnt, "\t", i, "/", NUMBER_OF_SYSTEMS)
+        tau = systems.generateSystemArray(1, 0, n=taskCnt)[0]
+        # print(tau)
+
+        Omax = max([task.O for task in tau.tasks])
+        H = tau.hyperPeriod()
+        fpdit = algorithms.findFirstDIT(tau)
+        stop = Omax + 10 * H  # FIXME
+        if fpdit:
+            stop = fpdit + H
+
+        for schedClass in schedulers:
+            if schedClass is Scheduler.ExhaustiveFixedPriority:
+                sched = schedClass(tau, 1, False)
+            else:
+                sched = schedClass(tau)
+            simu = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=sched, abortAndRestart=False, drawing=False)
+            simu.run(stopAtDeadlineMiss=True, stopAtStableConfig=True)
+            results[taskCnt][schedClass].append(simu.success())
+
+        assert not results[taskCnt][schedulers[0]][-1] or results[taskCnt][schedulers[1]][-1], tau
+
+    # compute score
+    for i in range(NUMBER_OF_SYSTEMS):
+        for sched in schedulers:
+            if results[taskCnt][sched][i]:
+                undefeated = True
+                for otherSched in schedulers:
+                    if otherSched is not sched and results[taskCnt][otherSched][i]:
+                        undefeated = False
+                        break
+                if undefeated:
+                    domin_scores[taskCnt][sched] += 1
 
 
+    # for i, sched in enumerate(schedulers):
+    #     print("Feasable under sched", i, ":", len([r for r in results[taskCnt][sched] if r is True]))
+    #     print("Scheduler", i, "score:", domin_scores[taskCnt][sched], "(", 100 * domin_scores[taskCnt][sched]/NUMBER_OF_SYSTEMS, "%)")
+
+
+nRange = list(range(1, 8))
+
+for n in nRange:
+    oneTest(n)
+
+pylab.figure()
 for i, sched in enumerate(schedulers):
-    print("Feasable under sched", i, ":", len([r for r in results[sched] if r is True]))
-    print("Scheduler", i, "score:", scores[sched], "(", 100*scores[sched]/NUMBER_OF_SYSTEMS, "%)")
+    dom_pct = [100 * domin_scores[n][sched] / NUMBER_OF_SYSTEMS for n in nRange]
+    result = [len([r for r in results[n][sched] if r is True]) for n in nRange]
+    result_pct = list(map(lambda r: 100 * r / NUMBER_OF_SYSTEMS, result))
+    print("result_pct of ", i, result_pct)
+    pylab.plot(nRange, result_pct, "o", label="Sched " + str(i))
 
-if len(interest) > 0:
-    for tau in interest:
-        print(tau)
+pylab.ylabel("% schedulable")
+pylab.xlabel("n")
+pylab.title("Domination percentage of C&KEDF on EDF")
+pylab.legend(loc=0)
+pylab.axis([nRange[0] - 1, nRange[-1] + 1, 0,  100])
+
+pylab.show()
