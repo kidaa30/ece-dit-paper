@@ -24,6 +24,7 @@ class Drawer(object):
         self.outDraw = draw.Draw(self.outImg)
 
         self.drawGrid(stop)
+        self.drawArrivalsAndDeadlines()
 
     def getTaskNbr(self, task):
         taskNbr = None
