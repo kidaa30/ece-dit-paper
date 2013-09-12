@@ -9,10 +9,10 @@ import pylab
 
 domin_scores = {}
 results = {}
-NUMBER_OF_SYSTEMS = 100
+NUMBER_OF_SYSTEMS = 1000
 nRange = list(range(2, 6))
-schedulers = [PALLF.PALLF, Scheduler.PTEDF]
-names = ["PALLF", "PA-EDF"]
+schedulers = [Scheduler.EDF, Scheduler.PTEDF]
+names = ["EDF", "PA-EDF"]
 
 
 def oneTest(taskCnt):
@@ -24,8 +24,8 @@ def oneTest(taskCnt):
 
     for i in range(NUMBER_OF_SYSTEMS):
         print("n", taskCnt, "\t", i, "/", NUMBER_OF_SYSTEMS)
-        tau = systems.generateSystemArray(1, 0, n=taskCnt)[0]  # 0 is implicit, 1 is constrained
-        # print(tau)
+        tau = systems.generateSystemArray(1, 0, n=taskCnt, preemptionCost=-1)[0]  # 0 is implicit, 1 is constrained
+        print(tau)
 
         Omax = max([task.O for task in tau.tasks])
         H = tau.hyperPeriod()
