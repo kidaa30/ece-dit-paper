@@ -30,17 +30,13 @@ def UUniFast(n, Utot):
     return [round(u, 4) for u in utils]
 
 
-def reduceSum(vec):
-    return reduce(lambda x, y: x + y, vec, 0)
-
-
 def generateTasks(Utot, n, maxHyperT, Tmin, Tmax, preemptionCost=0, synchronous=True, constrDeadlineFactor=1):
     # Utot will be delivered in a "best effort" way
     # constrDeadlineFactor: D will be in the interval [T-(T-C)/constrDeadlineFactor, T]
 
     assert 0 < Utot <= 1, "Utot out of bounds " + str(Utot)
     utilizations = UUniFast(n, Utot)
-    assert reduceSum(utilizations) - Utot <= 0.001, str(reduceSum(utilizations)) + ", \t" + str(Utot)
+    assert sum(utilizations) - Utot <= 0.001, str(sum(utilizations)) + ", \t" + str(Utot)
     tasks = generateTasksFrom(utilizations, maxHyperT, Tmin, Tmax, preemptionCost, synchronous, constrDeadlineFactor)
     return tasks
 
@@ -63,7 +59,8 @@ def generateTasksFrom(utilizations, T_LCM, Tmin, Tmax, preemptionCost, synchrono
         T = random.randrange(Tmin, Tmax) if T_LCM == -1 else random.choice(divisors)
         C = max(1, int(round(math.floor(u*T))))
         D = random.randint(int(T-(T-C)*constrDeadlineFactor), T)
-        tasks.append(Task.Task(O, C, D, T, alpha=preemptionCost))
+        a = preemptionCost if preemptionCost >= 0 else random.randrange(0,5)
+        tasks.append(Task.Task(O, C, D, T, a))
 
     # translate offset so that Omin=0
     Omin = min([task.O for task in tasks])
