@@ -16,7 +16,7 @@ class LBLScheduler(Scheduler.SchedulerDP):
         candidate = None
         jobP = self.schedFJP.priority(job)
         for otherTask in [ta_ for ta_ in self.tau.tasks if ta_ is not job.task]:
-            if t < otherTask.O:
+            if t <= otherTask.O:
                 nextArrival = otherTask.O
             else:
                 nextArrival = t + (otherTask.T - (t - otherTask.O) % otherTask.T)

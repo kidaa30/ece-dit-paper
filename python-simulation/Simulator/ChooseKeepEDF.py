@@ -17,10 +17,7 @@ class ChooseKeepEDF(Scheduler.SchedulerDP):
         # test against priority of next arrival of each task
         candidate = None
         for task in simu.system.tasks:
-            if t < task.O:
-                nextArrival = task.O
-            else:
-                nextArrival = (t - task.O) + (task.T - (t - task.O) % task.T) + task.O
+            nextArrival = self.nextArrival(task, t)
             prio = 1.0/(self.prioOffset + nextArrival + task.D)
             if prio >= jobP and nextArrival < finishTime and (candidate is None or nextArrival < candidate):
                 candidate = nextArrival

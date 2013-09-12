@@ -26,10 +26,7 @@ class PALLF(Scheduler.SchedulerDP):
         # Find next preemptive job arrival amongst tasks
         candidate = None
         for task in simu.system.tasks:
-            if t < task.O:
-                nextArrival = task.O
-            else:
-                nextArrival = t + (task.T - (t - task.O) % task.T)
+            nextArrival = self.nextArrival(task, t)
             # expected priorities (based on lax)
             jobExecLeftAtArrival = max(0, finishTime - nextArrival)
             arrivalLax = task.D - task.C
