@@ -25,6 +25,8 @@ class Task(object):
         reprStr += str(self.D)
         reprStr += ", "
         reprStr += str(self.T)
+        reprStr += ", "
+        reprStr += str(self.alpha)
         reprStr += ")"
         return reprStr
 
