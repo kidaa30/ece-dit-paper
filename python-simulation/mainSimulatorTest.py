@@ -44,6 +44,7 @@ class TestSimulator(unittest.TestCase):
         self.checkResult(tau, Scheduler.EDF(tau), True)
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), True)
         self.checkResult(tau, PALLF.PALLF(tau), True)
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
 
         sim = Simulator.Simulator(tau, stop=5, nbrCPUs=1, scheduler=Scheduler.EDF(tau), abortAndRestart=False)
         sim.run()
@@ -58,6 +59,7 @@ class TestSimulator(unittest.TestCase):
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), True)
         self.checkResult(tau, PALLF.PALLF(tau), True)
         self.checkResult(tau, Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False), True)
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
 
     def test_EDFNonOptimal(self):
         tau = systems.EDFNonOptimal
@@ -65,6 +67,7 @@ class TestSimulator(unittest.TestCase):
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), True)
         self.checkResult(tau, ChooseKeepEDF.ChooseKeepEDF(tau), True)
         self.checkResult(tau, PALLF.PALLF(tau), True)
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
 
     def test_SpotlightEDFNonOptimal(self):
         tau = systems.SpotlightEDFNonOptimal
@@ -85,6 +88,7 @@ class TestSimulator(unittest.TestCase):
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), False)
         self.checkResult(tau, ChooseKeepEDF.ChooseKeepEDF(tau), True)
         self.checkResult(tau, PALLF.PALLF(tau), True)
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
 
     def test_DPOnly(self):
         tau = systems.DPOnly
@@ -120,6 +124,18 @@ class TestSimulator(unittest.TestCase):
         tau = systems.CKEDFNonOptimal
         self.checkResult(tau, ChooseKeepEDF.ChooseKeepEDF(tau), False)
         self.checkResult(tau, PALLF.PALLF(tau), True)
+
+    def test_ImpCumulLaxity(self):
+        tau = systems.ImpCumulLaxity
+        self.checkResult(tau, Scheduler.EDF(tau), True)
+        self.checkResult(tau, PALLF.PALLF(tau), False)
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
+
+    def test_ImpFTPNonOptimal(self):
+        tau = systems.ImpFTPNonOptimal
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
+        self.checkResult(tau, Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False), False)
+
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestSimulator)
