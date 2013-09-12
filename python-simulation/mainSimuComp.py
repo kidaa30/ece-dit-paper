@@ -9,8 +9,10 @@ import pylab
 
 domin_scores = {}
 results = {}
-NUMBER_OF_SYSTEMS = 1000
-schedulers = [Scheduler.EDF, ChooseKeepEDF.ChooseKeepEDF]
+NUMBER_OF_SYSTEMS = 100
+nRange = list(range(2, 6))
+schedulers = [PALLF.PALLF, Scheduler.PTEDF]
+names = ["PALLF", "PA-EDF"]
 
 
 def oneTest(taskCnt):
@@ -22,7 +24,7 @@ def oneTest(taskCnt):
 
     for i in range(NUMBER_OF_SYSTEMS):
         print("n", taskCnt, "\t", i, "/", NUMBER_OF_SYSTEMS)
-        tau = systems.generateSystemArray(1, 0, n=taskCnt)[0]
+        tau = systems.generateSystemArray(1, 0, n=taskCnt)[0]  # 0 is implicit, 1 is constrained
         # print(tau)
 
         Omax = max([task.O for task in tau.tasks])
@@ -60,9 +62,6 @@ def oneTest(taskCnt):
     #     print("Feasable under sched", i, ":", len([r for r in results[taskCnt][sched] if r is True]))
     #     print("Scheduler", i, "score:", domin_scores[taskCnt][sched], "(", 100 * domin_scores[taskCnt][sched]/NUMBER_OF_SYSTEMS, "%)")
 
-
-nRange = list(range(1, 8))
-
 for n in nRange:
     oneTest(n)
 
@@ -71,13 +70,13 @@ for i, sched in enumerate(schedulers):
     dom_pct = [100 * domin_scores[n][sched] / NUMBER_OF_SYSTEMS for n in nRange]
     result = [len([r for r in results[n][sched] if r is True]) for n in nRange]
     result_pct = list(map(lambda r: 100 * r / NUMBER_OF_SYSTEMS, result))
-    print("result_pct of ", i, result_pct)
-    pylab.plot(nRange, result_pct, "o", label="Sched " + str(i))
+    print("result_pct of ", names[i], result_pct)
+    pylab.plot(nRange, result_pct, "o", label=names[i])
 
 pylab.ylabel("% schedulable")
-pylab.xlabel("n")
-pylab.title("Domination percentage of C&KEDF on EDF")
+pylab.xlabel("number of tasks")
+pylab.title("Schedulability of implicit systems (n = " + str(NUMBER_OF_SYSTEMS) + ")")
 pylab.legend(loc=0)
 pylab.axis([nRange[0] - 1, nRange[-1] + 1, 0,  100])
-
+pylab.grid()
 pylab.show()
