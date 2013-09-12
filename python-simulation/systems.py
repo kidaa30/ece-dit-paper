@@ -125,7 +125,7 @@ LongTransitive2 = Task.TaskSystem(tasks)
 # FailByTransitive
 tasks = []
 tasks.append(Task.Task(0, 3, 5, 5, alpha=2))
-tasks.append(Task.Task(1, 1, 1, 5))
+tasks.append(Task.Task(0, 1, 1, 5))
 FailByTransitive = Task.TaskSystem(tasks)
 
 
@@ -236,12 +236,25 @@ mpanaSchedule.append(t2)
 mpanaSchedule.append(t1)
 mpanaSchedule.append(t1)
 
+# ImpCumulLaxity
+tasks = []
+tasks.append(Task.Task(0, 1, 12, 12, alpha=2))
+tasks.append(Task.Task(2, 3, 20, 20, alpha=2))
+tasks.append(Task.Task(0, 26, 45, 45, alpha=2))
+ImpCumulLaxity = Task.TaskSystem(tasks)
+
+# ImpFTPNonOptimal
+tasks = []
+tasks.append(Task.Task(0, 1, 3, 3, alpha=1))
+tasks.append(Task.Task(0, 5, 9, 9, alpha=1))
+ImpFTPNonOptimal = Task.TaskSystem(tasks)
+
 # test
 tasks = []
-tasks.append(Task.Task(36, 1, 6, 6, alpha=2))
-tasks.append(Task.Task(41, 1, 4, 4, alpha=2))
-tasks.append(Task.Task(0, 3, 18, 18, alpha=2))
-tasks.append(Task.Task(0, 1, 9, 9, alpha=2))
-tasks.append(Task.Task(26, 3, 24, 24, alpha=2))
-tasks.append(Task.Task(0, 4, 45, 45, alpha=2))
+tasks.append(Task.Task(27, 1, 12, 12, alpha=2))
+tasks.append(Task.Task(0, 6, 20, 20, alpha=2))
+tasks.append(Task.Task(1, 1, 4, 4, alpha=2))
+tasks.append(Task.Task(60, 2, 12, 12, alpha=2))
+tasks.append(Task.Task(0, 1, 6, 6, alpha=2))
+
 test = Task.TaskSystem(tasks)

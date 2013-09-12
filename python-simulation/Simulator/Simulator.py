@@ -1,5 +1,5 @@
 from heapq import heapify, heappop, heappush
-# import pdb
+import pdb
 
 from Model.CPU import CPU
 from Model import algorithms
@@ -95,7 +95,7 @@ class Simulator(object):  # Global multiprocessing only
         if getWaitingJobs:
             waitingJobs = [job for prio, job in self.activeJobsHeap]
         if getBusyJobs:
-            busyJobs = [_f for _f in [cpu.job for cpu in self.CPUs] if _f]
+            busyJobs = [job for job in [cpu.job for cpu in self.CPUs] if job]
         return waitingJobs + busyJobs
 
     def updatePriorities(self, job="all"):
@@ -206,6 +206,8 @@ class Simulator(object):  # Global multiprocessing only
 
     def incrementTime(self):
         self.t += 1
+        # if self.t == 2:
+        #     pdb.set_trace()
         if self.verbose: print("t=", self.t)
         if self.t > self.system.omax() and (self.t - self.system.omax()) % self.system.hyperPeriod() == 0:
             if self.lastConfig is not None and self.checkConfig() is True:
