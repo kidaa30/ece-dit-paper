@@ -27,6 +27,8 @@ breaklines=true
 \setlength{\parindent}{0pt}
 
 \title{Improving schedulability rate of EDF when taking into account the preemption cost in uniprocessor systems}
+\author{Thomas Chapeaux}
+\date{Summer 2013}
 %opening
 \sloppy
 \begin{document}
@@ -38,7 +40,7 @@ breaklines=true
 
 \begin{abstract}
 
-
+In preemptive scheduling techniques of real-time systems, a task can be interrupted during its execution to allow another task to meet its deadline. Previous results, such as the optimality of the EDF scheduler, assume that the added cost of the preemptions (including context saving and restoration, as well as the increase in cache misses) is negligible compared to the tasks execution time. In this paper, we show that when the preemption costs are supposed non-negliglbe and constant per-task.
 
 \end{abstract}
 
@@ -46,19 +48,23 @@ breaklines=true
 
 \section{Introduction}
 
-    \subsection{Model}
+    
 
-    Present model with per-task $\alpha$
+\section{Model}
 
-    Constrained deadline
+    \subsection{State of the Art}
 
-    EDF is optimal
+        OCDT model with per-task
+
+        Constrained deadline
+
+        EDF is optimal
 
     \subsection{Preemption Cost}
 
-    \subsection{Previous results}
+        Preemption model (add parameters alpha and atomic preemption recovery period)
 
-    Meumeu, FTP-optimal
+        Meumeu is FTP-optimal (equivalent to ExhaustiveFTP)
 
 \section{Performance of EDF with preemption cost}
 
