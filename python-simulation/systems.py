@@ -257,10 +257,18 @@ tasks.append(Task.Task(1, 1, 9, 9, alpha=0))
 DifferentPreemptionCost_PTFNonOptimal = Task.TaskSystem(tasks)
 
 
+# ImpPTEFTNonOptimal
+tasks = []
+tasks.append(Task.Task(0, 9, 45, 45, alpha=2))
+tasks.append(Task.Task(0, 1, 6, 6, alpha=2))
+tasks.append(Task.Task(0, 6, 12, 12, alpha=2))
+ImpPTEFTNonOptimal = Task.TaskSystem(tasks)
+
+
 # test
 tasks = []
-tasks.append(Task.Task(1, 11, 18, 18, alpha=2))
-tasks.append(Task.Task(0, 7, 30, 30, alpha=0))
-tasks.append(Task.Task(1, 1, 9, 9, alpha=0))
+tasks.append(Task.Task(0, 9, 45, 45, alpha=2))
+tasks.append(Task.Task(0, 1, 6, 6, alpha=2))
+tasks.append(Task.Task(0, 6, 12, 12, alpha=2))
 
 test = Task.TaskSystem(tasks)
