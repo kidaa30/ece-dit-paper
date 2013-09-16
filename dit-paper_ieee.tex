@@ -207,14 +207,14 @@ joel.goossens@ulb.ac.be}
 		\end{definition}
 
 		Mathematically,
-		\[
+		\begin{equation}
 			\dbf{t_1, t_2} = \sum_{i=1}^{n} n_i(t_1, t_2) \, C_i
-		\]
+		\end{equation}
 		where $n_i(t_1, t_2)$ is the number of jobs of task $\tau_i$ which arrival times
 		and deadlines are both in the closed interval $[t_1, t_2]$.
 
 		The values of the $n_i$ are given by \cite{baruah1999generalized}
-		\[
+		\begin{equation}
 			n_i(t_1, t_2) =
 			\left\llbracket
 				\left\lfloor
@@ -224,19 +224,19 @@ joel.goossens@ulb.ac.be}
 					\frac{t_1 - O_i}{T_i}
 				\right\rceil + 1
 			\right\rrbracket_0
-		\]
+		\end{equation}
 		where $\llbracket x \rrbracket_0$ stands for $\max \{ 0, x \}$.
 
 		A necessary and sufficient condition of feasibility can easily be written
 		based on the DBF \cite{baruah1999generalized}
 
 		\begin{theorem}
-		\[
-			\begin{array}{c}
-				\{\tau_1, ..., \tau_n\} \: \text{is feasible}  \iff \\
-				\dbf{t_1, t_2} \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
-			\end{array}
-		\]
+			\begin{equation}
+				\begin{array}{c}
+					\{\tau_1, ..., \tau_n\} \: \text{is feasible}  \iff \\
+					\dbf{t_1, t_2} \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
+				\end{array}
+			\end{equation}
 		\end{theorem}
 
 	\subsection{C-space of synchronous systems}
@@ -256,13 +256,14 @@ joel.goossens@ulb.ac.be}
 			C-space in $\mathbb{N}_0^n$ (For a formulation in $\mathbb{N}^n$, we can add
 			$C_i \geqslant 1 \; \forall \tau_i \in \tau$ to the list of constraints).
 
-      The DBF test gives us a list of inequations on the WCET values of the task set which together are a necessary and sufficient condition of feasibility. They can all be written in the following way:
-      \[
-     	\sum_{i=1}^{n} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq
-      	t_1 \leq t_2
-      \]
-      Note that for a given $t$, we have that the $n_i(t)$ are
-      constant (w.r.t. the $C_i$). Those inequations are thus indeed linear.
+		The DBF test gives us a list of inequations on the WCET values of the task set
+		which together are a necessary and sufficient condition of feasibility. They
+		can all be written in the following way:
+		\begin{equation}
+			\sum_{i=1}^{n} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
+		\end{equation}
+		Note that for a given $t$, we have that the $n_i(t)$ are
+		constant (w.r.t. the $C_i$). Those inequations are thus indeed linear.
 
       However, this description contains an infinite number of constraints, most of
       which are redundant. While this does not harm the precision of the
@@ -304,28 +305,32 @@ joel.goossens@ulb.ac.be}
 			\end{itemize}
 		\end{remark}
 
-  The value of the first DIT can be found by solving the following modular equation system:
-	\[
-		t_d = \min
-		\left( t \; s.t. \; \forall \tau_i \in \tau, \; \exists a_i \in [D_i, T_i]:
-			\left\{
-				\begin{array}{c}
-					t > 0 \\
-					t \equiv a_i \; (mod \; T_i) \\
-				\end{array}
-			\right.
-		\right)
-	\]
+		The value of the first DIT can be found by solving the following modular
+		equation system:
+		
+		%TODO : change format so that the equation number is displayed correctly
+		
+		\begin{equation}
+			t_d = \min
+			\left( t \; s.t. \; \forall \tau_i \in \tau, \; \exists a_i \in [D_i, T_i]:
+				\left\{
+					\begin{array}{c}
+						t > 0 \\
+						t \equiv a_i \; (mod \; T_i) \\
+					\end{array}
+				\right.
+			\right)
+		\end{equation}
   The authors of \cite{george2009characterization} give a method to solve this system for cases in which periods are pairwise coprime.
 
   For synchronous systems in which the execution times are not known, the first DIT $t_d$
   is our ``best guess'' at an upper limit on the end of the busy period. As it was sufficient
   to check the DBF test in intervals $[0, t]$ before the end of the busy period, it is
   slightly more pessimistic but still correct to use the following condition:
-  \[
+  \begin{equation}
   		\dbf{0,t} \leqslant t \; \forall t \leqslant t_d
   		\iff \text{The system is feasible}
-  \]
+  \end{equation}
 
   To summarize, we reduced the description of the C-space from an infinite number
   of constraints to only those where $t_1 = 0$, $t_2 \leqslant t_d$ and
@@ -352,7 +357,7 @@ joel.goossens@ulb.ac.be}
 
 		As in the synchronous case, the problem of existence of the FPDIT
 		can be written as a system of modular equations:
-		\[
+		\begin{equation}
 			\begin{array}{l}
 				\exists ? \; t_d \; s.t. \; \forall \tau_i \in \tau, \exists a_i \in [D_i,
 				T_i] \; :\\
@@ -364,14 +369,17 @@ joel.goossens@ulb.ac.be}
 					\end{array}
 				\right.
 			\end{array}
-		\]
+		\end{equation}
 
 		This system is guaranteed to have at least one solution modulo $H$ for given
 		values of $a_i$ if the following condition is respected:
-		\[
-			a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i,
-			T_j)) \; \forall i,j
-		\]
+		
+		%Review 3 : use ref to justify this formula
+		%TODO : change format so that the equation number is displayed correctly
+		
+		\begin{equation}
+			a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i, T_j)) \; \forall i,j
+		\end{equation}
 		which means that there could be systems with no FPDIT.
 		We now present an example of such a system.\\
 
@@ -489,7 +497,7 @@ joel.goossens@ulb.ac.be}
 	\label{fig:noFPDIT}
 	\end{figure}
 
-	We observe that when the $CDF$ tends to zero, few systems have a FPDIT.
+	We observe that when the CDF tends to zero, few systems have a FPDIT.
 	This is easily explained by the fact that
 	a high CDF means more idle instants for each task, and thus more opportunities
 	for DITs to happen. Similarly, as all tasks must be synchronized for a DIT to
@@ -504,10 +512,10 @@ joel.goossens@ulb.ac.be}
 		is thus still relevant. Therefore the C-space is still accurately described by
 		the following infinite number of constraints:
 
-		\[
+		\begin{equation}
 			\sum_{i=1}^{n} n_i(t_1, t_2)
 			\, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
-		\]
+		\end{equation}
 
 		However, the method used in the synchronous case to remove redundancy does not
 		apply here. A more general approach is presented in the following section.
@@ -663,14 +671,14 @@ $[15, 17]$, $[15, 22]$, $[15, 27]$, $[15, 30]$, $[20, 22]$, $[20, 27]$, $[20, 30
 For each $[a, d]$, we have a constraint $$\sum_{i=1}^{n} n_i(a, d) \, C_i \leqslant d - a$$ which give a description of the C-space.
 
 We now apply Algorithm \ref{alg:prunRedun} to remove redundancies, leaving us with the following constraints:
-$$
-\left\{
-  \begin{array}{ccccc}
-    & & C_2 & \leqslant & 2 \\
-    C_1 & + & C_2 & \leqslant & 7
-  \end{array}
-\right.
-$$
+	\begin{equation}
+		\left\{
+			\begin{array}{ccccc}
+				& & C_2 & \leqslant & 2 \\
+				C_1 & + & C_2 & \leqslant & 7
+			\end{array}
+		\right.
+	\end{equation}
 The C-space thus contains 11 points $(C_1, C_2) = (1, 1)$, $(2, 1)$, $(3, 1)$, $(4, 1)$, $(5, 1)$, $(6, 1)$, $(1, 2)$, $(2, 2)$, $(3, 2)$, $(4, 2)$ and $(5, 2)$.
 
 Let us now consider the same system but with a synchronous pattern of arrival.
