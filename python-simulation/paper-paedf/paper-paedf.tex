@@ -40,7 +40,7 @@ breaklines=true
 
 \begin{abstract}
 
-In preemptive scheduling techniques of real-time systems, a task can be interrupted during its execution to allow another task to meet its deadline. Previous results, such as the optimality of the EDF scheduler, assume that the added cost of the preemptions (including context saving and restoration, as well as the increase in cache misses) is negligible compared to the tasks execution time. In this paper, we show that when the preemption costs are supposed non-negliglbe and constant per-task.
+In preemptive scheduling techniques of real-time systems, a task can be interrupted during its execution to allow another task to meet its deadline. Previous results, such as the optimality of the EDF scheduler, assume that the added cost of the preemptions (including context saving and restoration, as well as the increase in cache misses) is negligible compared to the tasks execution times. In this paper, we show that within a model taking this cost into account, the optimality of EDF is no longer guaranteed. We then propose another algorithm which strictly dominates EDF in the model, and prove that it is also optimal for implicit deadline systems.
 
 \end{abstract}
 
@@ -48,7 +48,7 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
 \section{Introduction}
 
-    
+
 
 \section{Model}
 
@@ -63,6 +63,8 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
     \subsection{Preemption Cost}
 
         Preemption model (add parameters alpha and atomic preemption recovery period)
+
+
 
         Meumeu is FTP-optimal (equivalent to ExhaustiveFTP)
 
