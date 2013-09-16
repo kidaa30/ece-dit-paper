@@ -1,13 +1,14 @@
-from .Model import algorithms
-from .Simulator import Simulator
-from .Simulator import Scheduler, ChooseKeepEDF, PALLF
-from . import systems
+from Model import algorithms
+from Simulator import Simulator
+from Simulator import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
+import systems
 
+import random
 import subprocess
 import sys
 
-# tau = systems.generateSystemArray(1, 1)[0]
-tau = systems.ULessThanOneImplicitUnfeasible
+# tau = systems.generateSystemArray(1, 0)[0]
+tau = systems.ImpPTEFTNonOptimal
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -18,16 +19,20 @@ print(("H", H))
 print(("fpdit", fpdit))
 print(("U", tau.systemUtilization()))
 
-stop = Omax + 2 * H
-if fpdit:
-    stop = fpdit + H
+stop = Omax + 10 * H
+# if fpdit:
+#     stop = fpdit + H
 
 print(("stop", stop))
 
 # scheduler = Scheduler.EDF(tau)
-scheduler = Scheduler.SpotlightEDF(tau)
+# scheduler = Scheduler.SpotlightEDF(tau)
 # scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
+scheduler = Scheduler.PTEDF(tau)
 # scheduler = PALLF.PALLF(tau)
+# scheduler = Scheduler.ArbitraryScheduler(tau, systems.mpanaSchedule)
+# scheduler = LBLScheduler.LBLEDF(tau)
+
 # scheduler = Scheduler.FixedPriority(tau, [1, 2, 3])
 # !!! exhaustive: set the parameters right !!!
 # scheduler = Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False)
@@ -36,7 +41,7 @@ scheduler = Scheduler.SpotlightEDF(tau)
 # else:
 #   print "No feasible priorities found !"
 
-simu = Simulator.Simulator(tau, stop=1000, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=False)
+simu = Simulator.Simulator(tau, stop=1000, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=True)
 
 try:
     simu.run(stopAtDeadlineMiss=True, stopAtStableConfig=True)

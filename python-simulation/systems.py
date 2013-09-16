@@ -3,13 +3,12 @@ from Model import Task
 from Model import TaskGenerator
 
 
-def generateSystemArray(numberOfSystems, constrDeadlineFactor, preemptionCost=2, verbose=False):
+def generateSystemArray(numberOfSystems, constrDeadlineFactor, n=4, preemptionCost=2, verbose=False):
 	systemArray = []
 	for i in range(numberOfSystems):
-		Umin = 0.25
+		Umin = 0.55
 		Umax = 0.95
 		Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
-		n = 4
 		maxHyperT = 360  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
 		# maxHyperT = -1
 		Tmin = 3
@@ -126,7 +125,7 @@ LongTransitive2 = Task.TaskSystem(tasks)
 # FailByTransitive
 tasks = []
 tasks.append(Task.Task(0, 3, 5, 5, alpha=2))
-tasks.append(Task.Task(1, 1, 1, 5))
+tasks.append(Task.Task(0, 1, 1, 5))
 FailByTransitive = Task.TaskSystem(tasks)
 
 
@@ -205,11 +204,13 @@ EDFNonOptimalMultiprocessor = Task.TaskSystem(tasks)
 
 # RequireClairvoyance
 tasks = []
-tasks.append(Task.Task(22, 2, 2, 24, alpha=2))
-tasks.append(Task.Task(0, 5, 12, 12, alpha=2))
-tasks.append(Task.Task(4, 5, 6, 12, alpha=2))
-tasks.append(Task.Task(9, 1, 1, 24, alpha=2))
+t1 = Task.Task(22, 2, 2, 24, alpha=1)
+t2 = Task.Task(0, 5, 12, 12, alpha=1)
+t3 = Task.Task(4, 5, 6, 12, alpha=1)
+t4 = Task.Task(9, 1, 1, 24, alpha=1)
+tasks.extend([t1, t2, t3, t4])
 RequireClairvoyance = Task.TaskSystem(tasks)
+clairvoyanceSchedule = [t2, t2, t2, t2, t3, t3, t3, t3, t3, t4, t2, t2, t2, t2, t2, t2, t2, t3, t3, t3, t3, t3, t1, t1]
 
 
 # ULessThanOneImplicitUnfeasible
@@ -218,10 +219,56 @@ tasks.append(Task.Task(0, 7, 10, 10, alpha=1))
 tasks.append(Task.Task(0, 1, 4, 4, alpha=1))
 ULessThanOneImplicitUnfeasible = Task.TaskSystem(tasks)
 
+# MustPreemptAtNoArrival
+tasks = []
+t1 = Task.Task(0, 3, 6, 6, alpha=1)
+t2 = Task.Task(3, 1, 1, 6, alpha=1)
+t3 = Task.Task(1, 1, 3, 6, alpha=1)
+tasks.append(t1)
+tasks.append(t2)
+tasks.append(t3)
+MustPreemptAtNoArrival = Task.TaskSystem(tasks)
+mpanaSchedule = []
+mpanaSchedule.append(t1)
+mpanaSchedule.append(t1)
+mpanaSchedule.append(t3)
+mpanaSchedule.append(t2)
+mpanaSchedule.append(t1)
+mpanaSchedule.append(t1)
+
+# ImpCumulLaxity
+tasks = []
+tasks.append(Task.Task(0, 1, 12, 12, alpha=2))
+tasks.append(Task.Task(2, 3, 20, 20, alpha=2))
+tasks.append(Task.Task(0, 26, 45, 45, alpha=2))
+ImpCumulLaxity = Task.TaskSystem(tasks)
+
+# ImpFTPNonOptimal
+tasks = []
+tasks.append(Task.Task(0, 1, 3, 3, alpha=1))
+tasks.append(Task.Task(0, 5, 9, 9, alpha=1))
+ImpFTPNonOptimal = Task.TaskSystem(tasks)
+
+# DifferentPreemptionCost_PTFNonOptimal
+tasks = []
+tasks.append(Task.Task(1, 11, 18, 18, alpha=2))
+tasks.append(Task.Task(0, 7, 30, 30, alpha=0))
+tasks.append(Task.Task(1, 1, 9, 9, alpha=0))
+DifferentPreemptionCost_PTFNonOptimal = Task.TaskSystem(tasks)
+
+
+# ImpPTEFTNonOptimal
+tasks = []
+tasks.append(Task.Task(0, 9, 45, 45, alpha=2))
+tasks.append(Task.Task(0, 1, 6, 6, alpha=2))
+tasks.append(Task.Task(0, 6, 12, 12, alpha=2))
+ImpPTEFTNonOptimal = Task.TaskSystem(tasks)
+
 
 # test
 tasks = []
-tasks.append(Task.Task(0, 5, 11, 11, alpha=1))
-tasks.append(Task.Task(4, 1, 1, 11))
-tasks.append(Task.Task(6, 4, 11, 11))
+tasks.append(Task.Task(0, 9, 45, 45, alpha=2))
+tasks.append(Task.Task(0, 1, 6, 6, alpha=2))
+tasks.append(Task.Task(0, 6, 12, 12, alpha=2))
+
 test = Task.TaskSystem(tasks)

@@ -12,26 +12,39 @@ class TestSimulator(unittest.TestCase):
     def checkResult(self, tau, sched, expectedResult):
         Omax = max([task.O for task in tau.tasks])
         H = tau.hyperPeriod()
-        fpdit = algorithms.findFirstDIT(tau)
-        stop = Omax + 2 * H
+        # fpdit = algorithms.findFirstDIT(tau)
+        stop = Omax + 10 * H
 
-        simulator = Simulator.Simulator(tau, stop, nbrCPUs=1, scheduler=sched, abortAndRestart=False)
+        simulator = Simulator.Simulator(tau, stop, nbrCPUs=1, scheduler=sched, abortAndRestart=False, verbose=False, drawing=False)
         simulator.run()
         self.assertIs(simulator.success(), expectedResult)
 
     def test_UnfeasibleLongTransitive(self):
         tau = systems.UnfeasibleLongTransitive
-        self.assertGreater(tau.systemUtilization(), 1)
         # This system is unfeasible but does not miss any deadline before Omax + 2H
+        self.assertGreater(tau.systemUtilization(), 1)
         self.checkResult(tau, Scheduler.EDF(tau), False)
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), False)
         self.checkResult(tau, PALLF.PALLF(tau), False)
+
+    def test_LongTransitive(self):
+        tau = systems.LongTransitive
+        self.checkResult(tau, Scheduler.EDF(tau), False)
+        self.checkResult(tau, Scheduler.SpotlightEDF(tau), False)
+        self.checkResult(tau, PALLF.PALLF(tau), True)
+        self.checkResult(tau, Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False), True)
+        tau = systems.LongTransitive2
+        self.checkResult(tau, Scheduler.EDF(tau), True)
+        self.checkResult(tau, Scheduler.SpotlightEDF(tau), True)
+        self.checkResult(tau, PALLF.PALLF(tau), True)
+        self.checkResult(tau, Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False), False)
 
     def test_AtomicPreemptionCost(self):
         tau = systems.AtomicPreemptionCost
         self.checkResult(tau, Scheduler.EDF(tau), True)
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), True)
         self.checkResult(tau, PALLF.PALLF(tau), True)
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
 
         sim = Simulator.Simulator(tau, stop=5, nbrCPUs=1, scheduler=Scheduler.EDF(tau), abortAndRestart=False)
         sim.run()
@@ -46,6 +59,7 @@ class TestSimulator(unittest.TestCase):
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), True)
         self.checkResult(tau, PALLF.PALLF(tau), True)
         self.checkResult(tau, Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False), True)
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
 
     def test_EDFNonOptimal(self):
         tau = systems.EDFNonOptimal
@@ -53,6 +67,7 @@ class TestSimulator(unittest.TestCase):
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), True)
         self.checkResult(tau, ChooseKeepEDF.ChooseKeepEDF(tau), True)
         self.checkResult(tau, PALLF.PALLF(tau), True)
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
 
     def test_SpotlightEDFNonOptimal(self):
         tau = systems.SpotlightEDFNonOptimal
@@ -73,6 +88,7 @@ class TestSimulator(unittest.TestCase):
         self.checkResult(tau, Scheduler.SpotlightEDF(tau), False)
         self.checkResult(tau, ChooseKeepEDF.ChooseKeepEDF(tau), True)
         self.checkResult(tau, PALLF.PALLF(tau), True)
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
 
     def test_DPOnly(self):
         tau = systems.DPOnly
@@ -108,6 +124,18 @@ class TestSimulator(unittest.TestCase):
         tau = systems.CKEDFNonOptimal
         self.checkResult(tau, ChooseKeepEDF.ChooseKeepEDF(tau), False)
         self.checkResult(tau, PALLF.PALLF(tau), True)
+
+    def test_ImpCumulLaxity(self):
+        tau = systems.ImpCumulLaxity
+        self.checkResult(tau, Scheduler.EDF(tau), True)
+        self.checkResult(tau, PALLF.PALLF(tau), False)
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
+
+    def test_ImpFTPNonOptimal(self):
+        tau = systems.ImpFTPNonOptimal
+        self.checkResult(tau, Scheduler.PTEDF(tau), True)
+        self.checkResult(tau, Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False), False)
+
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestSimulator)

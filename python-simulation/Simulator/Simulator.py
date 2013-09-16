@@ -3,7 +3,6 @@ import pdb
 
 from Model.CPU import CPU
 from Model import algorithms
-from Model.Job import Job
 from . import Drawer
 from .JobConfiguration import JobConfiguration
 
@@ -13,7 +12,7 @@ def heappeek(heap):
 
 
 class Simulator(object):  # Global multiprocessing only
-    def __init__(self, tau, stop, nbrCPUs, scheduler, abortAndRestart, verbose=False):
+    def __init__(self, tau, stop, nbrCPUs, scheduler, abortAndRestart, verbose=False, drawing=True):
         """stop can be set to None for default value"""
         self.verbose = verbose
         self.system = tau
@@ -46,7 +45,10 @@ class Simulator(object):  # Global multiprocessing only
         self.activeJobsHeap = []
         heapify(self.activeJobsHeap)
 
-        self.drawer = Drawer.Drawer(self, stop)
+        if drawing:
+            self.drawer = Drawer.Drawer(self, stop)
+        else:
+            self.drawer = Drawer.EmptyDrawer(self, stop)
 
     def saveConfiguration(self):
         jobs = self.getCurrentJobs()
@@ -93,7 +95,7 @@ class Simulator(object):  # Global multiprocessing only
         if getWaitingJobs:
             waitingJobs = [job for prio, job in self.activeJobsHeap]
         if getBusyJobs:
-            busyJobs = [_f for _f in [cpu.job for cpu in self.CPUs] if _f]
+            busyJobs = [job for job in [cpu.job for cpu in self.CPUs] if job]
         return waitingJobs + busyJobs
 
     def updatePriorities(self, job="all"):
@@ -142,55 +144,53 @@ class Simulator(object):  # Global multiprocessing only
     def checkJobArrival(self):
         for task in self.system.tasks:
             if self.t >= task.O and self.t % task.T == task.O % task.T:
-                newJob = Job(task, self.t)
+                newJob = task.getJob(self.t)
                 newJob.priority = self.scheduler.priority(newJob, self)
-                if self.verbose: print("\tarrival of job", newJob)
+                if self.verbose:
+                    print("\tarrival of job", newJob)
                 heappush(self.activeJobsHeap, (-1 * newJob.priority, newJob))
 
     def handlePreemptions(self):
-        while True:
-            # update priorities
-            self.updatePriorities()
-            self.updateHeaps()
-            # check for preemptions
+        # update priorities
+        self.updatePriorities()
+        self.updateHeaps()
+        # check for preemptions
+        if self.verbose:
+            print("\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.leastPrioritaryCPU(), "(", str(self.leastPrioritaryCPU().priority() if self.leastPrioritaryCPU() else None), ")")
+        if self.mostPrioritaryJob() and self.leastPrioritaryCPU() and self.mostPrioritaryJob().priority >= self.leastPrioritaryCPU().priority():
+            # special case of equal priorities : decided by the scheduler
+            if self.mostPrioritaryJob().priority == self.leastPrioritaryCPU().priority():
+                if self.verbose:
+                    print("equal priority: preemption policy of scheduler :", self.scheduler.preemptEqualPriorities())
+                if not self.scheduler.preemptEqualPriorities():
+                    return
+            if self.verbose:
+                print("\tpremption!")
+            preemptiveJob = heappop(self.activeJobsHeap)[1]
+            preemptedCPU = heappop(self.activeCPUsHeap)
+            preemptedJob = preemptedCPU.job  # may be None
+
+            # assign preemptive job to the CPU and push CPU in the correct heap
+            self.updatePriorities(job=preemptiveJob)
+            preemptedCPU.job = preemptiveJob
+            if preemptiveJob.preempted and preemptiveJob.alpha() > 0:
+                self.preemptedCPUs.add(preemptedCPU)
+            else:
+                heappush(self.activeCPUsHeap, preemptedCPU)
+            if preemptiveJob.preempted:
+                preemptiveJob.preempted = False
+
+            # put the preempted job back in the active job heap
+            if preemptedJob:
+                preemptedJob.preempted = True
+                preemptedJob.preemptionTimeLeft = preemptedJob.alpha()
+                if self.AR:
+                    preemptedJob.computation = 0
+                    self.drawer.drawAbort(preemptedJob.task, self.t)
+                heappush(self.activeJobsHeap, (-1 * preemptedJob.priority, preemptedJob))
+
             if self.verbose:
                 print("\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.leastPrioritaryCPU(), "(", str(self.leastPrioritaryCPU().priority() if self.leastPrioritaryCPU() else None), ")")
-            if self.mostPrioritaryJob() and self.leastPrioritaryCPU() and self.mostPrioritaryJob().priority >= self.leastPrioritaryCPU().priority():
-                # special case of equal priorities : decided by the scheduler
-                if self.mostPrioritaryJob().priority == self.leastPrioritaryCPU().priority():
-                    if self.verbose:
-                        print("equal priority: preemption policy of scheduler :", self.scheduler.preemptEqualPriorities())
-                    if not self.scheduler.preemptEqualPriorities():
-                        break
-                if self.verbose:
-                    print("\tpremption!")
-                preemptiveJob = heappop(self.activeJobsHeap)[1]
-                preemptedCPU = heappop(self.activeCPUsHeap)
-                preemptedJob = preemptedCPU.job  # may be None
-
-                # assign preemptive job to the CPU and push CPU in the correct heap
-                self.updatePriorities(job=preemptiveJob)
-                preemptedCPU.job = preemptiveJob
-                if preemptiveJob.preempted and preemptiveJob.alpha() > 0:
-                    self.preemptedCPUs.add(preemptedCPU)
-                else:
-                    heappush(self.activeCPUsHeap, preemptedCPU)
-                if preemptiveJob.preempted:
-                    preemptiveJob.preempted = False
-
-                # put the preempted job back in the active job heap
-                if preemptedJob:
-                    preemptedJob.preempted = True
-                    preemptedJob.preemptionTimeLeft = preemptedJob.alpha()
-                    if self.AR:
-                        preemptedJob.computation = 0
-                        self.drawer.drawAbort(preemptedJob.task, self.t)
-                    heappush(self.activeJobsHeap, (-1 * preemptedJob.priority, preemptedJob))
-
-                if self.verbose:
-                    print("\t", self.mostPrioritaryJob(), "(", str(self.mostPrioritaryJob().priority if self.mostPrioritaryJob() else None), ") vs.", self.leastPrioritaryCPU(), "(", str(self.leastPrioritaryCPU().priority() if self.leastPrioritaryCPU() else None), ")")
-            else:
-                break
 
     def computeBusyJobs(self):
         for cpu in self.activeCPUsHeap:
@@ -203,10 +203,14 @@ class Simulator(object):  # Global multiprocessing only
 
     def incrementTime(self):
         self.t += 1
+        # if self.t == 2:
+        #     pdb.set_trace()
         if self.verbose: print("t=", self.t)
-        if (self.t - self.system.omax()) % self.system.hyperPeriod() == 0:
+        if self.t > self.system.omax() and (self.t - self.system.omax()) % self.system.hyperPeriod() == 0:
             if self.lastConfig is not None and self.checkConfig() is True:
                 self.isStable = True
+                if self.verbose:
+                    print("Stable Config !")
             else:
                 self.isStable = False
             self.saveConfiguration()

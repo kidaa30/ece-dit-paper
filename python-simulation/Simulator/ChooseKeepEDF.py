@@ -12,15 +12,12 @@ class ChooseKeepEDF(Scheduler.SchedulerDP):
     def earliestPreempArrival(self, job, simu):
         # return earliest time at which job will be preempted if it is chosen now
         t = simu.t
-        jobP = 1.0/(self.prioOffset + job.deadline - job.alpha())
+        jobP = 1/(self.prioOffset + job.deadline - job.alpha())
         finishTime = self.finishTime(job, simu)
         # test against priority of next arrival of each task
         candidate = None
         for task in simu.system.tasks:
-            if t < task.O:
-                nextArrival = task.O
-            else:
-                nextArrival = (t - task.O) + (task.T - (t - task.O) % task.T) + task.O
+            nextArrival = self.nextArrival(task, t)
             prio = 1.0/(self.prioOffset + nextArrival + task.D)
             if prio >= jobP and nextArrival < finishTime and (candidate is None or nextArrival < candidate):
                 candidate = nextArrival

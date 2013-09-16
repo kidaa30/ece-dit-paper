@@ -6,8 +6,12 @@ class PALLF(Scheduler.SchedulerDP):
         super(PALLF, self).__init__(tau)
         self.prioOffset = max([task.alpha for task in tau.tasks]) + 1
 
-    # def preemptEqualPriorities(self):
-    #     return True
+    def preemptEqualPriorities(self):
+        # quick hack to prevent looping in free-preemption systems
+        if self.prioOffset > 1:
+            return True
+        else:
+            return False
 
     def getLaxity(self, job, simu):
         compLeft = job.task.C - job.computation
@@ -22,10 +26,7 @@ class PALLF(Scheduler.SchedulerDP):
         # Find next preemptive job arrival amongst tasks
         candidate = None
         for task in simu.system.tasks:
-            if t < task.O:
-                nextArrival = task.O
-            else:
-                nextArrival = (t - task.O) + (task.T - (t - task.O) % task.T) + task.O
+            nextArrival = self.nextArrival(task, t)
             # expected priorities (based on lax)
             jobExecLeftAtArrival = max(0, finishTime - nextArrival)
             arrivalLax = task.D - task.C
@@ -36,7 +37,7 @@ class PALLF(Scheduler.SchedulerDP):
     def priority(self, job, simu):
         lax = self.getLaxity(job, simu)
         if self.isJobExecuting(job, simu):
-            return 1.0/(self.prioOffset + lax - job.alpha())
+            return 1/(self.prioOffset + lax - job.alpha())
         if job.alpha() > 1:
             # If executing now is sure to result in costly preemption, idle
             epa = self.earliestPreempArrival(job, simu)
@@ -46,4 +47,4 @@ class PALLF(Scheduler.SchedulerDP):
         lpbCPU = simu.leastPrioritaryCPU()
         if lpbCPU and lpbCPU.job and lpbCPU.job.computationLeft() <= lax:
             return -1 * float("inf")
-        return 1.0/(self.prioOffset + lax)
+        return 1/(self.prioOffset + lax)

@@ -24,6 +24,7 @@ class Drawer(object):
         self.outDraw = draw.Draw(self.outImg)
 
         self.drawGrid(stop)
+        self.drawArrivalsAndDeadlines()
 
     def getTaskNbr(self, task):
         taskNbr = None
@@ -120,3 +121,19 @@ def drawArrow(drawer, x1, y1, x2, y2, color):
     drawer.line((x1, y1, x2, y2), fill=color, width=2)
     r = 2
     drawer.ellipse((x2 - r, y2 - r, x2 + r, y2 + r), fill=color)
+
+
+class EmptyDrawer(Drawer):
+    """Will not drax anything. Use it when you don't need a Drawer"""
+    def __init__(self, simu, stop):
+        self.drawnDeadlineMissCount = 0
+        pass
+
+    def drawInstant(self, t):
+        pass
+
+    def drawDeadlineMiss(self, t, task):
+        self.drawnDeadlineMissCount += 1
+
+    def drawArrivalsAndDeadlines(self):
+        pass

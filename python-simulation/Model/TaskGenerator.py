@@ -30,17 +30,13 @@ def UUniFast(n, Utot):
     return [round(u, 4) for u in utils]
 
 
-def reduceSum(vec):
-    return reduce(lambda x, y: x + y, vec, 0)
-
-
 def generateTasks(Utot, n, maxHyperT, Tmin, Tmax, preemptionCost=0, synchronous=True, constrDeadlineFactor=1):
     # Utot will be delivered in a "best effort" way
     # constrDeadlineFactor: D will be in the interval [T-(T-C)/constrDeadlineFactor, T]
 
     assert 0 < Utot <= 1, "Utot out of bounds " + str(Utot)
     utilizations = UUniFast(n, Utot)
-    assert reduceSum(utilizations) - Utot <= 0.001, str(reduceSum(utilizations)) + ", \t" + str(Utot)
+    assert sum(utilizations) - Utot <= 0.001, str(sum(utilizations)) + ", \t" + str(Utot)
     tasks = generateTasksFrom(utilizations, maxHyperT, Tmin, Tmax, preemptionCost, synchronous, constrDeadlineFactor)
     return tasks
 
@@ -62,8 +58,9 @@ def generateTasksFrom(utilizations, T_LCM, Tmin, Tmax, preemptionCost, synchrono
         O = 0 if synchronous else max(0, int(random.normalvariate(Tmin, (Tmax-Tmin)/2)))
         T = random.randrange(Tmin, Tmax) if T_LCM == -1 else random.choice(divisors)
         C = max(1, int(round(math.floor(u*T))))
-        D = random.randint(int(T-(T-C)/constrDeadlineFactor), T)
-        tasks.append(Task.Task(O, C, D, T, alpha=preemptionCost))
+        D = random.randint(int(T-(T-C)*constrDeadlineFactor), T)
+        a = preemptionCost if preemptionCost >= 0 else random.randrange(0,5)
+        tasks.append(Task.Task(O, C, D, T, a))
 
     # translate offset so that Omin=0
     Omin = min([task.O for task in tasks])
@@ -109,34 +106,34 @@ if __name__ == '__main__':
             assert task.C > 0, str(task)
 
 
-####################################
+# ####################################
 
-def oldGenerateTasks(Umax, Umin, u_max, u_min, maxHyperT, Tmin, Tmax, lowPPCM=True, synchronous=True, Kmax=1, Rmax=1):
+# def oldGenerateTasks(Umax, Umin, u_max, u_min, maxHyperT, Tmin, Tmax, lowPPCM=True, synchronous=True, Kmax=1, Rmax=1):
 
-    # assertions
-    assert 0 < Umin <= Umax <= 1, "Umin or Umax out of bound " + str(Umin) + "|" + str(Umax)
-    assert 0 < u_min <= u_max <= 1, "u_min or u_max out of bound" + str(Umin) + "|" + str(Umax)
-    assert (u_min*Tmin*1.0)/math.pow(Rmax, Kmax) > 1, "Not enough granularity! (u_min, Tmin, Rmax, Kmax)"
+#     # assertions
+#     assert 0 < Umin <= Umax <= 1, "Umin or Umax out of bound " + str(Umin) + "|" + str(Umax)
+#     assert 0 < u_min <= u_max <= 1, "u_min or u_max out of bound" + str(Umin) + "|" + str(Umax)
+#     assert (u_min*Tmin*1.0)/math.pow(Rmax, Kmax) > 1, "Not enough granularity! (u_min, Tmin, Rmax, Kmax)"
 
 
-    # generation of the utilizations
-    # generate a list of values between u_min and u_max
-    # s.t. their sum is between Umin and Umax
-    utilizations = []
-    cnt = 0
-    while reduceSum(utilizations) > Umax or reduceSum(utilizations) < Umin:
-        cnt += 1
-        if cnt > 1000:
-            # relax constraints
-            print("did not respect bounds after 1000 steps. Please give more relaxed constraints")
-            utilization_goal_below = Umin
-            utilization_goal_above = Umax
-        elif reduceSum(utilizations) <= Umin:
-            new_utiliz = random.uniform(u_min, u_max)
-            new_utiliz = round(new_utiliz, 2)
-            utilizations.append(new_utiliz)
-        else:  # reduceSum(utilizations) > Umax
-            utilizations.pop(random.randint(0, len(utilizations) - 1))
+#     # generation of the utilizations
+#     # generate a list of values between u_min and u_max
+#     # s.t. their sum is between Umin and Umax
+#     utilizations = []
+#     cnt = 0
+#     while reduceSum(utilizations) > Umax or reduceSum(utilizations) < Umin:
+#         cnt += 1
+#         if cnt > 1000:
+#             # relax constraints
+#             print("did not respect bounds after 1000 steps. Please give more relaxed constraints")
+#             utilization_goal_below = Umin
+#             utilization_goal_above = Umax
+#         elif reduceSum(utilizations) <= Umin:
+#             new_utiliz = random.uniform(u_min, u_max)
+#             new_utiliz = round(new_utiliz, 2)
+#             utilizations.append(new_utiliz)
+#         else:  # reduceSum(utilizations) > Umax
+#             utilizations.pop(random.randint(0, len(utilizations) - 1))
 
-    tasks = generateTasksFrom(utilizations, maxHyperT, Tmin, Tmax, Kmax, Rmax)
-    return tasks
+#     tasks = generateTasksFrom(utilizations, maxHyperT, Tmin, Tmax, Kmax, Rmax)
+#     return tasks

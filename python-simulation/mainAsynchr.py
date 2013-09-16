@@ -28,7 +28,7 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 
 if __name__ == '__main__':
 	NUMBER_OF_SYSTEMS = 10
-	for constrDeadlineFactor in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+	for constrDeadlineFactor in [1, 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10]:
 		print(("CONSTR DEAD FACTOR", constrDeadlineFactor))
 		systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor)
 		firstDITs = []
