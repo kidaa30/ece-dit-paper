@@ -107,15 +107,16 @@ joel.goossens@ulb.ac.be}
 
 \begin{abstract}
 	Sensitivity analysis for real-time systems provides efficient methods to determine feasibility
-	conditions in the case of small changes in task parameters, such as when porting a system to a
-	different platform. The C-space describes the set of execution times for which
-	a system is feasible. This paper extends previous works to generalize the
-	description of the C-space for Earliest Deadline First scheduling to systems
-	with initial task offsets. The feasibility gain offered by offsets is then
-	expressed as the volume ratio between the C-space of an asynchronous system and
-	its corresponding synchronous system. The problem requires solving multiple
-	similar instances of the Chinese Remainder Problem, for which an algorithm
-	efficient in this context is provided.
+	conditions in the case of small changes in task parameters, such as
+	different WCET values when porting a system to a different platform. The C-space describes the set of execution
+	times for which a system is feasible, which allows system designers to quickly
+	find the best platform for a given task set. This paper extends previous works
+	to generalize the description of the C-space for Earliest Deadline First
+	scheduling to systems with initial task offsets. The feasibility gain offered
+	by offsets is then expressed as the volume ratio between the C-space of an
+	asynchronous system and its corresponding synchronous system. The problem
+	requires solving multiple similar instances of the Chinese Remainder Problem,
+	for which an algorithm efficient in this context is provided.
 \end{abstract}
 
 % For peer review papers, you can put extra information on the cover
@@ -163,6 +164,9 @@ joel.goossens@ulb.ac.be}
 
 \section{Related works}
 \label{sct:relatedWorks}
+
+%Review 3 : add map of literature
+
 	\subsection{Model}
 		We consider a discrete timeline and tasks systems $\tau$ comprised of periodic
 		tasks with constrained deadlines on uniprocessor platforms. Each task
@@ -350,12 +354,13 @@ joel.goossens@ulb.ac.be}
 		can be written as a system of modular equations:
 		\[
 			\begin{array}{l}
-				\exists ? \; t_d \; s.t. \; \forall \tau_i \in \tau \; :\\
+				\exists ? \; t_d \; s.t. \; \forall \tau_i \in \tau, \exists a_i \in [D_i,
+				T_i] \; :\\
 				\left\{
 					\begin{array}{l}
 						t_d > O_i \\
-						t_d - O_i \equiv a_i \; (mod \; T_i) \\
-						a_i \in [D_i, T_i]
+						t_d - O_i \equiv a_i \; (mod \;	T_i)
+						\\
 					\end{array}
 				\right.
 			\end{array}
@@ -397,10 +402,12 @@ joel.goossens@ulb.ac.be}
 
 	\subsection{Solving the modular system}
 		The existence conditions of	Section~\ref{sct:FPDITexist} can directly be used to calculate the value of
-		the FPDIT (if any), because for a given set of $a_i$ values they are
-		very similar to an instance of the Chinese Remainder Problem (CRP), which is
-		easily solved using Gauss's CRP solving method for non-coprime moduli
-		\cite{gauss1965disquisitiones}.
+		the FPDIT (if any), because for a given set of $a_i$ values the problem of
+		finding the corresponding DIT is an instance of the Chinese Remainder Problem
+		(CRP), which is easily solved using Gauss's CRP solving method for non-coprime
+		moduli \cite{gauss1965disquisitiones}.
+		
+		%Review 3 : explain Gauss algorithm
 
 		However this is very inefficient as there are exponentially many different
 		combinations of $a_i$ values in the number of tasks, and resolving
@@ -408,6 +415,9 @@ joel.goossens@ulb.ac.be}
 		FPDIT consists in splitting Gauss's algorithm into two separate parts, as
 		shown in Algorithm~\ref{alg:multiACRP} (note that $x^{-1} \; (mod \; y)$
 		means the modular inverse of $x$ in the naturals modulo $y$).
+
+		
+		%Review 3 : add formal complexity assessment of this algorithm
 
 		\begin{algorithm}
 			\caption{Modified Gauss Algorithm}
