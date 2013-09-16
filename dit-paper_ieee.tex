@@ -108,12 +108,14 @@ joel.goossens@ulb.ac.be}
 \begin{abstract}
 	Sensitivity analysis for real-time systems provides efficient methods to determine feasibility
 	conditions in the case of small changes in task parameters, such as when porting a system to a
-	different platform. The C-space describes the
-	set of execution times for which a system is feasible. This paper extends previous works to
-	generalize the description of the C-space for Earliest Deadline First scheduling to
-	systems with initial task offsets. The feasibility gain offered by offsets is
-	then expressed as the volume ratio between the C-space of an asynchronous system and its corresponding
-	synchronous system.
+	different platform. The C-space describes the set of execution times for which
+	a system is feasible. This paper extends previous works to generalize the
+	description of the C-space for Earliest Deadline First scheduling to systems
+	with initial task offsets. The feasibility gain offered by offsets is then
+	expressed as the volume ratio between the C-space of an asynchronous system and
+	its corresponding synchronous system. The problem requires solving multiple
+	similar instances of the Chinese Remainder Problem, for which an algorithm
+	efficient in this context is provided.
 \end{abstract}
 
 % For peer review papers, you can put extra information on the cover
@@ -170,8 +172,8 @@ joel.goossens@ulb.ac.be}
 		the following, we differentiate between \emph{synchronous systems} (where $O_i
 		= 0 \; \forall i$) and \emph{asynchronous systems} (which are not synchronous).
 
-		For those systems, the preemptive \emph{Earliest Deadline First} (EDF) algorithm, in
-		which jobs are prioritized according to their absolute deadline, has been
+		For both synchronous and asynchronous systems, the preemptive
+		\emph{Earliest Deadline First} (EDF) algorithm, in which jobs are prioritized according to their absolute deadline, has been
 		shown to be optimal \cite{liu1973scheduling}, which means it
 		correctly schedules any feasible system within that group.
 
@@ -291,18 +293,17 @@ joel.goossens@ulb.ac.be}
   \end{remark}
 
   The value of the first DIT can be found by solving the following modular equation system:
-  \[
-    t_d = \min
-    \left( t \; s.t. \; \forall i:
-      \left\{
-        \begin{array}{c}
-          t > 0 \\
-          t \equiv a_i \; (mod \; T_i) \\
-          a_i \in [D_i, T_i]
-        \end{array}
-      \right.
-    \right)
-  \]
+	\[
+		t_d = \min
+		\left( t \; s.t. \; \forall i \; \exists a_i \in [D_i, T_i]:
+			\left\{
+				\begin{array}{c}
+					t > 0 \\
+					t \equiv a_i \; (mod \; T_i) \\
+				\end{array}
+			\right.
+		\right)
+	\]
   The authors of \cite{george2009characterization} give a method to solve this system for cases in which periods are pairwise coprime.
 
   For synchronous systems in which the execution times are not known, the first DIT $t_d$
@@ -404,7 +405,8 @@ joel.goossens@ulb.ac.be}
 			\caption{Modified Gauss Algorithm}
 			\label{alg:multiACRP}
 			\begin{algorithmic}[1]
-				\REQUIRE $A$ is a list of the sets of possible $a_i$ per task
+				\REQUIRE $\forall j: A_j$ is a list of the sets of possible $a_i$ values for
+				task $\tau_j$ 
 				\REQUIRE $H$ is the hyperperiod of the system
 
 				\STATE $sumchunks \leftarrow \text{empty list}$
@@ -412,19 +414,20 @@ joel.goossens@ulb.ac.be}
 					\STATE $taskTerms \leftarrow \text{empty list}$
 					\STATE $Mj \leftarrow \frac{H}{T_j}$
 					\STATE $invMj \leftarrow Mj^{-1} (mod \; T_j)$
-					\FORALL{$a_i \in A(\tau_j)$}
-						\STATE $\text{append} \; (a_i \cdot Mj \cdot invMj) \; \text{to} \; taskTerms$
+					\FORALL{$a_i \in A_j$}
+						\STATE $taskTerms[i] \leftarrow (a_i \cdot Mj \cdot invMj)$
 					\ENDFOR
-					\STATE $\text{append} \; taskTerms \; \text{to} \; sumchunks$
+					\STATE $sumchunks[j] \leftarrow taskTerms$
 				\ENDFOR
 
 				\STATE $results \leftarrow \text{empty list}$
 				\STATE append $0$ to $results$
 				\FORALL{$\tau_j \in \tau$}
 					\STATE $newresults \leftarrow \text{empty list}$
-					\FORALL{$a_i \in A(\tau_j)$}
+					\FORALL{$a_i \in A_j$}
 						\FORALL{$r \in results$}
-							\STATE $\text{append} \; (r + sumchunks(\tau_j,i)) \; \text{to} \; newresults$
+							\STATE $\text{append} \; (r + sumchunks[j][i]) \; \text{to} \;
+							newresults$
 						\ENDFOR
 					\ENDFOR
 					\STATE $results \leftarrow newresults$
