@@ -106,14 +106,14 @@ joel.goossens@ulb.ac.be}
 \maketitle
 
 \begin{abstract}
-Sensitivity analysis for real-time systems provides efficient methods to determine feasibility
-conditions  in the case of small changes in task parameters, such as when porting a system to a
-different platform. The C-space, presented in \cite{bini2004schedulability,george2009characterization}, describes the
-set of execution times for which a system is feasible. This paper extends previous works to
-generalize the description of the C-space for Earliest Deadline First scheduling to
-systems with initial offset. The feasibility gain offered by offsets is then
-expressed as the volume ratio between the C-space of an asynchronous system and its corresponding
-synchronous system.
+	Sensitivity analysis for real-time systems provides efficient methods to determine feasibility
+	conditions in the case of small changes in task parameters, such as when porting a system to a
+	different platform. The C-space describes the
+	set of execution times for which a system is feasible. This paper extends previous works to
+	generalize the description of the C-space for Earliest Deadline First scheduling to
+	systems with initial task offsets. The feasibility gain offered by offsets is
+	then expressed as the volume ratio between the C-space of an asynchronous system and its corresponding
+	synchronous system.
 \end{abstract}
 
 % For peer review papers, you can put extra information on the cover
@@ -135,8 +135,8 @@ synchronous system.
 	timeliness constraint) based on task parameters, including the WCET.
 
 	The \emph{C-space} of a real-time system is, intuitively,
-	the set of WCET values for which this system would be feasible. A
-	precise and efficient description of the C-space of a system would allow to quickly decide
+	the set of WCET values for which this system would be feasible
+	\cite{bini2004schedulability,george2009characterization}. A precise and efficient description of the C-space of a system would allow to quickly decide
 	whether or not it is feasible on a given platform.
 
 	In section~\ref{sct:relatedWorks}, the description of the C-space of synchronous
@@ -151,8 +151,10 @@ synchronous system.
 	then we show the influence of some factors on its existence.
 
 	In Section~\ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous
-	system based on the DBF test, we show why the interval $[t_d, t_d + H]$ is
-	sometimes sufficient to consider and we give a numerical example.
+	system based on the demand bound function test. Then we show why applying this
+	test on the interval starting at $t_d$
+	and spanning an hyperperiod when $t_d$ exists is sufficient. A
+	numerical example is also given.
 
 	Finally, in section~\ref{sct:expCspaceGain}, we use a simulation to quantify the feasibility
 	gain of asynchronous system in terms of volume of the C-space.
@@ -160,8 +162,7 @@ synchronous system.
 \section{Related works}
 \label{sct:relatedWorks}
 	\subsection{Model}
-
-		We consider a discrete timeline and tasks systems $\tau$ comprised of periodic concrete
+		We consider a discrete timeline and tasks systems $\tau$ comprised of periodic
 		tasks with constrained deadlines on uniprocessor platforms. Each task
 		$\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value,
 		$C_i$ the WCET, $D_i$ the relative deadline and $T_i$ the period.
