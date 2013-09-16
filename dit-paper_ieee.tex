@@ -405,29 +405,28 @@ joel.goossens@ulb.ac.be}
 			\caption{Modified Gauss Algorithm}
 			\label{alg:multiACRP}
 			\begin{algorithmic}[1]
-				\REQUIRE $\forall j: A_j$ is a list of the sets of possible $a_i$ values for
-				task $\tau_j$ 
+				\REQUIRE $\forall i: A_i$ is the set of possible $a_i$ values for
+					task $\tau_i$
 				\REQUIRE $H$ is the hyperperiod of the system
 
 				\STATE $sumchunks \leftarrow \text{empty list}$
-				\FORALL{$\tau_j \in \tau$}
+				\FORALL{$\tau_i \in \tau$}
 					\STATE $taskTerms \leftarrow \text{empty list}$
-					\STATE $Mj \leftarrow \frac{H}{T_j}$
-					\STATE $invMj \leftarrow Mj^{-1} (mod \; T_j)$
-					\FORALL{$a_i \in A_j$}
-						\STATE $taskTerms[i] \leftarrow (a_i \cdot Mj \cdot invMj)$
+					\STATE $Mj \leftarrow \frac{H}{T_i}$
+					\STATE $invMj \leftarrow Mj^{-1} (mod \; T_i)$
+					\FORALL{$a_i \in A_i$}
+						\STATE append $(a_i \cdot Mj \cdot invMj)$ to $taskTerms$
 					\ENDFOR
-					\STATE $sumchunks[j] \leftarrow taskTerms$
+					\STATE $sumchunks[i] \leftarrow taskTerms$
 				\ENDFOR
 
 				\STATE $results \leftarrow \text{empty list}$
 				\STATE append $0$ to $results$
-				\FORALL{$\tau_j \in \tau$}
+				\FORALL{$\tau_i \in \tau$}
 					\STATE $newresults \leftarrow \text{empty list}$
-					\FORALL{$a_i \in A_j$}
+					\FORALL{$chunk \in sumchunks[i]$}
 						\FORALL{$r \in results$}
-							\STATE $\text{append} \; (r + sumchunks[j][i]) \; \text{to} \;
-							newresults$
+							\STATE $\text{append} \; (r + chunk) \; \text{to} \; newresults$
 						\ENDFOR
 					\ENDFOR
 					\STATE $results \leftarrow newresults$
