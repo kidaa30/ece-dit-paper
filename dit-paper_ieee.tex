@@ -108,7 +108,7 @@ joel.goossens@ulb.ac.be}
 \begin{abstract}
 	Sensitivity analysis for real-time systems provides efficient methods to determine feasibility
 	conditions in the case of small changes in task parameters, such as
-	different WCET values when porting a system to a different platform. The C-space describes the set of execution
+	different WCET values when porting a system to a different platform. The \mbox{C-space} describes the set of execution
 	times for which a system is feasible, which allows system designers to quickly
 	find the best platform for a given task set. This paper extends previous works
 	to generalize the description of the C-space for Earliest Deadline First
@@ -156,7 +156,7 @@ joel.goossens@ulb.ac.be}
 	In Section~\ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous
 	system based on the demand bound function test. Then we show why applying this
 	test on the interval starting at $t_d$
-	and spanning an hyperperiod when $t_d$ exists is sufficient. A
+	and spanning an hyperperiod is sufficient when $t_d$ exists. A
 	numerical example is also given.
 
 	Finally, in section~\ref{sct:expCspaceGain}, we use a simulation to quantify the feasibility
@@ -171,8 +171,8 @@ joel.goossens@ulb.ac.be}
 		We consider a discrete timeline and tasks systems $\tau$ comprised of periodic
 		tasks with constrained deadlines on uniprocessor platforms. Each task
 		$\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value,
-		$C_i$ the WCET, $D_i$ the relative deadline and $T_i$ the period.
-		The constrained deadline property implies that $\forall i,\; D_i \leq T_i$. In
+		$C_i$ the WCET, $D_i$ the relative deadline and $T_i$ the period, which is the exact time between two consecutive arrivals.
+		The constrained deadline property implies that $D_i \leq T_i \; \forall i$. In
 		the following, we differentiate between \emph{synchronous systems} (where $O_i
 		= 0 \; \forall i$) and \emph{asynchronous systems} (which are not synchronous).
 
@@ -202,7 +202,7 @@ joel.goossens@ulb.ac.be}
 		\begin{definition}
 			The \textbf{demand-bound function (DBF)}
 			defined for a task set $\tau$ in a time interval $[t_1, t_2]$ and denoted $\dbf{t_1, t_2}$, is
-			equal to the maximal cumulated execution time of jobs of $\tau$ contained in the
+			equal to the maximum cumulated execution time of jobs of $\tau$ contained in the
 			closed interval $[t_1, t_2]$.
 		\end{definition}
 
