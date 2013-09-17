@@ -306,10 +306,10 @@ joel.goossens@ulb.ac.be}
 		\end{remark}
 
 		The value of the first DIT can be found by solving the following modular
-		equation system:	
+		equation system:
 		\begin{equation}
 			\begin{split}
-				 t_d = \min(& \{ t \; s.t. \; t > 0 \; and \\ 
+				 t_d = \min(& \{ t \; s.t. \; t > 0 \; and \\
 						& \forall \tau_i \in \tau, \; \exists a_i \in [D_i, T_i]: t \equiv a_i \;
 						(mod \; T_i) \})
 			\end{split}
@@ -366,10 +366,7 @@ joel.goossens@ulb.ac.be}
 
 		This system is guaranteed to have at least one solution modulo $H$ for given
 		values of $a_i$ if the following condition is respected:
-		
 		%Review 3 : use ref to justify this formula
-		%TODO : change format so that the equation number is displayed correctly
-		
 		\begin{equation}
 			a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i, T_j)) \; \forall i,j
 		\end{equation}
@@ -408,7 +405,7 @@ joel.goossens@ulb.ac.be}
 		(CRP), which is easily solved using Gauss's CRP solving method for non-coprime
 		moduli \cite{gauss1965disquisitiones}. (note that $x^{-1} \; (mod \; y)$
 		means the modular inverse of $x$ in the naturals modulo $y$)
-		
+
 		\begin{algorithm}
 			\caption{Gauss's CRP Algorithm}
 			\label{alg:algoCRP}
@@ -428,7 +425,7 @@ joel.goossens@ulb.ac.be}
 				\RETURN $\sum\limits_{\tau_i \in \tau}{a_i \cdot e_i} \; (mod \; H)$
 			\end{algorithmic}
 		\end{algorithm}
-		
+
 		%Review 3 : explain Gauss algorithm
 
 		However this is very inefficient as there are exponentially many different
@@ -532,12 +529,10 @@ joel.goossens@ulb.ac.be}
 		The description we presented in Section \ref{sct:cspaceDescr} based on \cite{baruah1999generalized} was general, and
 		is thus still relevant. Therefore the C-space is still accurately described by
 		the following infinite number of constraints:
-
 		\begin{equation}
 			\sum_{i=1}^{n} n_i(t_1, t_2)
 			\, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
 		\end{equation}
-
 		However, the method used in the synchronous case to remove redundancy does not
 		apply here. A more general approach is presented in the following section.
 
