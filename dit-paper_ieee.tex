@@ -108,7 +108,7 @@ joel.goossens@ulb.ac.be}
 \begin{abstract}
 	Sensitivity analysis for real-time systems provides efficient methods to determine feasibility
 	conditions in the case of small changes in task parameters, such as
-	different WCET values when porting a system to a different platform. The C-space describes the set of execution
+	different WCET values when porting a system to a different platform. The \mbox{C-space} describes the set of execution
 	times for which a system is feasible, which allows system designers to quickly
 	find the best platform for a given task set. This paper extends previous works
 	to generalize the description of the C-space for Earliest Deadline First
@@ -156,7 +156,7 @@ joel.goossens@ulb.ac.be}
 	In Section~\ref{sct:asyncCspace}, we show how to describe the C-space of an asynchronous
 	system based on the demand bound function test. Then we show why applying this
 	test on the interval starting at $t_d$
-	and spanning an hyperperiod when $t_d$ exists is sufficient. A
+	and spanning an hyperperiod is sufficient when $t_d$ exists. A
 	numerical example is also given.
 
 	Finally, in section~\ref{sct:expCspaceGain}, we use a simulation to quantify the feasibility
@@ -171,10 +171,10 @@ joel.goossens@ulb.ac.be}
 		We consider a discrete timeline and tasks systems $\tau$ comprised of periodic
 		tasks with constrained deadlines on uniprocessor platforms. Each task
 		$\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value,
-		$C_i$ the WCET, $D_i$ the relative deadline and $T_i$ the period.
-		The constrained deadline property implies that $\forall i,\; D_i \leq T_i$. In
+		$C_i$ the WCET, $D_i$ the relative deadline and $T_i$ the period, which is the exact time between two consecutive arrivals.
+		The constrained deadline property implies that $D_i \leq T_i$. In
 		the following, we differentiate between \emph{synchronous systems} (where $O_i
-		= 0 \; \forall i$) and \emph{asynchronous systems} (which are not synchronous).
+		= 0$ for all tasks) and \emph{asynchronous systems} (which are not synchronous).
 
 		For both synchronous and asynchronous systems, the preemptive
 		\emph{Earliest Deadline First} (EDF) algorithm, in which jobs are prioritized according to their absolute deadline, has been
@@ -202,7 +202,7 @@ joel.goossens@ulb.ac.be}
 		\begin{definition}
 			The \textbf{demand-bound function (DBF)}
 			defined for a task set $\tau$ in a time interval $[t_1, t_2]$ and denoted $\dbf{t_1, t_2}$, is
-			equal to the maximal cumulated execution time of jobs of $\tau$ contained in the
+			equal to the maximum cumulated execution time of jobs of $\tau$ contained in the
 			closed interval $[t_1, t_2]$.
 		\end{definition}
 
@@ -254,12 +254,12 @@ joel.goossens@ulb.ac.be}
 			$C_i \geqslant 1 \; \forall \tau_i \in \tau$ to the list of constraints).
 
 		The DBF test gives us a list of inequations on the WCET values of the task set
-		which together are a necessary and sufficient condition of feasibility. They
+		which, taken together, are a necessary and sufficient condition of feasibility. They
 		can all be written in the following way:
 		\begin{equation}
 			\sum_{i=1}^{n} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
 		\end{equation}
-		Note that for a given $t$, we have that the $n_i(t)$ are
+		Note that for given values  of $(t_1, t_2)$, the $n_i(t_1, t_2)$ are
 		constant (w.r.t. the $C_i$). Those inequations are thus indeed linear.
 
       However, this description contains an infinite number of constraints, most of
@@ -367,7 +367,7 @@ joel.goossens@ulb.ac.be}
 		\begin{equation}
 			a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i, T_j)) \; \forall i,j
 		\end{equation}
-		which means that there could be systems with no FPDIT.
+		which means that systems where no such values of $a_i$ exists do not have a FPDIT.
 		We now present an example of such a system.\\
 
 		\begin{center}
@@ -429,7 +429,7 @@ joel.goossens@ulb.ac.be}
 		exponentially many CRP is prohibitively slow. A faster method for finding
 		the FPDIT consists in merging all these CRP instances into one problem
 		(finding all DITs), which can be solved faster by
-		Algorithm~\ref{alg:multiACRP}, as a significant part of the needed
+		Algorithm~\ref{alg:multiACRP}, as a significant part of the
 		intermediate results are shared between instances.
 
 		%Review 3 : add formal complexity assessment of this algorithm
