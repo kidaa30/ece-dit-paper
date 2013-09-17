@@ -311,15 +311,11 @@ joel.goossens@ulb.ac.be}
 		%TODO : change format so that the equation number is displayed correctly
 		
 		\begin{equation}
-			t_d = \min
-			\left( t \; s.t. \; \forall \tau_i \in \tau, \; \exists a_i \in [D_i, T_i]:
-				\left\{
-					\begin{array}{c}
-						t > 0 \\
-						t \equiv a_i \; (mod \; T_i) \\
-					\end{array}
-				\right.
-			\right)
+			\begin{split}
+				 t_d = \min(& \{ t \; s.t. \; t > 0 \; and \\ 
+						& \forall \tau_i \in \tau, \; \exists a_i \in [D_i, T_i]: t \equiv a_i \;
+						(mod \; T_i) \})
+			\end{split}
 		\end{equation}
   The authors of \cite{george2009characterization} give a method to solve this system for cases in which periods are pairwise coprime.
 
