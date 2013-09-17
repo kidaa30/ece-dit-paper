@@ -306,10 +306,7 @@ joel.goossens@ulb.ac.be}
 		\end{remark}
 
 		The value of the first DIT can be found by solving the following modular
-		equation system:
-		
-		%TODO : change format so that the equation number is displayed correctly
-		
+		equation system:	
 		\begin{equation}
 			\begin{split}
 				 t_d = \min(& \{ t \; s.t. \; t > 0 \; and \\ 
@@ -409,27 +406,52 @@ joel.goossens@ulb.ac.be}
 		the FPDIT (if any), because for a given set of $a_i$ values the problem of
 		finding the corresponding DIT is an instance of the Chinese Remainder Problem
 		(CRP), which is easily solved using Gauss's CRP solving method for non-coprime
-		moduli \cite{gauss1965disquisitiones}.
+		moduli \cite{gauss1965disquisitiones}. (note that $x^{-1} \; (mod \; y)$
+		means the modular inverse of $x$ in the naturals modulo $y$)
+		
+		\begin{algorithm}
+			\caption{Gauss's CRP Algorithm}
+			\label{alg:algoCRP}
+			\begin{algorithmic}[1]
+				\REQUIRE $\forall \tau_i \in \tau : a_i \in [D_i,T_i]$
+				\REQUIRE $\forall \tau_i \in \tau : n_i = T_i$
+				\REQUIRE $H$ is the hyperperiod of the system
+
+				\STATE Modify the $n_i$ and $a_i$ by prime decomposition so \\ that the
+				$n_i$ become pairwise coprime
+
+				\FORALL{$\tau_i \in \tau$}
+					\STATE $Mj \leftarrow \frac{H}{n_i}$
+					\STATE $invMj \leftarrow Mj^{-1} (mod \; n_i)$
+					\STATE $e_i \leftarrow (Mj \cdot invMj)$
+				\ENDFOR
+				\RETURN $\sum\limits_{\tau_i \in \tau}{a_i \cdot e_i} \; (mod \; H)$
+			\end{algorithmic}
+		\end{algorithm}
 		
 		%Review 3 : explain Gauss algorithm
 
 		However this is very inefficient as there are exponentially many different
 		combinations of $a_i$ values in the number of tasks, and resolving
-		exponentially many CRP is prohibitively slow. A better method for finding the
-		FPDIT consists in splitting Gauss's algorithm into two separate parts, as
-		shown in Algorithm~\ref{alg:multiACRP} (note that $x^{-1} \; (mod \; y)$
-		means the modular inverse of $x$ in the naturals modulo $y$).
+		exponentially many CRP is prohibitively slow. A faster method for finding
+		the FPDIT consists in merging all these CRP instances into one problem
+		(finding all DITs), which can be solved faster by
+		Algorithm~\ref{alg:multiACRP}, as a significant part of the needed
+		intermediate results are shared between instances.
 
-		
 		%Review 3 : add formal complexity assessment of this algorithm
 
 		\begin{algorithm}
 			\caption{Modified Gauss Algorithm}
 			\label{alg:multiACRP}
 			\begin{algorithmic}[1]
-				\REQUIRE $\forall i: A_i$ is the set of possible $a_i$ values for
-					task $\tau_i$
+				\REQUIRE $\forall \tau_i \in \tau: A_i$ is the set of possible $a_i$ values
+				for $\tau_i$
+				\REQUIRE $\forall \tau_i \in \tau : n_i = T_i$
 				\REQUIRE $H$ is the hyperperiod of the system
+
+				\STATE Modify the $n_i$ and $a_i$ by prime decomposition so \\ that the
+				$n_i$ become pairwise coprime
 
 				\STATE $sumchunks \leftarrow \text{empty list}$
 				\FORALL{$\tau_i \in \tau$}
@@ -457,14 +479,17 @@ joel.goossens@ulb.ac.be}
 			\end{algorithmic}
 		\end{algorithm}
 
-		The global structure of the original algorithm is simply a sum of factors, each term being dependent on which $a_i$ value is chosen. A major
-		speedup is achieved by first computing all possible terms for each task
-		then creating all possible DIT values by summing the terms in all possible
-		ways. The number of results is still exponential in the number of tasks, but
-		the only operation that is repeated exponentially many times is now a sum.
-		This allows us to profit from a high chance of having DITs when the deadlines
-		are close to the WCETs (and far from the periods), but with only a slight
-		increase in computation time as the sizes of the $[D_i, T_i]$ intervals grow.
+		Both Algorithm~\ref{alg:algoCRP} and Algorithm~\ref{alg:multiACRP} require the
+		computation of one modular inversion per $a_i$ value, which is done in linear
+		time with the number of tasks. However, to find all DITs
+		Algorithm~\ref{alg:algoCRP} has to be executed once for each possible
+		combination of $a_i$ values, which is exponential in the number of tasks.
+		Algorithm~\ref{alg:multiACRP} is not faster in orders of
+		complexity as the computation of all DITs still requires an exponential number
+		of answers in the number of tasks, but it is nonetheless significantly faster
+		in practice. The running time of Algorithm~\ref{alg:multiACRP} is also less
+		sensitive to the number of different $a_i$ values per task, which means tasks
+		with deadlines significantly smaller than periods remain practical.
 
 	\subsection{Simulation}
 	\label{sct:noFPDITsimu}
