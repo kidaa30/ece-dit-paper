@@ -377,7 +377,7 @@ joel.goossens@ulb.ac.be}
 		Condition~\ref{eq:CRPcond} means that DITs might still exist even though in
 		the general case task periods will not necessarily be pairwise coprime.
 % 		We now present an example of such a system.\\
-% 
+%
 % 		\begin{center}
 % 			\begin{tabular}{|r|c|c|c|c|}
 % 				\hline
@@ -386,7 +386,7 @@ joel.goossens@ulb.ac.be}
 % 				$\tau_2$ 	& 2 	& $C_2$ & 7 	& 8\\ \hline
 % 			\end{tabular}
 % 		\end{center}
-% 
+%
 % 		Here, the possible values of $a_1$ are 3 and 4, and the possible values
 % 		of $a_2$ are 7 and 8. For a FPDIT to exist, one of the following
 % 		conditions must be fulfilled:
@@ -409,7 +409,7 @@ joel.goossens@ulb.ac.be}
 		modular inverse of $x$ in the naturals modulo $y$). In this paper we
 		concentrate on the latter part of the algorithm (after the modifications to
 		correct non-coprime periods, readers interested in the details of these
-		modifications should refer to \cite{knuth1969art}).		
+		modifications should refer to \cite{knuth1969art}).
 		\begin{algorithm}
 			\caption{Gauss's CRP Algorithm}
 			\label{alg:algoCRP}
@@ -603,7 +603,9 @@ As the FPDIT happens when all tasks are in the system, we know that the system w
 
 \subsubsection{Redundancy as an integer linear problem}
 
-The general problem of redundancy of a new linear constraint $C \, X \leq d$ w.r.t. a set of previous linear constraints $A \, X \leq B$ in an ILP can itself be written as the ILP presented in Fig.~\ref{fig:redILP}.
+Previous sections give us a list of (integer) linear constraints accurately describing the C-space, composed of the DBF test applied to the required intervals. We now give a method to remove redundant constraints from this list.
+
+The general problem of redundancy of some linear constraint $C \, X \leq d$ w.r.t. a set of previous linear constraints $A \, X \leq B$ in an ILP can itself be written as the ILP presented in Fig.~\ref{fig:redILP}.
 
 \begin{figure}[h]
 $$z = \max C \, X$$
@@ -630,7 +632,7 @@ with
 
 Indeed, if the maximization returns $z=d+1$, it means that there are some integer values accessible with the previous constraints that the new constraint forbids. On the other hands, if the maximization returns $z \leq d$, it means that the limitation expressed in the new constraint is already enforced by the previous constraints. Therefore $z \leq d$ is a necessary and sufficient condition of redundancy of the new constraint.
 
-Such a linear problem can be solved by e.g. the simplex algorithm and a branch-and-cut approach. However, in our case the problem is not exactly the same as we have a set of constraints and we want to find all redundant constraints within. A naive method would be to test each constraint against all the others. We present a similar method with an efficient preprocessing when most constraints are redundant in Algorithm \ref{alg:prunRedun}.
+Such a linear problem can be solved by e.g. the simplex algorithm and a branch-and-cut approach. However, in our case the problem is not to test for redundancy of a particular constraint but to find all redundant constraints within a set. A naive method would be to test every constraint against all the others. We present a similar method with an efficient preprocessing when most constraints are redundant in Algorithm \ref{alg:prunRedun}.
 
 \begin{algorithm}
 \caption{Removing redundancy from CSPACE}
@@ -641,14 +643,14 @@ Such a linear problem can be solved by e.g. the simplex algorithm and a branch-a
     \STATE \COMMENT{$1^{st}$ pass: test each $cstr$ against previous ones}
     \FOR{$cstr$ \textbf{in} $CSPACE$}
       \IF {$cstr$ is not redundant w.r.t. $S$}
-        \STATE $S \leftarrow cstr$
+        \STATE $S.push(cst)rcl$
       \ENDIF
     \ENDFOR
-    \STATE \COMMENT{$2^{nd}$ pass: test each $cstr$ against every other}
+    \STATE \COMMENT{$2^{nd}$ pass: test remaining $cstr$ against every other}
     \FOR{$cstr$ \textbf{in} $S$}
-      \STATE Remove $cstr$ from $S$
+      \STATE $cstr$ = $S.pop()$
       \IF {$cstr$ is not redundant w.r.t. $S$}
-        \STATE Put $cstr$ back into $S$
+        \STATE $S.push(cstr)$
       \ENDIF
     \ENDFOR
     \RETURN{S}
