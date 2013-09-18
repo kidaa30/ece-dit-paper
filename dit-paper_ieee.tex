@@ -344,8 +344,8 @@ joel.goossens@ulb.ac.be}
     By a slight abuse of notation, it will also be noted $t_d$. Note that in the
     synchronous case the first periodic DIT is also the first DIT.
 
-  \subsection{Existence condition}
-  \label{sct:FPDITexist}
+	\subsection{Existence condition}
+	\label{sct:FPDITexist}
 
 		As in the synchronous case, the problem of existence of the FPDIT
 		can be written as a system of modular equations:
@@ -362,57 +362,64 @@ joel.goossens@ulb.ac.be}
 				\right.
 			\end{array}
 		\end{equation}
-
-		This system is guaranteed to have at least one solution modulo $H$ for given
-		values of $a_i$ if the following condition is respected:
-		%Review 3 : use ref to justify this formula
+		This system is equivalent to an instance of the Chinese Remainder Problem
+		(CRP) where the goal is to find the value of $t_d$ such that it is congruent
+		to $a_i+O_i$ modulo $T_i$ for all tasks $\tau_i$ in $\tau$. We define $x_i =
+		a_i+O_i$ and $n_i = T_i$ for clarity in the context of the CRP. This problem
+		is guaranteed to have at least one solution modulo $H$ for given values of
+		$a_i$ if Condition~\ref{eq:CRPcond} is respected
+		\cite{knuth1969art}:
 		\begin{equation}
-			a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i, T_j)) \; \forall i,j
+			\label{eq:CRPcond}
+			x_i \equiv x_j \; (\operatorname{mod} \; \operatorname{gcd}(n_i, n_j))
+			\; \forall \tau_i,\tau_j \in \tau
 		\end{equation}
-		which means that systems where no such values of $a_i$ exists do not have a FPDIT.
-		We now present an example of such a system.\\
-
-		\begin{center}
-			\begin{tabular}{|r|c|c|c|c|}
-				\hline
-							& $O_i$ & $C_i$ & $D_i$ & $T_i$ \\ \hline
-				$\tau_1$ 	& 0 	& $C_1$ & 3 	& 4\\ \hline
-				$\tau_2$ 	& 2 	& $C_2$ & 7 	& 8\\ \hline
-			\end{tabular}
-		\end{center}
-
-		Here, the possible values of $a_1$ are 3 and 4, and the possible values
-		of $a_2$ are 7 and 8. For a FPDIT to exist, one of the following
-		conditions must be fulfilled:
-		\[
-			\left[
-			\begin{array}{c}
-				3 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
-				3 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
-				4 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
-				4 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
-			\end{array}
-			\right.
-		\]
-		However neither is, which means the system has
-		no FPDIT (and no other DIT than $t=0$).
+		Condition~\ref{eq:CRPcond} means that DITs might still exist even though in
+		the general case task periods will not necessarily be pairwise coprime.
+% 		We now present an example of such a system.\\
+% 
+% 		\begin{center}
+% 			\begin{tabular}{|r|c|c|c|c|}
+% 				\hline
+% 							& $O_i$ & $C_i$ & $D_i$ & $T_i$ \\ \hline
+% 				$\tau_1$ 	& 0 	& $C_1$ & 3 	& 4\\ \hline
+% 				$\tau_2$ 	& 2 	& $C_2$ & 7 	& 8\\ \hline
+% 			\end{tabular}
+% 		\end{center}
+% 
+% 		Here, the possible values of $a_1$ are 3 and 4, and the possible values
+% 		of $a_2$ are 7 and 8. For a FPDIT to exist, one of the following
+% 		conditions must be fulfilled:
+% 		\[
+% 			\left[
+% 			\begin{array}{c}
+% 				3 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
+% 				3 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
+% 				4 + 0 \equiv 7 + 2 \; (\operatorname{mod} \; 4 ) \\
+% 				4 + 0 \equiv 8 + 2 \; (\operatorname{mod} \; 4 ) \\
+% 			\end{array}
+% 			\right.
+% 		\]
+% 		However neither is, which means the system has
+% 		no FPDIT (and no other DIT than $t=0$).
 
 	\subsection{Solving the modular system}
-		The existence conditions of	Section~\ref{sct:FPDITexist} can directly be used to calculate the value of
-		the FPDIT (if any), because for a given set of $a_i$ values the problem of
-		finding the corresponding DIT is an instance of the Chinese Remainder Problem
-		(CRP), which is easily solved using Gauss's CRP solving method for non-coprime
-		moduli (Algorithm~\ref{alg:algoCRP}) \cite{gauss1965disquisitiones,knuth1969art}.
-		(note that $x^{-1} \; (mod \; y)$ means the modular inverse of $x$ in the naturals modulo $y$)
+		A sketch of the construction algorithm for $t_d$ can be found in
+		Algorithm~\ref{alg:algoCRP} (note that $x^{-1} \; (mod \; y)$ means the
+		modular inverse of $x$ in the naturals modulo $y$). In this paper we
+		concentrate on the latter part of the algorithm (after the modifications to
+		correct non-coprime periods, readers interested in the details of these
+		modifications should refer to \cite{knuth1969art}).		
 		\begin{algorithm}
 			\caption{Gauss's CRP Algorithm}
 			\label{alg:algoCRP}
 			\begin{algorithmic}[1]
 				\REQUIRE $\forall \tau_i \in \tau : a_i \in [D_i,T_i]$
+				\REQUIRE $\forall \tau_i \in \tau : x_i = a_i+O_i$
 				\REQUIRE $\forall \tau_i \in \tau : n_i = T_i$
 				\REQUIRE $H$ is the hyperperiod of the system
 
-				\STATE Modify the $n_i$ and $a_i$ by prime decomposition so \\ that the
+				\STATE Modify the $n_i$ and $x_i$ by prime decomposition so \\ that the
 				$n_i$ become pairwise coprime
 
 				\FORALL{$\tau_i \in \tau$}
@@ -420,19 +427,17 @@ joel.goossens@ulb.ac.be}
 					\STATE $invMj \leftarrow Mj^{-1} \; (mod \; n_i)$
 					\STATE $e_i \leftarrow Mj \cdot invMj$
 				\ENDFOR
-				\RETURN $\sum\limits_{\tau_i \in \tau}{a_i \cdot e_i} \; (mod \; H)$
+				\RETURN $\sum\limits_{\tau_i \in \tau}{x_i \cdot e_i} \; (mod \; H)$
 			\end{algorithmic}
 		\end{algorithm}
-
-		%Review 3 : explain Gauss algorithm
-
-		However this is very inefficient as there are exponentially many different
-		combinations of $a_i$ values in the number of tasks, and resolving
-		exponentially many CRP is prohibitively slow. A faster method for finding
-		the FPDIT consists in merging all these CRP instances into one problem
-		(finding all DITs), which can be solved faster by
-		Algorithm~\ref{alg:multiACRP}, as a significant part of the
-		intermediate results are shared between instances.
+		Algorithm~\ref{alg:algoCRP} finds one DIT given one value of $a_i$ per task.
+		However using it in practice is very inefficient as there are
+		exponentially many different combinations of $a_i$ values in the number of
+		tasks, and resolving exponentially many CRP instances is prohibitively slow.
+		A faster method for finding the FPDIT consists in merging all these CRP
+		instances into one problem (finding all DITs), which can be solved faster by
+		Algorithm~\ref{alg:multiACRP}, as a significant part of the intermediate
+		results are shared between instances.
 
 		%Review 3 : add formal complexity assessment of this algorithm
 
@@ -440,21 +445,21 @@ joel.goossens@ulb.ac.be}
 			\caption{Modified Gauss Algorithm}
 			\label{alg:multiACRP}
 			\begin{algorithmic}[1]
-				\REQUIRE $\forall \tau_i \in \tau: A_i$ is the set of possible $a_i$ values
-				for $\tau_i$
+				\REQUIRE $\forall \tau_i \in \tau: X_i$ is the set of possible $a_i+O_i
+				\; \forall a_i \in [D_i,T_i]$ values for $\tau_i$
 				\REQUIRE $\forall \tau_i \in \tau : n_i = T_i$
 				\REQUIRE $H$ is the hyperperiod of the system
 
-				\STATE Modify the $n_i$ and $a_i$ by prime decomposition so \\ that the
-				$n_i$ become pairwise coprime
+				\STATE Modify the $n_i$ and the content of the $X_i$ by prime
+				\\ decomposition so that the $n_i$ become pairwise coprime
 
 				\STATE $sumchunks \leftarrow \text{empty list}$
 				\FORALL{$\tau_i \in \tau$}
 					\STATE $taskTerms \leftarrow \text{empty list}$
-					\STATE $Mj \leftarrow \frac{H}{T_i}$
-					\STATE $invMj \leftarrow Mj^{-1} (mod \; T_i)$
-					\FORALL{$a_i \in A_i$}
-						\STATE append $(a_i \cdot Mj \cdot invMj)$ to $taskTerms$
+					\STATE $Mj \leftarrow \frac{H}{n_i}$
+					\STATE $invMj \leftarrow Mj^{-1} (mod \; n_i)$
+					\FORALL{$x_i \in X_i$}
+						\STATE append $(x_i \cdot Mj \cdot invMj)$ to $taskTerms$
 					\ENDFOR
 					\STATE $sumchunks[i] \leftarrow taskTerms$
 				\ENDFOR
