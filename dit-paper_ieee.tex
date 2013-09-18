@@ -402,8 +402,8 @@ joel.goossens@ulb.ac.be}
 		the FPDIT (if any), because for a given set of $a_i$ values the problem of
 		finding the corresponding DIT is an instance of the Chinese Remainder Problem
 		(CRP), which is easily solved using Gauss's CRP solving method for non-coprime
-		moduli \cite{gauss1965disquisitiones,knuth1969art}. (note that $x^{-1} \; (mod
-		\; y)$ means the modular inverse of $x$ in the naturals modulo $y$)
+		moduli (Algorithm~\ref{alg:algoCRP}) \cite{gauss1965disquisitiones,knuth1969art}.
+		(note that $x^{-1} \; (mod \; y)$ means the modular inverse of $x$ in the naturals modulo $y$)
 		\begin{algorithm}
 			\caption{Gauss's CRP Algorithm}
 			\label{alg:algoCRP}
@@ -417,8 +417,8 @@ joel.goossens@ulb.ac.be}
 
 				\FORALL{$\tau_i \in \tau$}
 					\STATE $Mj \leftarrow \frac{H}{n_i}$
-					\STATE $invMj \leftarrow Mj^{-1} (mod \; n_i)$
-					\STATE $e_i \leftarrow (Mj \cdot invMj)$
+					\STATE $invMj \leftarrow Mj^{-1} \; (mod \; n_i)$
+					\STATE $e_i \leftarrow Mj \cdot invMj$
 				\ENDFOR
 				\RETURN $\sum\limits_{\tau_i \in \tau}{a_i \cdot e_i} \; (mod \; H)$
 			\end{algorithmic}
