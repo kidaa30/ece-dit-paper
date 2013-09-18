@@ -229,21 +229,18 @@ joel.goossens@ulb.ac.be}
 
 		The following necessary and sufficient condition of feasibility
 		based on the DBF is given in \cite{baruah1999generalized}:
-
 		\begin{theorem}
-			\begin{equation}
+			\begin{equation*}
 				\begin{array}{c}
 					\tau \: \text{is feasible}  \iff
-					\dbf{t_1, t_2} \leqslant t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
+					\dbf{t_1, t_2} \leqslant t_2 - t_1 \; \forall t_1, t_2 \mid  0 \leq t_1 \leq t_2
 				\end{array}
-			\end{equation}
+			\end{equation*}
 		\end{theorem}
-
         Indeed, if there exists values of $t_1$ and $t_2$ such that $\dbf{t_1, t_2} > t_2 - t_1$, it means that more than $t_2 - t_1$ unit of computation have to be done in $t_2 - t_1$ unit of time. Therefore the system is unfeasible.
 
 	\subsection{C-space of synchronous systems}
 	\label{sct:cspaceDescr}
-
 
 			The authors of \cite{george2009characterization} give the following definition of the C-space (based on \cite{bini2004schedulability}):
 			\begin{definition}
@@ -262,7 +259,7 @@ joel.goossens@ulb.ac.be}
 		which, taken together, are a necessary and sufficient condition of feasibility. They
 		can all be written in the following way:
 		\begin{equation}
-			\sum_{i=1}^{n} n_i(t_1, t_2) \, C_i \leq t_2 - t_1 \; \forall \: 0 \leq t_1 \leq t_2
+			\sum_{i=1}^{n}  n_i(t_1, t_2) \cdot C_i \leq t_2 - t_1 \; \forall t_1,t_2 \mid 0 \leq t_1 \leq t_2
 		\end{equation}
 		Note that for given values  of $(t_1, t_2)$, the $n_i(t_1, t_2)$ are
 		constant (w.r.t. the $C_i$). Those inequations are thus indeed linear.
