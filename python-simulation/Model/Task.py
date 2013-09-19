@@ -1,6 +1,7 @@
 import math
 from Helper import myAlgebra
 from Model import Job
+from Model import cspace
 
 import array
 import heapq
@@ -41,6 +42,9 @@ class Task(object):
     def getJob(self, arrival):
         assert (arrival - self.O) % self.T == 0
         return Job.Job(self, arrival)
+        
+    def __lt__(self, other):
+	    return id(self) < id(other)  
 
 
 class TaskSystem(object):
@@ -148,10 +152,10 @@ class TaskSystem(object):
             if not self.isSynchronous() and nextArrival + task.D <= upperLimit:
                 heapTuple = (nextArrival, task)
                 heapq.heappush(arrivals, heapTuple)
-
-    def cSpaceSize(self, acspace):
-        # if acspace is None:
-        #   acspace = cspace.Cspace(self)
+                
+    def cSpaceSize(self, acspace=None):
+        if acspace is None:
+            acspace = cspace.Cspace(self)
         return acspace.size(self)
 
 import unittest

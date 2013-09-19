@@ -1,6 +1,4 @@
-from . import algorithms
-from . import Task
-from . import TaskGenerator
+from Model import algorithms
 
 import random
 import subprocess  # in order to launch GLPSOL
@@ -261,6 +259,8 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
 
 
 if __name__ == '__main__':
+    from . import Task
+    from . import TaskGenerator
     tasks = []
     #                      0, C, D, T
     tasks.append(Task.Task(0, 1, 5, 7))
