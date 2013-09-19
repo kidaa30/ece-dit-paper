@@ -12,6 +12,8 @@ def parallelFunc(util, cdf):
 	tau = Task.TaskSystem(tasks)
 	res = None
 	
+	print(util,cdf,tau)
+	
 	tSync = tau.firstSynchronousInstant()
 	if not tSync:
 		asyncCSpace = cspace.Cspace(tau)
@@ -25,10 +27,10 @@ def parallelFunc(util, cdf):
 if __name__ == "__main__":
 	UTIL_BINS = [f/10.0 for f in range(1,11)]
 	CDF_BINS = [e/5.0 for e in range(1,6)]
-	nSystems = 20000
+	nSystems = 2000
 	
 	
-	executor = concurrent.futures.ProcessPoolExecutor()
+	executor = concurrent.futures.ProcessPoolExecutor(max_workers=None)
 	parallelArgs = list(itertools.product(CDF_BINS,UTIL_BINS,range(nSystems)))
 # 	print(parallelArgs)
 	unzippedArgs = list(zip(*parallelArgs))
