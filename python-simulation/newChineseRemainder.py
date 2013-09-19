@@ -20,7 +20,7 @@ def newChineseRemainder(a, n):
         Mi = H // n[i]
         invMi = myAlgebra.modinv(Mi, n[i])
         for cnt, aValue in enumerate(a[i]):
-            sumChunks[i][cnt] = (aValue * Mi * invMi)
+            sumChunks[i][cnt] = (aValue * Mi * invMi) % H
 
 #   calculate the sums from the precomputed terms
     results = [0]
@@ -29,7 +29,7 @@ def newChineseRemainder(a, n):
         index = 0
         for j in range(len(a[i])):
             for r in results:
-                newResults[index] = r + sumChunks[i][j]
+                newResults[index] = (r + sumChunks[i][j]) % H
                 index += 1
         results = newResults
 
