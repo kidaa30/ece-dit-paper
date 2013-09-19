@@ -25,12 +25,12 @@ def parallelFunc(util, cdf):
 if __name__ == "__main__":
 	UTIL_BINS = [f/10.0 for f in range(1,11)]
 	CDF_BINS = [e/5.0 for e in range(1,6)]
-	nSystems = 10
+	nSystems = 20000
 	
 	
 	executor = concurrent.futures.ProcessPoolExecutor()
 	parallelArgs = list(itertools.product(CDF_BINS,UTIL_BINS,range(nSystems)))
-	print(parallelArgs)
+# 	print(parallelArgs)
 	unzippedArgs = list(zip(*parallelArgs))
 	argResults = {a:r for (a,r) in zip(parallelArgs, executor.map(parallelFunc,unzippedArgs[0],unzippedArgs[1]))}
 	
