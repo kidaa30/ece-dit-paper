@@ -12,6 +12,8 @@ def parallelFunc(util, cdf):
     tasks = TaskGenerator.generateTasks(Utot=util, n=3, maxHyperT=554400, Tmin=5, Tmax=20, synchronous=False, constrDeadlineFactor=cdf)
     tau = Task.TaskSystem(tasks)
     res = None
+    
+    print(util,cdf,tau)
 
     tSync = tau.firstSynchronousInstant()
     if not tSync:
@@ -24,11 +26,11 @@ def parallelFunc(util, cdf):
     return res
 
 if __name__ == "__main__":
-    UTIL_BINS = [f/10.0 for f in range(1, 11)]
-    CDF_BINS = [e/5.0 for e in range(1, 6)]
-    nSystems = 20000
+    UTIL_BINS = [f/5.0 for f in range(1, 6)]
+    CDF_BINS = [0.1,0.5,1.0]
+    nSystems = 5000
 
-    executor = concurrent.futures.ProcessPoolExecutor()
+    executor = concurrent.futures.ProcessPoolExecutor(max_workers=6)
     parallelArgs = list(itertools.product(CDF_BINS, UTIL_BINS, range(nSystems)))
 #   print(parallelArgs)
     unzippedArgs = list(zip(*parallelArgs))
@@ -55,12 +57,12 @@ if __name__ == "__main__":
     pylab.figure()
     markers = ['s', '*', 'o', 'D', '^']
     for cnt, cdf in enumerate(CDF_BINS):
-        pylab.plot(UTIL_BINS, results[cnt], label="CDF " + str(cdf), marker=markers[cnt], markersize=7.0, linewidth=1.5)
+        pylab.plot(UTIL_BINS, results[cnt], label="CDF " + str(cdf), marker=markers[cnt], markersize=9.0, linewidth=1.5)
     pylab.xlabel("system utilization")
     pylab.ylabel("size ratio")
     pylab.title("synchronous/asynchronous C-space size (" + str(nSystems) + " systems)")
     pylab.legend(loc=0)
-#   pylab.axis([0, 1, 0, 1])
+    pylab.axis([UTIL_BINS[0], 1, 0, 1])
     pylab.savefig("./plots/sizeratio_" + str(nSystems) + "-" + str(time.time()).replace(".", "") + ".png")
     pylab.spectral()
     pylab.show()
