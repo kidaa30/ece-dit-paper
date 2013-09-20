@@ -32,6 +32,7 @@ if __name__ == '__main__':
     noFPDITpcts = {}
     CDFvalues = [0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
     nValues = [2, 3, 4, 5, 7, 10]
+    symbols = ['D', 'o', 's', '*', 'v', '^']
     for taskCnt in nValues:
         print("n", taskCnt)
         noFPDITpcts[taskCnt] = {}
@@ -45,11 +46,11 @@ if __name__ == '__main__':
             noFPDITpcts[taskCnt][constrDeadlineFactor] = (100*firstDitsCnt)/NUMBER_OF_SYSTEMS
 
     pylab.figure()
-    for taskCnt in reversed(nValues):
+    for i, taskCnt in enumerate(reversed(nValues)):
         noFPDITpctsPerCDF = []
         for cdf in CDFvalues:
             noFPDITpctsPerCDF.append(noFPDITpcts[taskCnt][cdf])
-        pylab.plot(CDFvalues, noFPDITpctsPerCDF, "--o", label=str(taskCnt) + " Tasks")
+        pylab.plot(CDFvalues, noFPDITpctsPerCDF, "-" + str(symbols[i]), label=str(taskCnt) + " Tasks")
     pylab.ylabel("%")
     pylab.xlabel("CDF")
     pylab.title("Number of systems with no FPDIT (n=" + str(NUMBER_OF_SYSTEMS) + ")")
