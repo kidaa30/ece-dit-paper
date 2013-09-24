@@ -1,9 +1,7 @@
 from Model import algorithms
 
-import random
 import subprocess  # in order to launch GLPSOL
 import itertools
-import math
 import os.path
 import re
 
@@ -154,26 +152,6 @@ def testCVector(cspace, cvector):
     return True
 
 
-def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
-    systemArray = []
-    for i in range(numberOfSystems):
-        Umin = 0.25
-        Umax = 0.75
-        Utot = 1.0*random.randint(int(Umin*100), int(Umax*100))/100
-        n = 3
-        # maxHyperT = 554400  # PPCM(2, 3, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30, 32)
-        maxHyperT = -1
-        Tmin = 5
-        Tmax = 20
-        tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
-        if (verbose and numberOfSystems <= 10):
-            print("Generated task system # ", i)
-            for task in tasks:
-                    print("\t", task)
-        systemArray.append(Task.TaskSystem(tasks))
-    return systemArray
-
-
 class CSpaceConstraint(object):  # TODO : make the code use this lovely class
     def __init__(self, coeffs, t):
         self.coeffs = coeffs
@@ -199,7 +177,7 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
         self.writeRedundancyGLPSOLData(cspace, "redundant_temp.dat")
         p = subprocess.Popen(args=["glpsol", "-m", os.path.join("GLPK", "redundant.mod"), "-d", "redundant_temp.dat"], stdout=subprocess.PIPE)
         (output, err) = p.communicate()
-        reRes = re.search(r".*?Display\ statement\ at\ line\ 28.*?(?P<number>[0-9]+).*", output, re.DOTALL)
+        reRes = re.search(r".*?Display\ statement\ at\ line\ 28.*?(?P<number>[0-9]+).*", str(output), re.DOTALL)
         resultMaximization = int(reRes.group('number'))
         return resultMaximization <= self.t
 
@@ -256,62 +234,3 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
 
     def __len__(self):
         return self.coeffs.__len__()
-
-
-if __name__ == '__main__':
-    from . import Task
-    from . import TaskGenerator
-    tasks = []
-    #                      0, C, D, T
-    tasks.append(Task.Task(0, 1, 5, 7))
-    tasks.append(Task.Task(0, 1, 7, 11))
-    tasks.append(Task.Task(0, 1, 10, 13))
-    tau = Task.TaskSystem(tasks)
-    print(tau)
-    tau_Cspace = Cspace(tau)
-    tau_Cspace_noredun = tau_Cspace.removeRedundancy()
-
-    print("FINAL CSPACE")
-    for cstr in tau_Cspace_noredun:
-        print(cstr)
-    print(len(tau_Cspace), "=>", len(tau_Cspace_noredun), "constraints left")
-
-    tasks = []
-    #                      0, C, D, T
-    tasks.append(Task.Task(5, 1, 1, 3))
-    tasks.append(Task.Task(0, 4, 4, 8))
-    tau = Task.TaskSystem(tasks)
-    tau_Cspace = Cspace(tau)
-    assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is False
-
-    # "TEST2"
-
-    tasks = []
-    tasks.append(Task.Task(0, 1, 73, 154))
-    tasks.append(Task.Task(0, 1, 381, 825))
-    tasks.append(Task.Task(0, 1, 381, 400))
-    tau = Task.TaskSystem(tasks)
-    tau_Cspace = Cspace(tau, algorithms.findFirstDIT(tau))
-    assert testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
-    tau_Cspace_noredun = tau_Cspace.removeRedundancy()
-    assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
-
-    # RANDOM TEST
-    NUMBER_OF_SYSTEMS = 10
-    systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, 1)
-    for tau in systemArray:
-        print(tau)
-        print("cspace...")
-        cspace = Cspace(tau)
-        print("found ", len(cspace), "constraints")
-        print("remove redun...")
-        cspace_noredun = cspace.removeRedundancy()
-        print(len(cspace), "=>", len(cspace_noredun), "constraints left")
-        print("")
-        resultCSPACE = testCVector(cspace_noredun, [task.C for task in tau.tasks])
-        resultCSPACENOREDUN = testCVector(cspace, [task.C for task in tau.tasks])
-        resultDBF = algorithms.dbfTest(tau)
-        assert resultCSPACE == resultCSPACENOREDUN == resultDBF, str(resultCSPACE) + str(resultCSPACENOREDUN) + str(resultDBF)
-        print("redundancy (necessary) condition ok")
-        print("synchronous instant", algorithms.findSynchronousInstant(tau))
-        print("cspacesize", cspace_noredun.size(tau))

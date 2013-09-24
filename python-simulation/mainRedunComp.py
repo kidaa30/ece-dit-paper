@@ -1,7 +1,7 @@
-from .Model import Task
-from .Model import TaskGenerator
-from .Model import algorithms
-from .Model import cspace
+from Model import Task
+from Model import TaskGenerator
+from Model import algorithms
+from Model import cspace
 
 import pylab
 
@@ -58,7 +58,7 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 	return systemArray
 
 if __name__ == '__main__':
-	systemArray = generateSystemArray(100, 1)
+	systemArray = generateSystemArray(10, 1)
 	cstrSizes = []
 	twoTimes = []
 	oneTimes = []
