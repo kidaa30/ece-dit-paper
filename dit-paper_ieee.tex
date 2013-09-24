@@ -111,7 +111,7 @@ joel.goossens@ulb.ac.be}
 	different WCET values when porting a system to a different platform. The \mbox{C-space} describes the set of execution
 	times for which a system is feasible, which allows system designers to quickly
 	find the best platform for a given task set. This paper extends previous works
-	to generalize the description of the C-space for Earliest Deadline First
+	generalizing the description of the C-space for Earliest Deadline First
 	scheduling to systems with initial task offsets. The feasibility gain offered
 	by offsets is then expressed as the volume ratio between the C-space of an
 	asynchronous system and its corresponding synchronous system. The problem
@@ -160,7 +160,7 @@ joel.goossens@ulb.ac.be}
 	numerical example is also given.
 
 	Finally, in section~\ref{sct:expCspaceGain}, we use a simulation to quantify the feasibility
-	gain of asynchronous system in terms of volume of the C-space.
+	gain of asynchronous systems in terms of volume of the C-space.
 
 \section{Related works}
 \label{sct:relatedWorks}
@@ -168,7 +168,7 @@ joel.goossens@ulb.ac.be}
 %Review 3 : add map of literature
 
 	\subsection{Model}
-		We consider a discrete timeline and tasks systems $\tau$ comprised of periodic
+		We consider a discrete timeline and tasks systems comprised of periodic
 		tasks with constrained deadlines on uniprocessor platforms. Each task
 		$\tau_i$ is represented by a tuple $(O_i, C_i, D_i, T_i)$ where $O_i$ is the offset value,
 		$C_i$ the WCET, $D_i$ the relative deadline and $T_i$ the period, which is the exact time between two consecutive arrivals.
@@ -183,7 +183,7 @@ joel.goossens@ulb.ac.be}
 
 		Furthermore, the following notations are used:
 		\begin{itemize}
-			\item $\tau = \{\tau_1, \cdots, \tau_{n}\}$
+			\item $\tau = \{\tau_1, \cdots, \tau_{n}\}$ is called the task system
 			\item $H = \operatorname{lcm}(T_1, \cdots, T_{n})$
 			\item $O_{max} = \max (O_1, \cdots, O_{n})$
 			\item An \emph{idle time} is an instant $t$ at which each job that arrived
@@ -237,7 +237,7 @@ joel.goossens@ulb.ac.be}
 				\end{array}
 			\end{equation*}
 		\end{theorem}
-        It is easy to see that the condition is at least necessary, as if there exists values of $t_1$ and $t_2$ such that $\dbf{t_1, t_2} > t_2 - t_1$, it means that more than $t_2 - t_1$ unit of computation have to be done in $t_2 - t_1$ unit of time. Therefore the system would be unfeasible.
+        It is easy to see that the condition is at least necessary, as if there exists values of $t_1$ and $t_2$ such that $\dbf{t_1, t_2} > t_2 - t_1$, it means that more than $t_2 - t_1$ units of computation have to be done in $t_2 - t_1$ units of time. Therefore the system would not be feasible.
 
 	\subsection{C-space of synchronous systems}
 	\label{sct:cspaceDescr}
@@ -265,7 +265,7 @@ joel.goossens@ulb.ac.be}
 
       However, this description contains an infinite number of constraints, most of
       which are redundant. While this does not harm the precision of the
-      test, a smaller description is preferred as it can greatly
+      test, a finite description is needed in practice. The description should also be as small as possible as this can greatly
       reduce the computation time of practical feasibility tests. In Section~\ref{sct:removeRedundancy} a method to reduce the size of this set of constraints is given.
 
   \subsection{Removing redundant constraints}
@@ -279,7 +279,7 @@ joel.goossens@ulb.ac.be}
   of tasks. While it has been shown that constraints that cover intervals ending
   after the end of the first busy period are also redundant, this value depends on the $C_i$ and is
   therefore not usable for the purposes of this paper. The
-  following concept, initially described by \cite{lipariaverage}, is thus introduced. It gives an upper bound for to the end of the busy period and does not depend on the execution times.
+  following concept, initially described by \cite{lipariaverage}, is thus introduced. It gives an upper bound for the end of the first busy period and does not depend on the execution times.
 
   \begin{definition}
     A \textbf{definitive idle time} (DIT) \cite{lipariaverage} is a time $t$ such that every job
@@ -299,12 +299,12 @@ joel.goossens@ulb.ac.be}
 				\item In a feasible system, the first DIT happens after the end of the
 					first busy period.
 				\item In synchronous systems any $kH$ with $k \geqslant 0$ is a DIT and we
-					also have at least $t_d \leqslant H$.
+					also have $t_d \leqslant H$.
 			\end{itemize}
 		\end{remark}
 
 		The value of the first DIT can be found by solving the following modular
-		equation system:
+		equations system:
 		\begin{equation}
 			\begin{split}
 				 t_d = \min(& \{ t \; s.t. \; t > 0 \; and \\
@@ -502,7 +502,7 @@ joel.goossens@ulb.ac.be}
 	\begin{itemize}
 		\item Generating utilization values with the \texttt{UUniFast} algorithm described in \cite{bini2005measuring}, with:
 		\begin{itemize}
-			\item The system utilization chosen uniformly between 0.25 and 0.75
+			\item System utilization chosen uniformly between 0.25 and 0.75
 			\item The number of tasks set to several values (see Fig.~\ref{fig:noFPDIT})
 		\end{itemize}
 		\item Choosing the $T_i$ uniformly between 5 and 20 (in order to have a manageable value of $H$), which also gives us the $C_i = \lfloor U_i \, T_i \rfloor$
@@ -759,8 +759,9 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 
 	In other words, fig.~\ref{fig:sizeRatio}
 	evaluates the feasibility gain of adding random offsets to a synchronous task
-	set. It is assumed that a more advanced strategy to assign these offsets
-	would yield a greater difference.
+	set. It is assumed that a more advanced strategy to assign these offsets (such
+	as the ones from \cite{goossens2003scheduling}) would yield a
+	greater difference.
 
 	\begin{figure}[h]
 		\begin{center}
@@ -773,10 +774,7 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 
 	The ratio between the size of the synchronous and asynchronous C-spaces of
 	these systems roughly range from 0.95 in the worst case (high utilization, high
-	CDF) to 0.85 in the best case (low utilization, low CDF). As calculating those
-	sizes is rather long, the number of systems used to obtain average
-	results was rather low (1000), which is the likely cause of the spikes in the
-	data. Note that the value of the CDF has a greater influence on this ratio than
+	CDF) to 0.85 in the best case (low utilization, low CDF). Note that the value of the CDF has a greater influence on this ratio than
 	the system's total utilization, but less so when the CDF is lower. It is also
 	important to note that even though a 0.95 ratio may not seem much, the
 	synchronous C-spaces of the systems contain many dominated WCET vectors, and

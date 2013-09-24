@@ -22,6 +22,7 @@ def parallelFunc(util, cdf):
         if asyncCSpaceSize > 0:
             syncTau = tau.synchronousEquivalent()
             syncCSpaceSize = syncTau.cSpaceSize()
+            print(syncCSpaceSize,asyncCSpaceSize)
             res = float(syncCSpaceSize)/asyncCSpaceSize
     return res
 
@@ -62,7 +63,7 @@ if __name__ == "__main__":
     pylab.ylabel("size ratio")
     pylab.title("synchronous/asynchronous C-space size (" + str(nSystems) + " systems)")
     pylab.legend(loc=0)
-    pylab.axis([UTIL_BINS[0], 1, 0, 1])
+#     pylab.axis([UTIL_BINS[0], 1, 0, 1])
     pylab.savefig("./plots/sizeratio_" + str(nSystems) + "-" + str(time.time()).replace(".", "") + ".png")
     pylab.spectral()
     pylab.show()
