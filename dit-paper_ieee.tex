@@ -749,6 +749,8 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 	the design of a real-time system is a useful trick to fit a heavy periodic task set
 	into a given platform.
 
+    % PRECISER : on ne genere pas de systyemes avec instants synchroes
+
 	In Fig.~\ref{fig:sizeRatio} a number of feasible asynchronous task sets of
 	three tasks without synchronous instants were generated as described in Section~\ref{sct:noFPDITsimu}. The size of their
 	C-space (number of valid WCET vectors) was compared with that of the same
@@ -783,13 +785,13 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 	constraints and therefore add new acceptable solutions that will dominate solutions that were previously non-dominated,
 	increasing the quality of the C-space border.
 
-
 \section{Conclusion}
 
-In this paper, we presented a general approach to define the C-space of a constrained periodic task set for EDF on uniform platform. Possible future works includes an extension to the study of systems with preemption costs or running on multiprocessor platforms, as the value of the DIT does not depend on preemptions or the number of processors.
+In this paper, we presented a general approach to concisely define the C-space of a constrained periodic task set for EDF on uniform platforms. We then used the C-space to quantify the feasibility gain given by random offset values, with a final result of about 10~\% more WCET values being feasible. Possible future works includes an extension to the study of systems with preemption costs or running on multiprocessor platforms, as the value of the DIT does not depend on preemptions or the number of processors.
 
-Future works could also repeat the simulation of section~\ref{sct:expCspaceGain} with the algorithm described in \cite{grenier2008pushing}, which determine offset values with optimal feasibility. The
-feasibility gain could then be expressed using the C-space.
+% A mettre quelque part : nombre de contraintes avant/apres dans les expériences (issue #20)
+
+Future works could also study the case of offset-free systems, where the offset values can be chosen. The performance of algorithms such as \cite{grenier2008pushing} and \cite{goossens2003scheduling} (although the latter depends on the execution times), which determine offset values with optimal feasibility, can be expressed using the C-space.
 
 Another direction is to study the shape of the C-space and how it is affected by some factors. An
 interesting path would be the effect of the CDF on the number of constraints describing the C-space,
