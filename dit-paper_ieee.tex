@@ -91,12 +91,12 @@ Systems using Definitive Idle Times}
 
 \author{
 \IEEEauthorblockN{Thomas Chapeaux and Paul Rodriguez}
-\IEEEauthorblockA{Universit\'{e} Libre de Bruxelles\\
+\IEEEauthorblockA{Universit\'{e} Libre de Bruxelles / ECE\\
 tchapeau@ulb.ac.be, paurodri@ulb.ac.be}
 \and
 \IEEEauthorblockN{Laurent George}
-\IEEEauthorblockA{ECE Paris\\
-lgeorge@ece.fr}
+\IEEEauthorblockA{University of Paris-Est / ECE Paris\\
+lgeorge@ieee.org}
 \and
 \IEEEauthorblockN{Jo\"el Goossens}
 \IEEEauthorblockA{Universit\'{e} Libre de Bruxelles\\
@@ -107,16 +107,16 @@ joel.goossens@ulb.ac.be}
 
 \begin{abstract}
 	Sensitivity analysis for real-time systems provides efficient methods to determine feasibility
-	conditions in the case of small changes in task parameters, such as
-	different WCET values when porting a system to a different platform. The \mbox{C-space} describes the set of execution
-	times for which a system is feasible, which allows system designers to quickly
-	find the best platform for a given task set. This paper extends previous works
+	conditions in the case of changes in task parameters, such as
+	different WCET values when porting a system to a different platform. The \mbox{C-space} defines the space of execution
+	times for which a system is feasible, which can help system designers to more easily check 
+	if a task set is feasible on a set of candidate platforms. This paper extends previous works
 	generalizing the description of the C-space for Earliest Deadline First
 	scheduling to systems with initial task offsets. The feasibility gain offered
 	by offsets is then expressed as the volume ratio between the C-space of an
-	asynchronous system and its corresponding synchronous system. The problem
+	asynchronous system and its corresponding synchronous system when offsets are randomly chosen. The problem
 	requires solving multiple similar instances of the Chinese Remainder Problem,
-	for which an algorithm efficient in this context is provided.
+	for which an efficient algorithm in this context is provided. We show that even for random offsets, the gain can reach 15%.
 \end{abstract}
 
 % For peer review papers, you can put extra information on the cover
@@ -133,20 +133,19 @@ joel.goossens@ulb.ac.be}
 
 	Abstract models for real-time systems often require the determination of the
 	worst-case execution time of a job (WCET), a value highly dependent on the
-	platform on which the application is deployed. Feasibility conditions allow to
-	decide whether a system can be scheduled correctly (i.e. without violating any
+	platform on which the application is deployed. Feasibility conditions allow us to
+	decide whether a system can be correctly scheduled (i.e. without violating any
 	timeliness constraint) based on task parameters, including the WCET.
 
 	The \emph{C-space} of a real-time system is, intuitively,
-	the set of WCET values for which this system would be feasible
-	\cite{bini2004schedulability,george2009characterization}. A precise and efficient description of the C-space of a system would allow to quickly decide
-	whether or not it is feasible on a given platform.
+	the space of WCET values for which this system is feasible
+	\cite{bini2004schedulability,george2009characterization}. A precise and efficient description of the C-space of a system would allow us to efficiently decide whether or not it is feasible on a set of candidate platforms.
 
 	In section~\ref{sct:relatedWorks}, the description of the C-space of synchronous
 	constrained systems, which has been mostly covered by \cite{george2009characterization}, is revisited.
-	This description is based on the DBF feasibility condition described in
+	This description is based on the Demand Bound Function (DBF) feasibility condition described in
 	\cite{baruah1999generalized,baruah1990algorithms} and is found with exponential complexity using
-	the notion of definitive idle times (DIT).
+	the notion of definitive idle times (DIT). The DIT notion provides a feasibility interval for EDF that does not depend of the WCET of the tasks. 
 
 	In section~\ref{sct:asyncDIT}, we present an extension of the concept of DIT adapted to the
 	asynchronous case called first periodic DIT
@@ -227,8 +226,8 @@ joel.goossens@ulb.ac.be}
 		\end{equation}
 		where $\llbracket x \rrbracket_0$ stands for $\max \{ 0, x \}$.
 
-		The following necessary and sufficient condition of feasibility
-		based on the DBF is given in \cite{baruah1999generalized}:
+		The following theorem is a necessary and sufficient condition of feasibility
+		based on the DBF, given in \cite{baruah1999generalized}:
 		\begin{theorem}
 			\begin{equation*}
 				\begin{array}{c}
@@ -237,7 +236,7 @@ joel.goossens@ulb.ac.be}
 				\end{array}
 			\end{equation*}
 		\end{theorem}
-        It is easy to see that the condition is at least necessary, as if there exists values of $t_1$ and $t_2$ such that $\dbf{t_1, t_2} > t_2 - t_1$, it means that more than $t_2 - t_1$ units of computation have to be done in $t_2 - t_1$ units of time. Therefore the system would not be feasible.
+        %It is easy to see that the condition is at least necessary, as if there exists values of $t_1$ and $t_2$ such that $\dbf{t_1, t_2} > t_2 - t_1$, it means that more than $t_2 - t_1$ units of computation have to be done in $t_2 - t_1$ units of time. Therefore the system would not be feasible.
 
 	\subsection{C-space of synchronous systems}
 	\label{sct:cspaceDescr}
@@ -282,18 +281,18 @@ joel.goossens@ulb.ac.be}
   following concept, initially described by \cite{lipariaverage}, is thus introduced. It gives an upper bound for the end of the first busy period and does not depend on the execution times.
 
   \begin{definition}
-    A \textbf{definitive idle time} (DIT) \cite{lipariaverage} is a time $t$ such that every job
+    A \textbf{definitive idle time} (DIT) \cite{lipariaverage} is a time $t$ (if it exists) such that every job
     released strictly before instant $t$ has its absolute deadline before or at instant $t$.
   \end{definition}
 
   \begin{definition}
-    The earliest DIT occurring in the system strictly after $t=0$ is called the
+    The earliest DIT (if it exists) occurring in the system strictly after $t=0$ is called the
     \textbf{first DIT} and is noted $t_d$.
   \end{definition}
 
-		\begin{remark} (from the definitions):
+		\begin{remark} (from the definitions, if a DIT exist then):
 			\begin{itemize}
-				\item Contrary to other idle times, DITs are independent of the
+				\item Contrary to other idle times, a DIT is independent of the
 					scheduling or the execution times of the jobs.
 				\item In a feasible system, every DIT is an idle time.
 				\item In a feasible system, the first DIT happens after the end of the
@@ -316,8 +315,7 @@ joel.goossens@ulb.ac.be}
 
   For synchronous systems in which the execution times are not known, the first DIT $t_d$
   is our ``best guess'' at an upper limit on the end of the busy period. As it was sufficient
-  to check the DBF test in intervals $[0, t]$ before the end of the busy period, it is
-  slightly more pessimistic but still correct to use the following condition:
+  to check the DBF test in intervals $[0, t]$ before the end of the first busy period. This time interval is WCETs dependant. A more general feasility condition valid for any WCET is as follows:
   \begin{equation}
   		\dbf{0,t} \leqslant t \; \forall t \leqslant t_d
   		\iff \text{The system is feasible}
@@ -326,7 +324,7 @@ joel.goossens@ulb.ac.be}
   To summarize, the description of the C-space is reduced from an infinite number
   of constraints to only those where $t_1 = 0$, $t_2 \leqslant t_d$ and
   values of $t_2$ correspond to job deadlines. Note that the number of
-  constraints is still exponential in the number of tasks in the worst-case ($t_d = H$).
+  constraints is still exponential in the number of tasks in the worst-case (which is when $t_d = H$).
 
 \section{DIT in asynchronous systems}
   \label{sct:asyncDIT}
@@ -366,8 +364,8 @@ joel.goossens@ulb.ac.be}
 		values) of the Chinese Remainder Problem (CRP) where the goal is to find the
 		value of $t_d$ such that it is congruent to $a_i+O_i$ modulo $T_i$ for all
 		tasks $\tau_i$ in $\tau$. To find the FPDIT it is to the best of our knowledge
-		necessary to solve the problem on all combinations of $a_i$ values then
-		compute the minimum solution. We define $x_i = a_i+O_i$ and $n_i = T_i$ for
+		necessary to solve the problem on all combinations of $a_i$ values and then
+		to compute the minimum solution. We define $x_i = a_i+O_i$ and $n_i = T_i$ for
 		clarity in the context of the CRP. One instance of this problem is guaranteed
 		to have at least one solution modulo $H$ for given values of $a_i$ if
 		Condition~\ref{eq:CRPcond} is satisfied \cite{knuth1969art}:
@@ -406,7 +404,7 @@ joel.goossens@ulb.ac.be}
 % 		no FPDIT (and no other DIT than $t=0$).
 
 	\subsection{Solving the modular system}
-		A sketch of the construction algorithm for $t_d$ can be found in
+		A sketch of the construction algorithm to compute $t_d$ can be found in
 		Algorithm~\ref{alg:algoCRP} (note that $x^{-1} \; (mod \; y)$ means the
 		modular inverse of $x$ in the naturals modulo $y$). In this paper we
 		concentrate on the latter part of the algorithm (after the modifications to
@@ -561,6 +559,16 @@ joel.goossens@ulb.ac.be}
 			First let us recall how an asynchronous system behaves under an optimal
 			scheduler, for example EDF.
 
+			As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the
+			\emph{incomplete period}, where all tasks are not in the system. Then, after
+			$O_{max}$ time units, every tasks is in the system and the \emph{transient
+			period} begins. Then, after $O_{max} + H$ time units, the system is faced
+			with the same pattern of arrival as in $O_{max}$. However, because in
+			$O_{max} + H$ every task is in the system and in $O_{max}$ some were missing,
+			the state of the system will be different. The \emph{stationary period} then
+			begins. At instant $O_{max} + 2H$ it is guaranteed that the system is in the
+			exact same situation it was at instant $O_{max} + H$.
+
 			\begin{figure}[h]
 				\[
 					\begin{array}{r||c|c|c|l}
@@ -575,23 +583,13 @@ joel.goossens@ulb.ac.be}
 				\label{fig:asyncBehavior}
 				\end{center}
 			\end{figure}
-
-			As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the
-			\emph{incomplete period}, where all tasks are not in the system. Then, after
-			$O_{max}$ time units, every tasks is in the system and the \emph{transient
-			period} begins. Then, after $O_{max} + H$ time units, the system is faced
-			with the same pattern of arrival as in $O_{max}$. However, because in
-			$O_{max} + H$ every task is in the system and in $O_{max}$ some were missing,
-			the state of the system will be different. The \emph{stationary period} then
-			begins. At instant $O_{max} + 2H$ it is guaranteed that the system is in the
-			exact same situation it was at instant $O_{max} + H$.
-
+			
 			For this reason, as shown by \cite{leung1982complexity}, it is sufficient (but pessimistic) to
 			check for
 			intervals included in the interval $[O_{max}, O_{max} + 2H]$, which has an exponential length
 			in the number of tasks. A better interval is given in \cite{choquet2004minimal} using the
 			notion of cyclic idle times (denoted $t_c$), which are dependent of the execution
-			time and therefore cannot be used directly. Their interval is $[0, t_c + H]$ and is valid for
+			time and therefore cannot be used directly to characterize the C-Space. Their interval is $[0, t_c + H]$ and is valid for
 			every cyclic idle time $t_c$.
 
 			In the following section, we extend the latter interval using the previously defined notion
@@ -608,16 +606,22 @@ As the FPDIT happens when all tasks are in the system, we know that the system w
 
 Previous sections give us a list of (integer) linear constraints accurately describing the C-space, composed of the DBF test applied to the required intervals. We now give a method to remove redundant constraints from this list.
 
-The general problem of redundancy of some linear constraint $C \, X \leq d$ w.r.t. a set of previous linear constraints $A \, X \leq B$ in an ILP can itself be written as the ILP presented in Fig.~\ref{fig:redILP}.
+The general problem of redundancy of some linear constraint $C \cdot X \leq d$
+w.r.t. a set of previous linear constraints $A \cdot X \leq B$ in an ILP can
+itself be written as the ILP presented in Fig.~\ref{fig:redILP}.
 
 \begin{figure}[h]
-$$z = \max C \, X$$
+$$z = \max C \cdot X$$
 s.t.
 \[
-\begin{array}{rccc}
-  A & X &\leq & B \\
-  C & X &\leq & d + 1
+\begin{array}{rcc}
+  A \cdot X &\leq & B \\
+  C \cdot X &\leq & d + 1
 \end{array}
+%\begin{array}{rccc}
+%  A & X &\leq & B \\
+%  C & X &\leq & d + 1
+%\end{array}
 \]
 with
 \[
@@ -629,7 +633,7 @@ with
     d & : & \text{integer}
   \end{array}
 \]
-\caption{Redundancy of $CX \leq d$ w.r.t. $A X \leq B$ as an ILP}
+\caption{Redundancy of $C \cdot X \leq d$ w.r.t. $A \cdot X \leq B$ as an ILP}
 \label{fig:redILP}
 \end{figure}
 
@@ -744,8 +748,7 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 \label{sct:expCspaceGain}
 	One of the advantages of asynchronous systems over synchronous systems in the
 	context of periodic tasks is that the critical instants of asynchronous systems
-	are at most as constraining for the C-space as a synchronous instant. For this
-	reason, modifying task offsets when possible during
+	can be less constraining for the C-space than synchronous instants (if offsets are chosen to prevent synchronous releases). For this reason, modifying task offsets when possible during
 	the design of a real-time system is a useful trick to fit a heavy periodic task set
 	into a given platform.
 
@@ -756,10 +759,8 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 	and the integer linear problems used to remove redundancies were solved via the GLPK tool\footnote{\url{http://www.gnu.org/software/glpk/}}.
 
 	In other words, fig.~\ref{fig:sizeRatio}
-	evaluates the feasibility gain of adding random offsets to a synchronous task
-	set. It is assumed that a more advanced strategy to assign these offsets (such
-	as the ones from \cite{goossens2003scheduling}) would yield a
-	greater difference.
+	evaluates the feasibility gain of adding random offsets w.r.t. a synchronous task
+	set. We have chosen in this paper to generate offsets randomly but we did not consider offsets that eventually lead to synchronous releases. The problem of offset assignment has been considered for example in \cite{grenier2008pushing}. The problem of those heuristics is that they depend on WCETs. Finding offsets that maximize a C-space region is still an open problem.
 
 	\begin{figure}[h]
 		\begin{center}
@@ -772,8 +773,9 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 
 	The ratio between the size of the synchronous and asynchronous C-spaces of
 	these systems roughly range from 0.95 in the worst case (high utilization, high
-	CDF) to 0.85 in the best case (low utilization, low CDF). Note that the value of the CDF has a greater influence on this ratio than
-	the system's total utilization, but less so when the CDF is lower. It is also
+	CDF) to 0.85 in the best case (low utilization, low CDF). Each point on the graph is based on an average over 5000 tests.
+	Note that the value of the CDF has a greater influence on this ratio than
+	the system's total utilization, but less so when the CDF is higher. It is also
 	important to note that even though a 0.95 ratio may not seem much, the
 	synchronous C-spaces of the systems contain many dominated WCET vectors, and
 	only those that are in the border (i.e. non-dominated) actually matter to the
@@ -786,8 +788,7 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 
 In this paper, we presented a general approach to define the C-space of a constrained periodic task set for EDF on uniform platform. Possible future works includes an extension to the study of systems with preemption costs or running on multiprocessor platforms, as the value of the DIT does not depend on preemptions or the number of processors.
 
-Future works could also repeat the simulation of section~\ref{sct:expCspaceGain} with the algorithm described in \cite{grenier2008pushing}, which determine offset values with optimal feasibility. The
-feasibility gain could then be expressed using the C-space.
+Future works could also repeat the simulation of section~\ref{sct:expCspaceGain} with the algorithm described in \cite{grenier2008pushing}, which determine offset values with optimal feasibility but for specific WCETs. We would like to study if those heuristics obtained for particular WCETs scenarios can be also interesting for any WCET in the C-Space.
 
 Another direction is to study the shape of the C-space and how it is affected by some factors. An
 interesting path would be the effect of the CDF on the number of constraints describing the C-space,
