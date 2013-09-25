@@ -91,7 +91,7 @@ Systems using Definitive Idle Times}
 
 \author{
 \IEEEauthorblockN{Thomas Chapeaux and Paul Rodriguez}
-\IEEEauthorblockA{Universit\'{e} Libre de Bruxelles / ECE\\
+\IEEEauthorblockA{Universit\'{e} Libre de Bruxelles / ECE Paris\\
 tchapeau@ulb.ac.be, paurodri@ulb.ac.be}
 \and
 \IEEEauthorblockN{Laurent George}
@@ -109,7 +109,7 @@ joel.goossens@ulb.ac.be}
 	Sensitivity analysis for real-time systems provides efficient methods to determine feasibility
 	conditions in the case of changes in task parameters, such as
 	different WCET values when porting a system to a different platform. The \mbox{C-space} defines the space of execution
-	times for which a system is feasible, which can help system designers to more easily check 
+	times for which a system is feasible, which can help system designers to more easily check
 	if a task set is feasible on a set of candidate platforms. This paper extends previous works
 	generalizing the description of the C-space for Earliest Deadline First
 	scheduling to systems with initial task offsets. The feasibility gain offered
@@ -145,7 +145,7 @@ joel.goossens@ulb.ac.be}
 	constrained systems, which has been mostly covered by \cite{george2009characterization}, is revisited.
 	This description is based on the Demand Bound Function (DBF) feasibility condition described in
 	\cite{baruah1999generalized,baruah1990algorithms} and is found with exponential complexity using
-	the notion of definitive idle times (DIT). The DIT notion provides a feasibility interval for EDF that does not depend of the WCET of the tasks. 
+	the notion of definitive idle times (DIT). The DIT notion provides a feasibility interval for EDF that does not depend of the WCET of the tasks.
 
 	In section~\ref{sct:asyncDIT}, we present an extension of the concept of DIT adapted to the
 	asynchronous case called first periodic DIT
@@ -583,7 +583,7 @@ joel.goossens@ulb.ac.be}
 				\label{fig:asyncBehavior}
 				\end{center}
 			\end{figure}
-			
+
 			For this reason, as shown by \cite{leung1982complexity}, it is sufficient (but pessimistic) to
 			check for
 			intervals included in the interval $[O_{max}, O_{max} + 2H]$, which has an exponential length
