@@ -137,7 +137,7 @@ joel.goossens@ulb.ac.be}
 	decide whether a system can be correctly scheduled (i.e. without violating any
 	timeliness constraint) based on task parameters, including the WCET.
 
-	The \emph{C-space} of a real-time system is, intuitively,
+	The \mbox{C-space} of a real-time system is, intuitively,
 	the space of WCET values for which this system is feasible
 	\cite{bini2004schedulability,george2009characterization}. A precise and efficient description of the C-space of a system would allow us to efficiently decide whether or not it is feasible on a set of candidate platforms.
 
@@ -180,7 +180,7 @@ joel.goossens@ulb.ac.be}
 		shown to be optimal \cite{liu1973scheduling}, which means it
 		correctly schedules any feasible system within that group.
 
-		Furthermore, the following notations are used:
+		Furthermore, we define:
 		\begin{itemize}
 			\item $\tau = \{\tau_1, \cdots, \tau_{n}\}$ is called the task system
 			\item $H = \operatorname{lcm}(T_1, \cdots, T_{n})$
@@ -287,31 +287,31 @@ joel.goossens@ulb.ac.be}
 
   \begin{definition}
     The earliest DIT (if it exists) occurring in the system strictly after $t=0$ is called the
-    \textbf{first DIT} and is noted $t_d$.
+    \textbf{first DIT}, denoted $t_d$.
   \end{definition}
 
-		\begin{remark} (from the definitions, if a DIT exist then):
+		\begin{remark} (from previous definitions):
 			\begin{itemize}
-				\item Contrary to other idle times, a DIT is independent of the
+				\item Contrary to other idle times, DITs are independent of the
 					scheduling or the execution times of the jobs.
 				\item In a feasible system, every DIT is an idle time.
 				\item In a feasible system, the first DIT happens after the end of the
-					first busy period.
+					first busy period if it exists.
 				\item In synchronous systems any $kH$ with $k \geqslant 0$ is a DIT and we
 					also have $t_d \leqslant H$.
 			\end{itemize}
 		\end{remark}
 
-		The value of the first DIT can be found by solving the following modular
-		equations system:
-		\begin{equation}
-			\begin{split}
-				 t_d = \min(& \{ t \; s.t. \; t > 0 \; and \\
-						& \forall \tau_i \in \tau, \; \exists a_i \in [D_i, T_i]: t \equiv a_i \;
-						(mod \; T_i) \})
-			\end{split}
-		\end{equation}
-  The authors of \cite{george2009characterization} give a method to solve this system for cases in which periods are pairwise coprime.
+		% The value of the first DIT can be found by solving the following modular
+		% equations system:
+		% \begin{equation}
+		% 	\begin{split}
+		% 		 t_d = \min(& \{ t \; s.t. \; t > 0 \; and \\
+		% 				& \forall \tau_i \in \tau, \; \exists a_i \in [D_i, T_i]: t \equiv a_i \;
+		% 				(mod \; T_i) \})
+		% 	\end{split}
+		% \end{equation}
+  The authors of \cite{george2009characterization} give a method to find the value of $t_d$ for cases in which periods are pairwise coprime.
 
   For synchronous systems in which the execution times are not known, the first DIT $t_d$
   is our ``best guess'' at an upper limit on the end of the busy period. As it was sufficient
@@ -512,7 +512,7 @@ joel.goossens@ulb.ac.be}
 
 	\begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=0.5\textwidth]{figs/nofpdit_4.png}
+		\includegraphics[width=0.4\textwidth]{figs/nofpdit_4.png}
 	\end{center}
 	\caption{Evolution of the existence of FPDIT with the CDF}
 	\label{fig:noFPDIT}
@@ -639,7 +639,7 @@ with
 
 Indeed, if the maximization returns $z=d+1$, it means that there are some integer values accessible with the previous constraints that the new constraint forbids. On the other hands, if the maximization returns $z \leq d$, it means that the limitation expressed in the new constraint is already enforced by the previous constraints. Therefore $z \leq d$ is a necessary and sufficient condition of redundancy of the new constraint.
 
-Such a linear problem can be solved by e.g. the simplex algorithm and a branch-and-cut approach. However, in our case the problem is not to test for redundancy of a particular constraint but to find all redundant constraints within a set. A naive method would be to test every constraint against all the others. We present a similar method with an efficient preprocessing when most constraints are redundant in Algorithm \ref{alg:prunRedun}.
+Such a linear problem can be solved by a branch-and-bound approach \cite{nemhauser1988integer}. However, in our case the problem is not to test for redundancy of a particular constraint but to find all redundant constraints within a set. A naive algorithm would consist of testing every constraint against all others. We present Algorithm \ref{alg:prunRedun}, which has the same theoretical complexity but is more efficient when most of the constraints are redundant. Indeed, most of the system we generated had a final C-space description size of less than five constraints, even if the initial description often contained more than a thousand.
 
 \begin{algorithm}
 \caption{Removing redundancy from CSPACE}
@@ -664,16 +664,15 @@ Such a linear problem can be solved by e.g. the simplex algorithm and a branch-a
   \end{algorithmic}
 \end{algorithm}
 
-After doing this, no redundant constraints are left. However, this algorithm
-takes an exponential time in the number of constraints. An efficient initial
-description of $CSPACE$, as given by the methods described in previous
-sections, is therefore preferred.
+This algorithm
+has an exponential complexity in the number of constraints. The initial description
+of the C-space should thus be as concise as possible.
 
 To summarize, we first reduced the number of constraints from every possible
 interval $[t_1, t_2]$ to the intervals where $t_1$ is an arrival time and
 $t_2$ is a deadline in $[t_d, t_d + H]$ if $t_d$ exists, or in
 $[O_{max}, O_{max} + 2H]$ otherwise. This set of constraints is a
-correct description of the C-Space, but it is not efficient. Redundant
+correct but redundant description of the C-Space. Redundant
 constraints are removed through a linear integer approach.
 
 \section{Numerical Example}
@@ -708,21 +707,7 @@ We now apply Algorithm \ref{alg:prunRedun} to remove redundancies, leaving us wi
 	\end{equation}
 The C-space thus contains 11 points $(C_1, C_2) = (1, 1)$, $(2, 1)$, $(3, 1)$, $(4, 1)$, $(5, 1)$, $(6, 1)$, $(1, 2)$, $(2, 2)$, $(3, 2)$, $(4, 2)$ and $(5, 2)$.
 
-Let us now consider the same system but with a synchronous pattern of arrival.
-
-    \begin{center}
-    \begin{tabular}{|r|c|c|c|c|}
-     \hline
-      & $O_i$ & $C_i$ & $D_i$ & $T_i$ \\
-     \hline
-     $\tau_1$ & 0 & $C_1$ & 7 & 15\\
-     \hline
-     $\tau_2$ & 0 & $C_2$ & 2 & 5\\
-     \hline
-    \end{tabular}
-    \end{center}
-
-The first DIT happens at time $t_d = 7$. The intervals to consider are thus of the form $[0, t]$ where $t$ is a deadline happening before or at time $t_d$. This yields two intervals ($[0, 2]$ and $[0, 7]$) and the following constraints describing the C-space, none of them being redundant:
+Let us now consider the same system but with a synchronous pattern of arrival ($O_1 = O_2 = 0$). The first DIT happens at time $t_d = 7$. The intervals to consider are thus of the form $[0, t]$ where $t$ is a deadline happening before or at time $t_d$. This yields two intervals ($[0, 2]$ and $[0, 7]$) and the following constraints describing the C-space, none of them being redundant:
 $$
 \left\{
   \begin{array}{ccccc}
@@ -737,7 +722,7 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 
 \begin{figure}[h]
 \begin{center}
-  \includegraphics[width=0.5\textwidth]{figs/cspace_example.png}
+  \includegraphics[width=0.3\textwidth]{figs/cspace_example.png}
   \caption{C-space of an asynchronous system and its corresponding synchronous system}
   \label{fig:cspaceComp}
 \end{center}
@@ -752,8 +737,6 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 	the design of a real-time system is a useful trick to fit a heavy periodic task set
 	into a given platform.
 
-    % PRECISER : on ne genere pas de systyemes avec instants synchroes
-
 	In Fig.~\ref{fig:sizeRatio} a number of feasible asynchronous task sets of
 	three tasks without synchronous instants were generated as described in Section~\ref{sct:noFPDITsimu}. The size of their
 	C-space (number of valid WCET vectors) was compared with that of the same
@@ -762,11 +745,11 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 
 	In other words, fig.~\ref{fig:sizeRatio}
 	evaluates the feasibility gain of adding random offsets w.r.t. a synchronous task
-	set. We have chosen in this paper to generate offsets randomly but we did not consider offsets that eventually lead to synchronous releases. The problem of offset assignment has been considered for example in \cite{grenier2008pushing}. The problem of those heuristics is that they depend on WCETs. Finding offsets that maximize a C-space region is still an open problem.
+	set. Offsets eventually leading to synchronous releases have been discarded. The problem of offset assignment has been considered for example in \cite{grenier2008pushing} in the case of fixed WCET values. To the best of our knowledge, finding offsets maximizing a C-space region is an open problem.
 
 	\begin{figure}[h]
 		\begin{center}
-			\includegraphics[width=0.5\textwidth]{figs/sizeratio.png}
+			\includegraphics[width=0.4\textwidth]{figs/sizeratio.png}
 			\caption{C-space size ratio between asynchronous and equivalent synchronous
 			systems}
 			\label{fig:sizeRatio}
@@ -782,16 +765,14 @@ Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray reg
 	synchronous C-spaces of the systems contain many dominated WCET vectors, and
 	only those that are in the border (i.e. non-dominated) actually matter to the
 	designer of the system. Using the asynchronous C-space instead will relax some
-	constraints and therefore add new acceptable solutions that will dominate solutions that were previously non-dominated,
+	constraints and therefore add new acceptable and dominating solutions,
 	increasing the quality of the C-space border.
 
 \section{Conclusion}
 
 In this paper, we presented a general approach to concisely define the C-space of a constrained periodic task set for EDF on uniform platforms. We then used the C-space to quantify the feasibility gain given by random offset values, with a final result of about 10~\% more WCET values being feasible. Possible future works includes an extension to the study of systems with preemption costs or running on multiprocessor platforms, as the value of the DIT does not depend on preemptions or the number of processors.
 
-Future works could also repeat the simulation of section~\ref{sct:expCspaceGain} with the algorithm described in \cite{grenier2008pushing}, which determine offset values with optimal feasibility but for specific WCETs. We would like to study if those heuristics obtained for particular WCETs scenarios can be also interesting for any WCET in the C-Space.
-
-% A mettre quelque part : nombre de contraintes avant/apres dans les expériences (issue #20)
+Future works could also repeat the simulation of section~\ref{sct:expCspaceGain} with the algorithm described in \cite{grenier2008pushing}, which determine offset values with optimal feasibility for given WCET values. We could like to study if those heuristics obtained for particular WCETs scenarios can also be interesting for any WCET in the \mbox{C-Space}.
 
 % Future works could also study the case of offset-free systems, where the offset values can be chosen. The performance of algorithms such as \cite{grenier2008pushing} and \cite{goossens2003scheduling} (although the latter depends on the execution times), which determine offset values with optimal feasibility, can be expressed using the C-space.
 
