@@ -5,6 +5,8 @@ python-simulation/plots/001*.png
 python-simulation/plots/backup/001*.png
 python-simulation/plots/sizeratio*.png
 python-simulation/plots/sizeratio*.eps
+python-simulation/plots/cspaceHist*.png
+python-simulation/plots/results
 !python-simulation/plots/nofpdit.png
 
 # LaTeX
