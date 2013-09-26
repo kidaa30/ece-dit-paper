@@ -47,7 +47,7 @@ class TestSimulator(unittest.TestCase):
         self.checkResult(tau, PALLF.PALLF(tau), True)
         self.checkResult(tau, Scheduler.PTEDF(tau), True)
 
-        sim = Simulator.Simulator(tau, stop=5, nbrCPUs=1, scheduler=Scheduler.EDF(tau), abortAndRestart=False)
+        sim = Simulator.Simulator(tau, stop=5, nbrCPUs=1, scheduler=Scheduler.EDF(tau), abortAndRestart=False, drawing=False)
         sim.run()
         self.assertEquals(sim.t, 6)
         blockedJob = sim.mostPrioritaryJob()
