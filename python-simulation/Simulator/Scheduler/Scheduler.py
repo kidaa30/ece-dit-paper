@@ -1,5 +1,3 @@
-from . import Simulator
-
 import itertools
 import pdb
 
@@ -33,7 +31,7 @@ class SchedulerDP(object):
 
 class PTEDF(SchedulerDP):
     def __init__(self, tau):
-        super(PTEDF, self).__init__(tau)
+        super().__init__(tau)
         self.tau = tau
         self.prioOffset = max([task.alpha for task in tau.tasks])
 
@@ -96,7 +94,7 @@ class ArbitraryScheduler(SchedulerDP):
     format of userSchedule : userSchedule[t] = task to execute
     if t > len(userSchedule), userSchedule is assumed periodic"""
     def __init__(self, tau, userSchedule):
-        super(ArbitraryScheduler, self).__init__(tau)
+        super().__init__(tau)
         self.tau = tau
         self.userSchedule = userSchedule
 
@@ -108,7 +106,7 @@ class ArbitraryScheduler(SchedulerDP):
 class SpotlightEDF(SchedulerDP):
     def __init__(self, tau):
         """ Non-optimal algorithm taking preemption cost into account."""
-        super(SpotlightEDF, self).__init__(tau)
+        super().__init__(tau)
         self.prioOffset = max([task.alpha for task in tau.tasks])
 
     def priority(self, job, simu):
@@ -129,13 +127,13 @@ class SchedulerFJP(SchedulerDP):
 
 class EDF(SchedulerFJP):
     def priority(self, job, simu=None):
-        super(SchedulerFJP, self).priority(job, simu)
+        super().priority(job, simu)
         return 1 / job.deadline
 
 
 class SchedulerFTP(SchedulerFJP):
     def __init__(self, tau):
-        super(SchedulerFTP, self).__init__(tau)
+        super().__init__(tau)
         self.priorities = self.orderPriorities(tau.tasks)
 
     def orderPriorities(self, taskArray):
@@ -143,7 +141,7 @@ class SchedulerFTP(SchedulerFJP):
         pass
 
     def priority(self, job, simu=None):
-        super(SchedulerFTP, self).priority(job, simu)
+        super().priority(job, simu)
         for i, task in enumerate(reversed(self.priorities)):  # priorities is decreasing
             if job.task is task:
                 return i + 1  # prio = 0 is for idle cpu
@@ -156,7 +154,7 @@ class FixedPriority(SchedulerFTP):
     def __init__(self, tau, prioArray):
         """prioArray : list of priorities in the same order as tau.tasks"""
         self.prioArray = prioArray
-        super(FixedPriority, self).__init__(tau)
+        super().__init__(tau)
 
     def orderPriorities(self, taskArray):
         assert len(self.prioArray) == len(taskArray), str(len(taskArray)) + "\t" + str(len(self.prioArray))
@@ -173,14 +171,15 @@ class ExhaustiveFixedPriority(FixedPriority):
         self.abortAndRestart = abortAndRestart
         self.foundFeasible = None
         feasiblePriorities = self.exhaustiveSearch()
-        super(ExhaustiveFixedPriority, self).__init__(tau, feasiblePriorities)
+        super().__init__(tau, feasiblePriorities)
 
     def exhaustiveSearch(self):
+        from Simulator.Simulator import Simulator
         taskArray = self.tau.tasks
         priorities = [i for i in range(0, len(taskArray))]
         self.foundFeasible = False
         for prio in itertools.permutations(priorities):
-            simu = Simulator.Simulator(self.tau, None, self.m, FixedPriority(self.tau, prio), self.abortAndRestart)
+            simu = Simulator(self.tau, None, self.m, FixedPriority(self.tau, prio), self.abortAndRestart)
             simu.run(stopAtDeadlineMiss=True)
             if simu.success():
                 self.foundFeasible = True

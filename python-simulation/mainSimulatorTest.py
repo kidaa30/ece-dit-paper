@@ -1,4 +1,5 @@
-from Simulator import Simulator, Scheduler, ChooseKeepEDF, PALLF
+from Simulator import Simulator
+from Simulator.Scheduler import Scheduler, ChooseKeepEDF, PALLF
 from Model import algorithms
 import systems
 
