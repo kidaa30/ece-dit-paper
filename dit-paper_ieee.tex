@@ -406,22 +406,28 @@ joel.goossens@ulb.ac.be}
 	\subsection{Solving the modular system}
 		A sketch of the construction algorithm to compute $t_d$ can be found in
 		Algorithm~\ref{alg:algoCRP} (note that $x^{-1} \; (mod \; y)$ means the
-		modular inverse of $x$ in the naturals modulo $y$). In this paper we
-		concentrate on the latter part of the algorithm (after the modifications to
-		correct non-coprime periods, readers interested in the details of these
-		modifications should refer to \cite{knuth1969art}).
+		modular inverse of $x$ in the naturals modulo $y$). The congruences must
+		first be modified in order to obtain pairwise coprime moduli. Each $n_i$
+		is factored into prime powers $p^{k_1}_1 p^{k_2}_2 \cdots p^{k_m}_m = n_i$.
+		Each original constraint $t_d \equiv x_i \; (mod \; n_i)$ is replaced by the
+		equivalent set
+		\begin{equation*}
+			\begin{split}
+				t_d \equiv x_i 	& \; (mod \; p^{k_1}_1) \\
+				t_d \equiv x_i 	& \; (mod \; p^{k_2}_2) \\
+								& \vdots \\
+				t_d \equiv x_i 	& \; (mod \; p^{k_m}_m) \\
+			\end{split}
+		\end{equation*}
+		This operation might create duplicate constraints, which are removed. As shown
+		in \cite{knuth1969art}, the resulting system can be solved using
+		Algorithm~\ref{alg:algoCRP}.
+		
 		\begin{algorithm}
 			\caption{Gauss's CRP Algorithm}
 			\label{alg:algoCRP}
 			\begin{algorithmic}[1]
-				\REQUIRE $\forall \tau_i \in \tau : a_i \in [D_i,T_i]$
-				\REQUIRE $\forall \tau_i \in \tau : x_i = a_i+O_i$
-				\REQUIRE $\forall \tau_i \in \tau : n_i = T_i$
 				\REQUIRE $H$ is the hyperperiod of the system
-
-				\STATE Modify the $n_i$ and $x_i$ by prime decomposition so \\ that the
-				$n_i$ become pairwise coprime
-
 				\FORALL{$\tau_i \in \tau$}
 					\STATE $Mj \leftarrow \frac{H}{n_i}$
 					\STATE $invMj \leftarrow Mj^{-1} \; (mod \; n_i)$
@@ -430,6 +436,10 @@ joel.goossens@ulb.ac.be}
 				\RETURN $\sum\limits_{\tau_i \in \tau}{x_i \cdot e_i} \; (mod \; H)$
 			\end{algorithmic}
 		\end{algorithm}
+		
+		
+		%TODO change algo 2 with respect to explanation of coprime n_i
+		
 		Algorithm~\ref{alg:algoCRP} finds one DIT given one combination of $a_i$
 		values. However using it in practice is very inefficient as there are
 		exponentially many different combinations of $a_i$ values in the number of
