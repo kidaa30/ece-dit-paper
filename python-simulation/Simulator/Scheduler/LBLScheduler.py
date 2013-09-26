@@ -1,4 +1,4 @@
-from Simulator import Scheduler
+from Simulator.Scheduler import Scheduler
 
 
 class LBLScheduler(Scheduler.SchedulerDP):
