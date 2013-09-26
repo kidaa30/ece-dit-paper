@@ -10,7 +10,7 @@ if __name__ == '__main__':
 	nSystems = paramInfo
 	pylab.ylabel("Amount of systems")
 	pylab.xlabel("Synchronous/asynchronous C-space size ratio")
-	pylab.hist(results,normed=True)
+	pylab.hist(results,bins=10)
 	pylab.title(" ("+str(nSystems)+" systems)")
 	pylab.savefig("./plots/cspaceHist_n"+str(nSystems)+"_"+str(time.time()).replace(".", "") + ".png")
 	pylab.show()
