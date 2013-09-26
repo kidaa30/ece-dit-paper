@@ -1,3 +1,5 @@
+from Simulator.Drawer.Drawer import Drawer
+
 from Model import algorithms
 
 from PIL import Image as img
@@ -7,17 +9,16 @@ from PIL import ImageDraw as draw
 import random
 import re
 
-class Drawer(object):
+class PILDrawer(Drawer):
     def __init__(self, simu, stop):
-        self.simu = simu
+        super().__init__(simu, stop)
         self.instantWidth = 20
         self.widthMargin = 20
         self.taskHeight = 50
         self.heightMargin = 20
         self.width = stop * self.instantWidth + 2 * self.widthMargin
         self.height = len(simu.system.tasks) * self.taskHeight + 2 * self.heightMargin
-        self.colors = ["rgb(" + ",".join([str(random.randint(0, 255)) for i in range(3)]) + ")" for j in range(self.simu.m)] + ["black"]  # black: preemption
-        self.drawnDeadlineMissCount = 0
+        self.colors = ["rgb(" + ",".join([str(random.randint(0, 255)) for i in range(3)]) + ")" for j in range(self.simu.m)]
 
         self.outImg = img.new("RGB", (self.width, self.height), "white")
         self.fontRoboto = ImageFont.truetype("res/Roboto-Medium.ttf", 9)
@@ -67,6 +68,9 @@ class Drawer(object):
         self.outDraw.line([x, y1, x, y2], fill="black", width=5)
         self.drawnDeadlineMissCount += 1
 
+    def getDrawnDeadlineMissCount(self):
+        return self.drawnDeadlineMissCount
+
     def drawOneExecutionUnit(self, taskNbr, CPUnbr, t, preemp):
         color = self.colors[CPUnbr]
         if preemp:
@@ -95,6 +99,9 @@ class Drawer(object):
                 else:
                     self.drawOneExecutionUnit(taskNbr, cpuNbr, t, preemp=False)
 
+    def terminate(self):
+        self.drawArrivalsAndDeadlines()
+
     def drawArrivalsAndDeadlines(self):
         for taskNbr, task in enumerate(self.simu.system.tasks):
             for t in range(task.O, self.simu.stop + 1, task.T):
@@ -113,27 +120,11 @@ def greyColor(color):
     rgb = colorRe.findall(color)
     assert len(rgb) == 3
     rgb = [int(s) for s in rgb]
-    rgb = [c // 2 for c in rgb]
-    return "rgb(" + ",".join([str(c) for c in rgb]) + ")"
+    rgbGrey = [c // 2 for c in rgb]
+    return "rgb(" + ",".join([str(c) for c in rgbGrey]) + ")"
 
 
 def drawArrow(drawer, x1, y1, x2, y2, color):
     drawer.line((x1, y1, x2, y2), fill=color, width=2)
     r = 2
     drawer.ellipse((x2 - r, y2 - r, x2 + r, y2 + r), fill=color)
-
-
-class EmptyDrawer(Drawer):
-    """Will not drax anything. Use it when you don't need a Drawer"""
-    def __init__(self, simu, stop):
-        self.drawnDeadlineMissCount = 0
-        pass
-
-    def drawInstant(self, t):
-        pass
-
-    def drawDeadlineMiss(self, t, task):
-        self.drawnDeadlineMissCount += 1
-
-    def drawArrivalsAndDeadlines(self):
-        pass

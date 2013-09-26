@@ -3,8 +3,8 @@ import pdb
 
 from Model.CPU import CPU
 from Model import algorithms
-from . import Drawer
-from .JobConfiguration import JobConfiguration
+from Simulator.Drawer import Drawer
+from Simulator.JobConfiguration import JobConfiguration
 
 
 def heappeek(heap):
@@ -46,7 +46,8 @@ class Simulator(object):  # Global multiprocessing only
         heapify(self.activeJobsHeap)
 
         if drawing:
-            self.drawer = Drawer.Drawer(self, stop)
+            from Simulator.Drawer import PILDrawer
+            self.drawer = PILDrawer.PILDrawer(self, stop)
         else:
             self.drawer = Drawer.EmptyDrawer(self, stop)
 
@@ -232,7 +233,7 @@ class Simulator(object):  # Global multiprocessing only
             self.incrementTime()
             self.drawer.drawInstant(self.t)
 
-            if len(self.deadlineMisses) > self.drawer.drawnDeadlineMissCount:
+            if len(self.deadlineMisses) > self.drawer.getDrawnDeadlineMissCount():
                 # new deadline miss
                 assert len(self.deadlineMisses) > 0
                 missT, job = self.deadlineMisses[-1]
@@ -243,7 +244,7 @@ class Simulator(object):  # Global multiprocessing only
                     break
             if stopAtStableConfig and self.isStable:
                 break
-        self.drawer.drawArrivalsAndDeadlines()
+        self.drawer.terminate()
 
     def success(self):
         assert self.t >= 0, "Simulator.success: call run() first"
