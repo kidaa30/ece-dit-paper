@@ -12,8 +12,8 @@ def parallelFunc(util, cdf):
     tasks = TaskGenerator.generateTasks(Utot=util, n=3, maxHyperT=554400, Tmin=5, Tmax=20, synchronous=False, constrDeadlineFactor=cdf)
     tau = Task.TaskSystem(tasks)
     res = None
-    
-    print(util,cdf,tau)
+
+    print(util, cdf, tau)
 
     tSync = tau.firstSynchronousInstant()
     if not tSync:
@@ -22,13 +22,13 @@ def parallelFunc(util, cdf):
         if asyncCSpaceSize > 0:
             syncTau = tau.synchronousEquivalent()
             syncCSpaceSize = syncTau.cSpaceSize()
-            print(syncCSpaceSize,asyncCSpaceSize)
+            print(syncCSpaceSize, asyncCSpaceSize)
             res = float(syncCSpaceSize)/asyncCSpaceSize
     return res
 
 if __name__ == "__main__":
     UTIL_BINS = [f/5.0 for f in range(1, 6)]
-    CDF_BINS = [0.1,0.5,1.0]
+    CDF_BINS = [0.1, 0.5, 1.0]
     nSystems = 5000
 
     executor = concurrent.futures.ProcessPoolExecutor(max_workers=6)
