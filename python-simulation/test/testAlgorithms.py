@@ -57,5 +57,35 @@ class TestAlgorithms(unittest.TestCase):
         tasks.append(Task(2, 1, 3, 6))
         tasks.append(Task(10, 1, 1, 2))
         tau = TaskSystem(tasks)
-        assert algo.findFirstPeriodicDIT(tau) == 11
-        assert algo.findSynchronousInstant(tau) is None
+        self.assertEquals(algo.findFirstPeriodicDIT(tau), 11)
+        self.assertIsNone(algo.findSynchronousInstant(tau))
+
+    def test_asynchronous3(self):
+        tasks = []
+        tasks.append(Task(120, 6, 25, 25))
+        tasks.append(Task(0, 4, 47, 48))
+        tau = TaskSystem(tasks)
+        self.assertEquals(algo.findFirstPeriodicDIT(tau), 720)
+        self.assertEquals(algo.findSynchronousInstant(tau), 720)
+
+    def test_longerSystem(self):
+        tasks = []
+        tasks.append(Task(0, 38, 73, 154))
+        tasks.append(Task(0, 156, 381, 825))
+        tasks.append(Task(0, 120, 381, 400))
+        tau = TaskSystem(tasks)
+        # I haven't checked these results so this test only check that the values do not change.
+        self.assertEquals(algo.findBusyPeriod(tau),  390)
+        self.assertEquals(algo.findFirstDIT(tau),  381)
+        self.assertEquals(algo.findSynchronousInstant(tau), 0)
+        self.assertFalse(algo.dbfTest(tau))
+
+    def test_randomSystem(self):
+        from Model import TaskGenerator
+        Utot = 1
+        n = 4
+        maxHyperT = 100
+        Tmin = 5
+        Tmax = 20
+        tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False)
+        return  # oracle ?
