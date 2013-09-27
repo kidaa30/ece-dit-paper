@@ -8,4 +8,4 @@ if __name__ == '__main__':
     tests = [TestSimulator, TestMyAlgebra, TestAlgorithms]
     for test in tests:
         suite = unittest.TestLoader().loadTestsFromTestCase(test)
-        unittest.TextTestRunner(verbosity=2).run(suite)
+        unittest.TextTestRunner(verbosity=1).run(suite)

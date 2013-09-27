@@ -1,7 +1,7 @@
 from Model import algorithms
 from Simulator import Simulator
 from Simulator.Scheduler import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
-import systems
+from Helper import systems
 
 import subprocess
 import sys
