@@ -136,8 +136,3 @@ class TestSimulator(unittest.TestCase):
         tau = systems.ImpFTPNonOptimal
         self.checkResult(tau, Scheduler.PTEDF(tau), True)
         self.checkResult(tau, Scheduler.ExhaustiveFixedPriority(tau, nbrCPUs=1, abortAndRestart=False), False)
-
-
-if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestSimulator)
-    unittest.TextTestRunner(verbosity=2).run(suite)
