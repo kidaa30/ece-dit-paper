@@ -104,63 +104,9 @@ def dbfTest(tau, firstDIT=None):
     return True
 
 if __name__ == '__main__':
-    from . import Task
 
-    # UNIT TEST 1
-    tasks = []
-    #                      0, C, D, T
-    tasks.append(Task.Task(0, 1, 3, 6))
-    tasks.append(Task.Task(0, 1, 3, 3))
-    tau = Task.TaskSystem(tasks)
-    assert completedJobCount(tau.tasks[0], 15, 25) == 1
-    assert completedJobCount(tau.tasks[0], 0, 33) == 6
-    assert completedJobCount(tau.tasks[1], 0, 33) == 11, "returned: " + str(completedJobCount(tau.tasks[1], 0, 33))
-    assert findBusyPeriod(tau) == 2, "Unit Test FAIL : findBusyPeriod"
-    assert findFirstDIT(tau) == 3, "Unit Test FAIL : findFirstDIT, returned: " + str(findFirstDIT(tau))
-    assert findSynchronousInstant(tau) == 0, "Unit Test FAIL : findSynchronousInstant; returned: " + str(findSynchronousInstant(tau))
-    assert dbfTest(tau) is True
+## TODO : continue transfer to testAlgorithms
 
-    # UNIT TEST 2 -- Influence of deadline on the DIT
-    tasks = []
-    #                      0, C, D, T
-    tasks.append(Task.Task(0, 1, 1, 6))
-    tasks.append(Task.Task(0, 1, 1, 3))
-    tau = Task.TaskSystem(tasks)
-    assert findBusyPeriod(tau) == 2, "Unit Test FAIL : findBusyPeriod (2); " + "returned: " + str(findBusyPeriod(tau))
-    assert findFirstDIT(tau) == 1, "Unit Test FAIL : findFirstDIT (2)"
-    assert findSynchronousInstant(tau) == 0, "Unit Test FAIL : findSynchronousInstant (2); returned: " + str(findSynchronousInstant(tau))
-    assert dbfTest(tau) is False
-
-    # UNIT TEST 3 -- Edge case of congruence (cannot return 0: we do not consider 0 to be a DIT)
-    tasks = []
-    #                      0, C, D, T
-    tasks.append(Task.Task(0, 1, 2, 2))
-    tasks.append(Task.Task(0, 1, 3, 3))
-    tau = Task.TaskSystem(tasks)
-    assert findBusyPeriod(tau) == 2, "Unit Test FAIL : findBusyPeriod (3); " + "returned: " + str(findBusyPeriod(tau))
-    assert findFirstDIT(tau) == 6, "Unit Test FAIL : findFirstDIT (3); " + "returned: " + str(findFirstDIT(tau))
-    assert findSynchronousInstant(tau) == 0, "Unit Test FAIL : findSynchronousInstant (3); returned: " + str(findSynchronousInstant(tau))
-    assert dbfTest(tau) is True
-
-    # UNIT TEST 4 -- Asynchronous system
-    tasks = []
-    #                      0, C, D, T
-    tasks.append(Task.Task(5, 1, 1, 3))
-    tasks.append(Task.Task(0, 4, 4, 8))
-    tau = Task.TaskSystem(tasks)
-    # No busy period test as it does not make sense in asynchronous system
-    assert findFirstPeriodicDIT(tau) == 6, "Unit Test FAIL : findFirstDIT (4a); " + "returned: " + str(findFirstDIT(tau))
-    assert findSynchronousInstant(tau) == 8, "Unit Test FAIL : findSynchronousInstant (4a); " + "returned: " + str(findSynchronousInstant(tau))
-    #assert dbfTest(tau) is True
-
-    tasks = []
-    #                      0, C, D, T
-    tasks.append(Task.Task(0, 1, 4, 6))
-    tasks.append(Task.Task(2, 1, 3, 6))
-    tasks.append(Task.Task(10, 1, 1, 2))
-    tau = Task.TaskSystem(tasks)
-    assert findFirstPeriodicDIT(tau) == 11, "Unit Test FAIL : findFirstDIT (4b); " + "returned: " + str(findFirstDIT(tau))
-    assert findSynchronousInstant(tau) is None, "Unit Test FAIL : findSynchronousInstant (4b); " + "returned: " + str(findSynchronousInstant(tau))
 
     tasks = []
     #                      0, C, D, T
