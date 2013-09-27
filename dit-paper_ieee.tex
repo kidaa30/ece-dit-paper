@@ -412,7 +412,7 @@ joel.goossens@ulb.ac.be}
 		is factored into prime powers $p^{k_1}_1 p^{k_2}_2 \cdots p^{k_m}_m = n_i$
 		with $k_j$ the highest integer s.t. $p^{k_j}_j$ divides $n_i \; \forall j
 		\; \mid 1 \leqslant j \leqslant m$. Each original constraint $t_d \equiv x_i
-		\; (mod \; n_i)$ is replaced by the equivalent set
+		\; (mod \; n_i)$ is replaced by the equivalent set \cite{knuth1969art}
 		\begin{equation*}
 			\begin{split}
 				t_d \equiv x_i 	& \; (mod \; p^{k_1}_1) \\
@@ -441,9 +441,6 @@ joel.goossens@ulb.ac.be}
 				\RETURN $\sum\limits_{c \in C}{x_c \cdot e_c} \; (mod \; H)$
 			\end{algorithmic}
 		\end{algorithm}
-		
-		
-		%TODO change algo 2 with respect to explanation of coprime n_i
 		
 		Algorithm~\ref{alg:algoCRP} finds one DIT given one combination of $a_i$
 		values. However using it in practice is very inefficient as there are
