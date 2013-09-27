@@ -17,7 +17,7 @@
 \title {Real-Time Systems}
 \subtitle {The Space of Feasible Execution Times for Asynchronous Periodic Task
 Systems using Definitive Idle Times}
-\author{Thomas Chapeaux \inst{1} \and Paul Rodriguez \inst{1} \and Laurent George \inst{2} \and Joël Goossens \inst{1}}
+\author{Thomas~Chapeaux~\inst{1}~\inst{2} \and Paul~Rodriguez~\inst{1}~\inst{2} \and Laurent~George~\inst{2} \and Joël~Goossens~\inst{1}}
 \institute[shortinst]{\inst{1} Université Libre de Bruxelles \and %
                       \inst{2} ECE Paris}
 \date{July 2013}
@@ -37,8 +37,39 @@ Systems using Definitive Idle Times}
 	\subsection{Real-time systems}
 
 	\begin{frame}{Model}
-		Tasks, jobs, OCDT
-	\end{frame}
+  \begin{block}{Definition}
+  Systems with real-time constraints. (e.g. ABS, VOD, etc)
+  \end{block}
+  \textbf{Model:} Set of tasks $\tau_i = (O_i, T_i, D_i, C_i)$ generating jobs $J_{i,j}$, with
+      \begin{itemize}
+      \item $O_i$ : arrival of the first job
+      \item $T_i$ : time between two jobs
+      \item $D_i$ : relative deadline
+      \item $C_i$ : execution time
+    \end{itemize}
+
+  \begin{columns}[c] % the "c" option specifies center vertical alignment
+  \column{.4\textwidth}
+\begin{center}
+\begin{tabular}{|r|c|c|c|c|}
+ \hline
+  & $O_i$ & $T_i$ & $D_i$ & $C_i$ \\
+ \hline
+ $\tau_1$ & 1 & 2 & 6 & 10\\
+ \hline
+ $\tau_2$ & 0 & 3 & 5 & 5\\
+ \hline
+\end{tabular}
+\end{center}
+
+  \column{.6\textwidth} % column designated by a command
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{figs/RTsystem_example.png}
+\caption{A task system}
+\label{fig:llf}
+\end{figure}
+  \end{columns}
+\end{frame}
 
 	\begin{frame}{Feasibility}
 		We define feasibility...
@@ -66,9 +97,21 @@ Systems using Definitive Idle Times}
 
 	\subsection{Related works}
 
-	\begin{frame}{Related Works}
-	This one and this one
-	\end{frame}
+    \subsubsection{The C-space}
+
+    \begin{frame}{Definition of the C-space}
+        \begin{block}{Definition}
+            The \textbf{C-space} of a task system $\tau$ is a region of $n$ dimensions (where each dimension denotes the possible $C_i$ of a task of $\tau$) such that for any vector $C = \{ C_1, \cdots, C_{n}\}$ in it, $\tau$ is feasible.
+        \end{block}
+
+        A region of $\mathbb{N}_0^n$ such as the C-space can be described by a list of parametric linear constraints (called the \emph{formulation}), such as those given by the DBF test.
+    \end{frame}
+
+    \begin{frame}{Removing Redundancies in the C-space of synchronous system}
+
+
+
+    \end{frame}
 
 	\subsection{Our work}
 
@@ -83,7 +126,7 @@ Systems using Definitive Idle Times}
 	\subsection{Definition}
 
 	\begin{frame}{Definition of the FPDIT}
-		Even without knowing the WCETs in advance, we can define the following notions:
+		We define the following notions, which do not depend on the WCET values:
 		\begin{block}{Definition}
 			A \textbf{definitive idle time} (DIT) \cite{lipariaverage} is a time $t$ such that every job
 			released strictly before instant $t$ has its absolute deadline before or at instant $t$.
@@ -122,43 +165,13 @@ Systems using Definitive Idle Times}
 		Note that in the synchronous case $t_d = H$ is always a solution ($a_i = T_i$)
 	\end{frame}
 
-\section{C-space}
+\section{C-space of asynchronous system}
 
-	\subsection{Definition}
-
-	\begin{frame}{Definition of the C-space}
-		\begin{block}{Definition}
-			The \textbf{C-space} of a task system $\tau$ is a region of $n$ dimensions (where each dimension denotes the possible $C_i$ of a task of $\tau$) such that for any vector $C = \{ C_1, \cdots, C_{n}\}$ in it, $\tau$ is feasible.
-		\end{block}
-
-		A region of $\mathbb{N}_0^n$ such as the C-space can be described by a list of parametric linear constraints (called the \emph{formulation}).
+	\begin{frame}{Redundancy in asynchronous systems}
+		[$t_d$, $t_d + H$] is a feasibility interval
 	\end{frame}
 
-	\subsection{Redundancies}
-
-		\subsubsection{General approach}
-
-		\begin{frame}{Redundancies}
-			Infinite number of constraints...
-
-			However: arrival and deadlines, feasibility interval, ILP
-
-			The sequel will concentrate on obtaining a short feasibility interval
-		\end{frame}
-
-		\subsubsection{Synchronous systems}
-
-		\begin{frame}{Redundancy in synchronous systems}
-			[0, t] is a critical instant, 0 is the worst-case
-		\end{frame}
-
-		\subsubsection{Asynchronous systems}
-
-		\begin{frame}{Redundancy in asynchronous systems}
-			[$t_d$, $t_d + H$] is a feasibility interval
-		\end{frame}
-
-	\subsection{Numerical Example}
+\section{Numerical Example}
 
 	\begin{frame}{Example}
 		Table, OCDT, figure
