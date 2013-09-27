@@ -427,7 +427,7 @@ joel.goossens@ulb.ac.be}
 		Algorithm~\ref{alg:algoCRP}. For ease of reading, we call $C$ the set of
 		resulting constraints $c$ each written $t_d \equiv x_c \; (mod \;
 		p_c)$.
-		
+
 		\begin{algorithm}
 			\caption{Gauss's CRP Algorithm}
 			\label{alg:algoCRP}
@@ -441,10 +441,10 @@ joel.goossens@ulb.ac.be}
 				\RETURN $\sum\limits_{c \in C}{x_c \cdot e_c} \; (mod \; H)$
 			\end{algorithmic}
 		\end{algorithm}
-		
-		
+
+
 		%TODO change algo 2 with respect to explanation of coprime n_i
-		
+
 		Algorithm~\ref{alg:algoCRP} finds one DIT given one combination of $a_i$
 		values. However using it in practice is very inefficient as there are
 		exponentially many different combinations of $a_i$ values in the number of
@@ -467,6 +467,7 @@ joel.goossens@ulb.ac.be}
 			\caption{Modified Gauss Algorithm}
 			\label{alg:multiACRP}
 			\begin{algorithmic}[1]
+                \REQUIRE $P$, $C_{p}$, $x_c$: as defined above
 				\REQUIRE $H$ is the hyperperiod of the system
 
 				\STATE $sumchunks \leftarrow \text{empty map}$
@@ -494,7 +495,7 @@ joel.goossens@ulb.ac.be}
 				\RETURN $r \; (mod \; H)$ for all $r \in results$
 			\end{algorithmic}
 		\end{algorithm}
-		
+
 		This method ``forgets'' the link between generated constraints and the tasks
 		(with the associated $A_i$) they come from. Constraints are instead grouped by their
 		primal power modulo $p$ and each $p$ is associated with a set of $x_c$ values
