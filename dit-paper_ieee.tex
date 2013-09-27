@@ -447,15 +447,15 @@ joel.goossens@ulb.ac.be}
 		exponentially many different combinations of $a_i$ values in the number of
 		tasks (the cartesian product of all the $A_i$ sets), and resolving
 		exponentially many CRP instances is prohibitively slow.
-		A faster method for finding the FPDIT consists in merging all these CRP
-		instances into one problem (finding all DITs), which can be solved faster by
+		In this paper a faster method for finding the FPDIT is proposed. It consists
+		in merging all these CRP instances into one problem (finding all DITs), which can be solved faster by
 		Algorithm~\ref{alg:multiACRP}, as a significant part of the intermediate
 		results are shared between instances. The first part consisting in splitting
 		all constraints into sets of constraints with prime power moduli is slightly
 		different. We define for each task $\tau_i$ and $a_j \in A_i$ :
-		$C_{ij}$ is the set of constraints resulting from the factorisation of $t_d
-		\equiv a_j+O_i \; (mod \; n_i)$ of the form $t_d \equiv x_c
-		\; (mod \; p_c)$ if named $c$. We define $C = \bigcup\limits_{\tau_i \in \tau,
+		$D_{ij}$ the set of constraints $c$ of the form $t_d \equiv x_c
+		\; (mod \; p_c)$ resulting from the factorisation of $t_d
+		\equiv a_j+O_i \; (mod \; n_i)$. We define $C = \bigcup\limits_{\tau_i \in \tau,
 		a_j \in A_i}{C_{ij}}$, $P$ the set of all $p_c$ values appearing in
 		constraints of $C$ and $C_{p}$ the subset of $C$ containing all constraints
 		$c$ with $p_c = p$.
