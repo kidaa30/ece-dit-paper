@@ -42,9 +42,9 @@ class Task(object):
     def getJob(self, arrival):
         assert (arrival - self.O) % self.T == 0
         return Job.Job(self, arrival)
-        
+
     def __lt__(self, other):
-	    return id(self) < id(other)  
+	    return id(self) < id(other)
 
 
 class TaskSystem(object):
@@ -152,70 +152,8 @@ class TaskSystem(object):
             if not self.isSynchronous() and nextArrival + task.D <= upperLimit:
                 heapTuple = (nextArrival, task)
                 heapq.heappush(arrivals, heapTuple)
-                
+
     def cSpaceSize(self, acspace=None):
         if acspace is None:
             acspace = cspace.Cspace(self)
         return acspace.size(self)
-
-import unittest
-
-class TestTask(unittest.TestCase):
-    def setUp(self):
-        self.tasks = []
-        #                   O, C, D, T
-        self.tasks.append(Task(0, 1, 3, 6))
-        self.tasks.append(Task(0, 1, 3, 3))
-        self.tasks.append(Task(1, 1, 5, 4))
-
-        self.tasks2 = []
-        #                 0, C, D, T
-        self.tasks2.append(Task(0, 38, 73, 154))
-        self.tasks2.append(Task(0, 156, 362, 825))
-        self.tasks2.append(Task(0, 120, 362, 400))
-
-        self.tau = TaskSystem(self.tasks)
-        self.tau2 = TaskSystem(self.tasks[0:2])
-        self.tau3 = TaskSystem(self.tasks2)
-
-    def test_isSynchronous(self):
-        self.assertFalse(self.tau.isSynchronous())
-        self.assertTrue(self.tau2.isSynchronous())
-        self.assertTrue(self.tau3.isSynchronous())
-
-    def test_hasConstrainedDeadline(self):
-        self.assertFalse(self.tau.hasConstrainedDeadline())
-        self.assertTrue(self.tau2.hasConstrainedDeadline())
-        self.assertTrue(self.tau3.hasConstrainedDeadline())
-
-    def test_systemUtilization(self):
-        self.assertEqual(0.5, self.tau2.systemUtilization())
-
-    def test_hyperperiod(self):
-        self.assertEqual(6, self.tau2.hyperPeriod())
-
-if __name__ == '__main__':
-    unittest.main()
-#   tasks = []
-#   #                 0, C, D, T
-#   tasks.append(Task(0, 1, 3, 6))
-#   tasks.append(Task(0, 1, 3, 3))
-#   tasks.append(Task(1, 1, 5, 4))
-#   tau = TaskSystem(tasks)
-#   assert not tau.isSynchronous(), "Unit Test FAIL : isSynchronous (1)"
-#   assert not tau.hasConstrainedDeadline(), "Unit Test FAIL : hasConstrainedDeadline (1)"
-#   tasks.pop()
-#   tau = TaskSystem(tasks)
-#   assert tau.isSynchronous(), "Unit Test FAIL : isSynchronous (2)"
-#   assert tau.hasConstrainedDeadline(), "Unit Test FAIL : hasConstrainedDeadline (2)"
-#   assert tau.systemUtilization() == 1.0/3 + 1.0/6
-#   assert tau.hyperPeriod() == 6
-#
-#   tasks = []
-#   #                 0, C, D, T
-#   tasks.append(Task(0, 38, 73, 154))
-#   tasks.append(Task(0, 156, 362, 825))
-#   tasks.append(Task(0, 120, 362, 400))
-#   tau = TaskSystem(tasks)
-#   assert tau.isSynchronous(), "Unit Test FAIL : isSynchronous (3)"
-#   assert tau.hasConstrainedDeadline(), "Unit Test FAIL : hasConstrainedDeadline (3)"
