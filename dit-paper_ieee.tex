@@ -365,9 +365,10 @@ joel.goossens@ulb.ac.be}
 		value of $t_d$ such that it is congruent to $a_i+O_i$ modulo $T_i$ for all
 		tasks $\tau_i$ in $\tau$. To find the FPDIT it is to the best of our knowledge
 		necessary to solve the problem on all combinations of $a_i$ values and then
-		to compute the minimum solution. We define $x_i = a_i+O_i$ and $n_i = T_i$ for
-		clarity in the context of the CRP. One instance of this problem is guaranteed
-		to have at least one solution modulo $H$ for given values of $a_i$ if and only if
+		to compute the minimum solution. We define $A_i = [D_i,T_i]$, $X_i = \{x_i
+		= a_i+O_i \mid a_i \in A_i\}$ and $n_i = T_i$ for clarity in the context of
+		the CRP.
+		One instance of this problem is guaranteed to have at least one solution modulo $H$ for given values of $a_i$ if and only if
 		Condition~\ref{eq:CRPcond} is satisfied \cite{knuth1969art}:
 		\begin{equation}
 			\label{eq:CRPcond}
@@ -408,9 +409,10 @@ joel.goossens@ulb.ac.be}
 		Algorithm~\ref{alg:algoCRP} (note that $x^{-1} \; (mod \; y)$ means the
 		modular inverse of $x$ in the naturals modulo $y$). The congruences must
 		first be modified in order to obtain pairwise coprime moduli. Each $n_i$
-		is factored into prime powers $p^{k_1}_1 p^{k_2}_2 \cdots p^{k_m}_m = n_i$.
-		Each original constraint $t_d \equiv x_i \; (mod \; n_i)$ is replaced by the
-		equivalent set
+		is factored into prime powers $p^{k_1}_1 p^{k_2}_2 \cdots p^{k_m}_m = n_i$
+		with $k_j$ the highest integer s.t. $p^{k_j}_j$ divides $n_i \; \forall j
+		\; \mid 1 \leqslant j \leqslant m$. Each original constraint $t_d \equiv x_i
+		\; (mod \; n_i)$ is replaced by the equivalent set
 		\begin{equation*}
 			\begin{split}
 				t_d \equiv x_i 	& \; (mod \; p^{k_1}_1) \\
@@ -419,21 +421,24 @@ joel.goossens@ulb.ac.be}
 				t_d \equiv x_i 	& \; (mod \; p^{k_m}_m) \\
 			\end{split}
 		\end{equation*}
-		This operation might create duplicate constraints, which are removed. As shown
-		in \cite{knuth1969art}, the resulting system can be solved using
-		Algorithm~\ref{alg:algoCRP}.
+		This operation (later called constraint \emph{factorisation}) might create
+		duplicate constraints, which are removed.
+		As shown in \cite{knuth1969art}, the resulting system can be solved using
+		Algorithm~\ref{alg:algoCRP}. For ease of reading, we call $C$ the set of
+		resulting constraints $c$ each written $t_d \equiv x_c \; (mod \;
+		p_c)$.
 		
 		\begin{algorithm}
 			\caption{Gauss's CRP Algorithm}
 			\label{alg:algoCRP}
 			\begin{algorithmic}[1]
 				\REQUIRE $H$ is the hyperperiod of the system
-				\FORALL{$\tau_i \in \tau$}
-					\STATE $Mj \leftarrow \frac{H}{n_i}$
-					\STATE $invMj \leftarrow Mj^{-1} \; (mod \; n_i)$
-					\STATE $e_i \leftarrow Mj \cdot invMj$
+				\FORALL{$c \in C$}
+					\STATE $Mc \leftarrow \frac{H}{p_c}$
+					\STATE $invMc \leftarrow Mc^{-1} \; (mod \; p_c)$
+					\STATE $e_c \leftarrow Mc \cdot invMc$
 				\ENDFOR
-				\RETURN $\sum\limits_{\tau_i \in \tau}{x_i \cdot e_i} \; (mod \; H)$
+				\RETURN $\sum\limits_{c \in C}{x_c \cdot e_c} \; (mod \; H)$
 			\end{algorithmic}
 		\end{algorithm}
 		
@@ -443,42 +448,43 @@ joel.goossens@ulb.ac.be}
 		Algorithm~\ref{alg:algoCRP} finds one DIT given one combination of $a_i$
 		values. However using it in practice is very inefficient as there are
 		exponentially many different combinations of $a_i$ values in the number of
-		tasks, and resolving exponentially many CRP instances is prohibitively slow.
+		tasks (the cartesian product of all the $A_i$ sets), and resolving
+		exponentially many CRP instances is prohibitively slow.
 		A faster method for finding the FPDIT consists in merging all these CRP
 		instances into one problem (finding all DITs), which can be solved faster by
 		Algorithm~\ref{alg:multiACRP}, as a significant part of the intermediate
-		results are shared between instances.
-
-		%Review 3 : add formal complexity assessment of this algorithm
+		results are shared between instances. The first part consisting in splitting
+		all constraints into sets of constraints with prime power moduli is slightly
+		different. We define for each task $\tau_i$ and $a_j \in A_i$ :
+		$C_{ij}$ is the set of constraints resulting from the factorisation of $t_d
+		\equiv a_j+O_i \; (mod \; n_i)$ of the form $t_d \equiv x_c
+		\; (mod \; p_c)$ if named $c$. We define $C = \cup\limits_{\tau_i \in \tau,
+		a_j \in A_i}{C_{ij}}$, $P$ the set of all $p_c$ values appearing in
+		constraints of $C$ and $C_{p}$ the subset of $C$ containing all constraints
+		$c$ with $p_c = p$.
 
 		\begin{algorithm}
 			\caption{Modified Gauss Algorithm}
 			\label{alg:multiACRP}
 			\begin{algorithmic}[1]
-				\REQUIRE $\forall \tau_i \in \tau: X_i$ is the set of possible $a_i+O_i
-				\; \forall a_i \in [D_i,T_i]$ values for $\tau_i$
-				\REQUIRE $\forall \tau_i \in \tau : n_i = T_i$
 				\REQUIRE $H$ is the hyperperiod of the system
 
-				\STATE Modify $n_i$ and the content of $X_i$ by prime
-				\\ decomposition to get pairwise coprime $n_i$ values
-
-				\STATE $sumchunks \leftarrow \text{empty list}$
-				\FORALL{$\tau_i \in \tau$}
+				\STATE $sumchunks \leftarrow \text{empty map}$
+				\FORALL{$p \in P$}
 					\STATE $taskTerms \leftarrow \text{empty list}$
-					\STATE $Mj \leftarrow \frac{H}{n_i}$
-					\STATE $invMj \leftarrow Mj^{-1} (mod \; n_i)$
-					\FORALL{$x_i \in X_i$}
-						\STATE append $(x_i \cdot Mj \cdot invMj)$ to $taskTerms$
+					\STATE $Mp \leftarrow \frac{H}{p}$
+					\STATE $invMp \leftarrow Mp^{-1} (mod \; p)$
+					\FORALL{$c \in C_p$}
+						\STATE append $(x_c \cdot Mp \cdot invMp)$ to $taskTerms$
 					\ENDFOR
-					\STATE $sumchunks[i] \leftarrow taskTerms$
+					\STATE $sumchunks[p] \leftarrow taskTerms$
 				\ENDFOR
 
 				\STATE $results \leftarrow \text{empty list}$
 				\STATE append $0$ to $results$
-				\FORALL{$\tau_i \in \tau$}
+				\FORALL{$p \in P$}
 					\STATE $newresults \leftarrow \text{empty list}$
-					\FORALL{$chunk \in sumchunks[i]$}
+					\FORALL{$chunk \in sumchunks[p]$}
 						\FORALL{$r \in results$}
 							\STATE $\text{append} \; (r + chunk) \; \text{to} \; newresults$
 						\ENDFOR
@@ -488,17 +494,30 @@ joel.goossens@ulb.ac.be}
 				\RETURN $r \; (mod \; H)$ for all $r \in results$
 			\end{algorithmic}
 		\end{algorithm}
+		
+		This method ``forgets'' the link between generated constraints and the tasks
+		(with the associated $A_i$) they come from. Constraints are instead grouped by their
+		primal power modulo $p$ and each $p$ is associated with a set of $x_c$ values
+		for $c$ in $C_p$, acting similarly as the $A_i$ set of each task. Due to this
+		simplification, Algorithm~\ref{alg:multiACRP} might output ``false''
+		solutions. This isn't a major drawback as checking whether a solution is
+		correct can be done in linear time in the number of tasks (for each task
+		$\tau_i$, check whether at least one $a \in A_i$ satisfies $t_d \equiv a \;
+		(mod \; T_i)$) and the only interesting result is the minimum $t_d$ which
+		means that using a minimum heap structure containing the results we only need
+		to check solutions for correctness until the first (hence minimum) correct
+		solution is found.
 
 		Both Algorithm~\ref{alg:algoCRP} and Algorithm~\ref{alg:multiACRP} require the
-		computation of one modular inversion per $a_i$ value, which is done in a
-		linear number of modular inversions per task. However, to
+		computation of one modular inversion per constraint and per $a_i$ value, which
+		is done in a linear number of modular inversions per task. However, to
 		find all DITs Algorithm~\ref{alg:algoCRP} has to be executed once for each possible
 		combination of $a_i$ values, which is exponential in the number of tasks.
 		Algorithm~\ref{alg:multiACRP} has the same theoretical complexity as the
 		computation of all DITs still requires an exponential number of answers in the
 		number of tasks, but it is nonetheless significantly faster in practice. The
 		running time of Algorithm~\ref{alg:multiACRP} is also less sensitive to the
-		number of different $a_i$ values per task, which means that this method
+		size of the $A_i$ sets per task, which means that this method
 		remains practical when tasks deadlines are much smaller than periods.
 
 	\subsection{Simulation}
