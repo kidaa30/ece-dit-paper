@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 # tau = systems.generateSystemArray(1, 0)[0]
-tau = systems.LongTransitive2
+tau = systems.SmallExample
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()

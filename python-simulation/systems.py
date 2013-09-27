@@ -22,7 +22,14 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, n=4, preemptionCo
 	return systemArray
 
 
-# exemple from Patrick Meumeu's thesis pp. 128 (Fig. 4.13) (alpha???)
+# SmallExample
+tasks = []
+tasks.append(Task.Task(0, 3, 5, 5, alpha=1))
+tasks.append(Task.Task(1, 2, 6, 10, alpha=1))
+SmallExample = Task.TaskSystem(tasks)
+
+
+# exemple from Patrick Meumeu's thesis pp. 128 (Fig. 4.13)
 tasks = []
 tasks.append(Task.Task(0, 3, 7, 15, alpha=1))
 tasks.append(Task.Task(5, 2, 6, 6, alpha=1))
