@@ -2,7 +2,7 @@ import itertools
 import math
 
 from Helper import myAlgebra
-import newChineseRemainder
+from Model import newChineseRemainder
 from functools import reduce
 
 
