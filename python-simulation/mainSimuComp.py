@@ -1,8 +1,8 @@
 from Model import algorithms
 from Model import Task, TaskGenerator
 from Simulator import Simulator
-from Simulator import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
-import systems
+from Simulator.Scheduler import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
+from Helper import systems
 
 import random
 import pylab
@@ -10,7 +10,7 @@ import pylab
 
 domin_scores = {}
 results = {}
-NUMBER_OF_SYSTEMS = 1000
+NUMBER_OF_SYSTEMS = 100
 uRange = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 schedulers = [Scheduler.EDF, Scheduler.PTEDF]
 names = ["EDF", "PA-EDF"]

@@ -12,6 +12,29 @@ def findFirstDIT(tau):
     return newChineseRemainder.newFindFirstPeriodicDIT(tau)
 
 
+def isDefinitelyIdle(task, t):
+    loc_t = (t - task.O) % task.T
+    return t <= task.O or loc_t >= task.D or loc_t == 0
+
+
+def YAfindFPDIT(tau):
+    H = tau.hyperPeriod()
+    omax, latestTask = max([(task.O, task) for task in tau.tasks])
+    t = omax + 1  # omax is never a FPDIT (by definition)
+    while t <= omax + H:
+        # print("YA: t = ", t)
+        notDefIdle = [task for task in tau.tasks if not isDefinitelyIdle(task, t)]
+        if len(notDefIdle) > 0:
+            # print("Not def idle:", notDefIdle)
+            nextDeadlines = [myAlgebra.nextPeriodic(t, ta.T, ta.O + ta.D) for ta in notDefIdle]
+            # print("deadlines:", nextDeadlines)
+            t = max(nextDeadlines)
+            continue
+        else:
+            return t
+    return None
+
+
 def findFirstPeriodicDIT(tau):
     # Requires to solve several system of modular equations
 
@@ -73,14 +96,18 @@ def findBusyPeriod(tau):
             wNew += int(math.ceil(wOld*1.0 / task.T)*task.C)
     return wNew
 
+
 def dbf_synchr(tau, t):
     return tau.dbf(0, t)
+
 
 def dbf(tau, t1, t2):
     return tau.dbf(t1, t2)
 
+
 def completedJobCount(task, t1, t2):
     return task.completedJobCount(t1, t2)
+
 
 def dbfTest(tau, firstDIT=None):
     # TODO : add lowerLimit (already present in all subfunctions)
@@ -100,5 +127,5 @@ def dbfTest(tau, firstDIT=None):
         if testResult is False:
             return False
 
-    # If all previous test succeed, the system is feasible
+    # If all previous tests succeed, the system is feasible
     return True

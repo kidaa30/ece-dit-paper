@@ -80,12 +80,33 @@ class TestAlgorithms(unittest.TestCase):
         self.assertEquals(algo.findSynchronousInstant(tau), 0)
         self.assertFalse(algo.dbfTest(tau))
 
-    def test_randomSystem(self):
+    def test_YAfindFPDIT(self):
+        tasks = []
+        tasks.append(Task(10, 2, 2, 5))
+        tasks.append(Task(5, 1, 2, 10))
+        tasks.append(Task(5, 1, 4, 5))
+        tasks.append(Task(0, 1, 4, 5))
+        tau = TaskSystem(tasks)
+        self.assertEquals(algo.YAfindFPDIT(tau), algo.findFirstDIT(tau))
+
+    def test_randomYAfindFPDIT(self):
         from Model import TaskGenerator
         Utot = 1
         n = 4
         maxHyperT = 100
         Tmin = 5
         Tmax = 20
-        tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False)
-        return  # oracle ?
+        for i in range(1000):
+            tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False)
+            tau = TaskSystem(tasks)
+            self.assertEquals(algo.YAfindFPDIT(tau), algo.findFirstDIT(tau))
+
+    # def test_randomSystem(self):
+    #     from Model import TaskGenerator
+    #     Utot = 1
+    #     n = 4
+    #     maxHyperT = 100
+    #     Tmin = 5
+    #     Tmax = 20
+    #     tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, synchronous=False)
+    #     return  # oracle ?
