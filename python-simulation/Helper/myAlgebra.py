@@ -195,31 +195,3 @@ def congruencePrimalPower(primalSystem, aList):
         pbList.append(int(math.pow(p, maxB[p])))
 
     return chineseRemainderTheorem(subXList, pbList)
-
-
-if __name__ == '__main__':
-    assert lcm(2, 3) == 6
-    assert lcm(11, 121) == 121
-    assert lcm(12, 36, 30) == 180
-    assert lcmArray([12, 42]) == 84
-    assert lcmArray([2, 3, 15]) == 30
-    assert lcmArray([1, 12, 35]) == 420
-    assert lcmArray([6, 14]) == 42
-
-    assert egcd(9, 21) == 3
-    assert egcd(5, 125) == 5
-    assert egcd(36, 27, 45, 81) == 9
-    assert modinv(3, 11) == 4
-    assert modinv(3, 5) == 2
-    assert modinv(17, 60) == 53
-
-    assert chineseRemainderTheorem([2, 3, 1], [3, 4, 5]) == 11
-    assert chineseRemainderTheorem([3, 1, 4], [8, 9, 11]) == 235
-
-    assert 2 in primeFactors(48)
-    assert primeFactors(48).count(2) == 4
-    assert 3 in primeFactors(48)
-    assert primeFactors(48).count(3) == 1
-
-    assert congruence([1, 0, 3, 2], [2, 3, 6, 7]) == 9, "returned: " + str(congruence([1, 0, 3, 2], [2, 3, 6, 7]))
-    assert congruence([0, 0, 2, 8], [2, 8, 6, 9]) == 8

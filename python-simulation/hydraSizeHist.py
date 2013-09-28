@@ -3,9 +3,10 @@ from Model import Task
 from Model import cspace
 
 import pickle
-import time
+# import time
 import concurrent.futures
 import random
+
 
 def parallelFunc():
     tasks = TaskGenerator.generateTasks(Utot=random.random(), n=3, maxHyperT=554400, Tmin=5, Tmax=20, synchronous=False, constrDeadlineFactor=random.random())
