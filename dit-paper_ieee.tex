@@ -409,7 +409,7 @@ joel.goossens@ulb.ac.be}
 		Algorithm~\ref{alg:algoCRP} (note that $x^{-1} \; (mod \; y)$ means the
 		modular inverse of $x$ in the naturals modulo $y$). The congruences must
 		first be modified in order to obtain pairwise coprime moduli. Each $n_i$
-		is factored into prime powers $p^{k_1}_1 p^{k_2}_2 \cdots p^{k_m}_m = n_i$
+		is factored into prime powers $p^{k_1}_1 p^{k_2}_2 \cdots p^{k_m}_m$
 		with $k_j$ the highest integer s.t. $p^{k_j}_j$ divides $n_i \; \forall j
 		\; \mid 1 \leqslant j \leqslant m$. Each original constraint $t_d \equiv x_i
 		\; (mod \; n_i)$ is replaced by the equivalent set \cite{knuth1969art}
@@ -421,12 +421,13 @@ joel.goossens@ulb.ac.be}
 				t_d \equiv x_i 	& \; (mod \; p^{k_m}_m) \\
 			\end{split}
 		\end{equation*}
-		This operation (later called constraint \emph{factorisation}) might create
+		This operation might create
 		duplicate constraints, which are removed.
 		As shown in \cite{knuth1969art}, the resulting system can be solved using
 		Algorithm~\ref{alg:algoCRP}. For ease of reading, we call $C$ the set of
-		resulting constraints $c$ each written $t_d \equiv x_c \; (mod \;
-		p_c)$.
+		resulting constraints. We define two functions on the set of
+		constraints. Assuming contraint $c$ of the form $t_d \equiv x \; (mod \; p)$,
+		we have $p(c) = p$ and $x(c) = x$
 
 		\begin{algorithm}
 			\caption{Gauss's CRP Algorithm}
@@ -434,11 +435,11 @@ joel.goossens@ulb.ac.be}
 			\begin{algorithmic}[1]
 				\REQUIRE $H$ is the hyperperiod of the system
 				\FORALL{$c \in C$}
-					\STATE $Mc \leftarrow \frac{H}{p_c}$
-					\STATE $invMc \leftarrow Mc^{-1} \; (mod \; p_c)$
+					\STATE $Mc \leftarrow \frac{H}{p(c)}$
+					\STATE $invMc \leftarrow Mc^{-1} \; (mod \; p(c))$
 					\STATE $e_c \leftarrow Mc \cdot invMc$
 				\ENDFOR
-				\RETURN $\sum\limits_{c \in C}{x_c \cdot e_c} \; (mod \; H)$
+				\RETURN $\sum\limits_{c \in C}{x(c) \cdot e_c} \; (mod \; H)$
 			\end{algorithmic}
 		\end{algorithm}
 
@@ -450,30 +451,26 @@ joel.goossens@ulb.ac.be}
 		In this paper a faster method for finding the FPDIT is proposed. It consists
 		in merging all these CRP instances into one problem (finding all DITs), which can be solved faster by
 		Algorithm~\ref{alg:multiACRP}, as a significant part of the intermediate
-		results are shared between instances. The first part consisting in splitting
-		all constraints into sets of constraints with prime power moduli is slightly
-		different. We define for each task $\tau_i$ and $a_j \in A_i$ :
-		$D_{ij}$ the set of constraints $c$ of the form $t_d \equiv x_c
-		\; (mod \; p_c)$ resulting from the factorisation of $t_d
-		\equiv a_j+O_i \; (mod \; n_i)$. We define $C = \bigcup\limits_{\tau_i \in \tau,
-		a_j \in A_i}{C_{ij}}$, $P$ the set of all $p_c$ values appearing in
-		constraints of $C$ and $C_{p}$ the subset of $C$ containing all constraints
-		$c$ with $p_c = p$.
-
+		results are shared between instances. First, the same $C$ set is obtained,
+		but instead of one $x_i$ value per task, all variants in $X_i$ spawn a set of
+		constraints. All the duplicate and useless constraints are removed. Then we
+		define $P$ the set of all powers of prime numbers appearing as moduli in the
+		congruences (the $p_j^{k_j}$ values). For all $p \in P$, we define $C_p$ the set of
+		constraints where $p$ is the modulo.
 		\begin{algorithm}
 			\caption{Modified Gauss Algorithm}
 			\label{alg:multiACRP}
 			\begin{algorithmic}[1]
-                \REQUIRE $P$, $C_{p}$, $x_c$: as defined above
+                \REQUIRE $P$, $C_{p}$, $x(c)$: as defined above
 				\REQUIRE $H$ is the hyperperiod of the system
 
-				\STATE $sumchunks \leftarrow \text{empty map}$
+				\STATE $sumchunks \leftarrow \text{empty mapping}$
 				\FORALL{$p \in P$}
 					\STATE $taskTerms \leftarrow \text{empty list}$
 					\STATE $Mp \leftarrow \frac{H}{p}$
 					\STATE $invMp \leftarrow Mp^{-1} (mod \; p)$
 					\FORALL{$c \in C_p$}
-						\STATE append $(x_c \cdot Mp \cdot invMp)$ to $taskTerms$
+						\STATE append $(x(c) \cdot Mp \cdot invMp)$ to $taskTerms$
 					\ENDFOR
 					\STATE $sumchunks[p] \leftarrow taskTerms$
 				\ENDFOR
@@ -492,31 +489,23 @@ joel.goossens@ulb.ac.be}
 				\RETURN $r \; (mod \; H)$ for all $r \in results$
 			\end{algorithmic}
 		\end{algorithm}
-
-		This method ``forgets'' the link between generated constraints and the tasks
-		(with the associated $A_i$) they come from. Constraints are instead grouped by their
-		primal power modulo $p$ and each $p$ is associated with a set of $x_c$ values
-		for $c$ in $C_p$, acting similarly as the $A_i$ set of each task. Due to this
-		simplification, Algorithm~\ref{alg:multiACRP} might output ``false''
-		solutions. This isn't a major drawback as checking whether a solution is
-		correct can be done in linear time in the number of tasks (for each task
-		$\tau_i$, check whether at least one $a \in A_i$ satisfies $t_d \equiv a \;
-		(mod \; T_i)$) and the only interesting result is the minimum $t_d$ which
-		means that using a minimum heap structure containing the results we only need
-		to check solutions for correctness until the first (hence minimum) correct
-		solution is found.
-
-		Both Algorithm~\ref{alg:algoCRP} and Algorithm~\ref{alg:multiACRP} require the
-		computation of one modular inversion per constraint and per $a_i$ value, which
+		In the first loop over $P$ of Algorithm~\ref{alg:multiACRP}, all the
+		required intermediate values are computed. In the second loop, those
+		intermediate values are added in every possible way. Both
+		Algorithm~\ref{alg:algoCRP} and Algorithm~\ref{alg:multiACRP} require the
+		computation of one modular inversion per constraint, which
 		is done in a linear number of modular inversions per task. However, to
 		find all DITs Algorithm~\ref{alg:algoCRP} has to be executed once for each possible
 		combination of $a_i$ values, which is exponential in the number of tasks.
 		Algorithm~\ref{alg:multiACRP} has the same theoretical complexity as the
 		computation of all DITs still requires an exponential number of answers in the
-		number of tasks, but it is nonetheless significantly faster in practice. The
-		running time of Algorithm~\ref{alg:multiACRP} is also less sensitive to the
-		size of the $A_i$ sets per task, which means that this method
-		remains practical when tasks deadlines are much smaller than periods.
+		number of tasks, but it is nonetheless significantly faster in practice. One
+		drawback of Algorithm~\ref{alg:multiACRP} is that the replacement of each
+		constraint by sets of constraints with powers of primes as moduli is not
+		equivalent. Algorithm~\ref{alg:multiACRP} might ouput values that are not
+		DITs. However, as we only need the FPDIT, it remains practical to check those
+		solutions one by one from the lowest to the highest, and stop as soon as the
+		first correct result is found.
 
 	\subsection{Simulation}
 	\label{sct:noFPDITsimu}
