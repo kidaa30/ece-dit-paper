@@ -1,5 +1,6 @@
 import itertools
 import pdb
+from Helper import myAlgebra
 
 
 class SchedulerDP(object):
@@ -26,7 +27,7 @@ class SchedulerDP(object):
 
     def nextArrival(self, task, t):
         """ returns the earliest job arrival of task after or at t """
-        return t + (task.T - (t - task.O) % task.T)
+        return myAlgebra.nextPeriodic(t, task.T, task.O)
 
 
 class PTEDF(SchedulerDP):

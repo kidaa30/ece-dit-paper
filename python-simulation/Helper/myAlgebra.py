@@ -2,6 +2,13 @@ import math
 from functools import reduce
 
 
+def nextPeriodic(t, period, offset):
+    """
+        return the smallest t' > t such that (t' - offset) mod period = 0
+    """
+    return t + (period - (t - offset) % period)
+
+
 def egcd_couple(a, b):
     # from https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm
     x, y, u, v = 0, 1, 1, 0
