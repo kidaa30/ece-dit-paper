@@ -92,14 +92,20 @@ Systems using Definitive Idle Times}
 \author{
 \IEEEauthorblockN{Thomas Chapeaux and Paul Rodriguez}
 \IEEEauthorblockA{Universit\'{e} Libre de Bruxelles / ECE Paris\\
+ Avenue Franklin Roosevelt 50\\
+ 1050 Brussels, Belgium\\
 tchapeau@ulb.ac.be, paurodri@ulb.ac.be}
 \and
 \IEEEauthorblockN{Laurent George}
 \IEEEauthorblockA{University of Paris-Est / ECE Paris\\
+Quai de Grenelle, 37\\
+75015 Paris\\
 lgeorge@ieee.org}
 \and
 \IEEEauthorblockN{Jo\"el Goossens}
 \IEEEauthorblockA{Universit\'{e} Libre de Bruxelles\\
+ Avenue Franklin Roosevelt 50\\
+ 1050 Brussels, Belgium\\
 joel.goossens@ulb.ac.be}
 }
 
@@ -275,7 +281,7 @@ joel.goossens@ulb.ac.be}
   necessary and sufficient to test the feasibility of a system.
 
   Even then, the number of constraints to consider is exponential in the number
-  of tasks. While it has been shown that constraints that cover intervals ending
+  of tasks. While it has been shown \cite{baruah1990algorithms} that constraints that cover intervals ending
   after the end of the first busy period are also redundant, this value depends on the $C_i$ and is
   therefore not usable for the purposes of this paper. The
   following concept, initially described by \cite{lipariaverage}, is thus introduced. It gives an upper bound for the end of the first busy period and does not depend on the execution times.
@@ -314,8 +320,8 @@ joel.goossens@ulb.ac.be}
   The authors of \cite{george2009characterization} give a method to find the value of $t_d$ for cases in which periods are pairwise coprime.
 
   For synchronous systems in which the execution times are not known, the first DIT $t_d$
-  is our ``best guess'' at an upper limit on the end of the busy period. As it was sufficient
-  to check the DBF test in intervals $[0, t]$ before the end of the first busy period. This time interval is WCETs dependant. A more general feasility condition valid for any WCET is as follows:
+  is an upper limit on the end of the busy period regardless of the WCET values. As it was sufficient
+  to check the DBF test in intervals $[0, t]$ before the end of the first busy period, a condition valid for any WCET is as follows:
   \begin{equation}
   		\dbf{0,t} \leqslant t \; \forall t \leqslant t_d
   		\iff \text{The system is feasible}
@@ -412,7 +418,7 @@ joel.goossens@ulb.ac.be}
 		is factored into prime powers $p^{k_1}_1 p^{k_2}_2 \cdots p^{k_m}_m$
 		with $k_j$ the highest integer s.t. $p^{k_j}_j$ divides $n_i \; \forall j
 		\; \mid 1 \leqslant j \leqslant m$. Each original constraint $t_d \equiv x_i
-		\; (mod \; n_i)$ is replaced by the equivalent set \cite{knuth1969art}
+		\; (mod \; n_i)$ is replaced by the following equivalent set of constraints \cite{knuth1969art}:
 		\begin{equation*}
 			\begin{split}
 				t_d \equiv x_i 	& \; (mod \; p^{k_1}_1) \\
@@ -422,12 +428,11 @@ joel.goossens@ulb.ac.be}
 			\end{split}
 		\end{equation*}
 		This operation might create
-		duplicate constraints, which are removed.
-		As shown in \cite{knuth1969art}, the resulting system can be solved using
-		Algorithm~\ref{alg:algoCRP}. For ease of reading, we call $C$ the set of
+		duplicate constraints, which are removed. We call $C$ the set of
 		resulting constraints. We define two functions on the set of
-		constraints. Assuming contraint $c$ of the form $t_d \equiv x \; (mod \; p)$,
-		we have $p(c) = p$ and $x(c) = x$
+		constraints, assuming contraint $c$ of the form $t_d \equiv x \; (mod \; p)$
+		we have $p(c) = p$ and $x(c) = x$. As shown in \cite{knuth1969art}, the resulting system can be solved
+        using Algorithm~\ref{alg:algoCRP}.
 
 		\begin{algorithm}
 			\caption{Gauss's CRP Algorithm}
@@ -448,15 +453,17 @@ joel.goossens@ulb.ac.be}
 		exponentially many different combinations of $a_i$ values in the number of
 		tasks (the cartesian product of all the $A_i$ sets), and resolving
 		exponentially many CRP instances is prohibitively slow.
-		In this paper a faster method for finding the FPDIT is proposed. It consists
+
+		We propose a faster method for finding the FPDIT which consists
 		in merging all these CRP instances into one problem (finding all DITs), which can be solved faster by
 		Algorithm~\ref{alg:multiACRP}, as a significant part of the intermediate
 		results are shared between instances. First, the same $C$ set is obtained,
 		but instead of one $x_i$ value per task, all variants in $X_i$ spawn a set of
-		constraints. All the duplicate and useless constraints are removed. Then we
+		constraints. All duplicate and useless constraints are removed. We then
 		define $P$ the set of all powers of prime numbers appearing as moduli in the
 		congruences (the $p_j^{k_j}$ values). For all $p \in P$, we define $C_p$ the set of
 		constraints where $p$ is the modulo.
+
 		\begin{algorithm}
 			\caption{Modified Gauss Algorithm}
 			\label{alg:multiACRP}
@@ -499,10 +506,11 @@ joel.goossens@ulb.ac.be}
 		combination of $a_i$ values, which is exponential in the number of tasks.
 		Algorithm~\ref{alg:multiACRP} has the same theoretical complexity as the
 		computation of all DITs still requires an exponential number of answers in the
-		number of tasks, but it is nonetheless significantly faster in practice. One
-		drawback of Algorithm~\ref{alg:multiACRP} is that the replacement of each
+		number of tasks, but it is nonetheless significantly faster in practice.
+
+        One drawback of Algorithm~\ref{alg:multiACRP} is that the replacement of each
 		constraint by sets of constraints with powers of primes as moduli is not
-		equivalent. Algorithm~\ref{alg:multiACRP} might ouput values that are not
+		equivalent. Algorithm~\ref{alg:multiACRP} might output values that are not
 		DITs. However, as we only need the FPDIT, it remains practical to check those
 		solutions one by one from the lowest to the highest, and stop as soon as the
 		first correct result is found.
@@ -521,10 +529,10 @@ joel.goossens@ulb.ac.be}
 		\end{itemize}
 		\item Choosing the $T_i$ uniformly between 5 and 20 (in order to have a manageable value of $H$), which also gives us the $C_i = \lfloor U_i \, T_i \rfloor$
 		\item Choosing the $O_i$ with a normal distribution of mean $T_{min}$ and standard deviation $\frac{T_{max} - T_{min}}{2}$
-		\item Choosing the $D_i$ uniformly in the interval $[T_i - CDF(T_i - C_i), T_i]$, where $CDF$ varies between 0 and 1 and is called the \emph{Constrained Deadline Factor}. It allows us to generate systems where the deadlines are closer to the period.
+		\item Choosing the $D_i$ uniformly in the interval \mbox{$[T_i - CDF \cdot (T_i - C_i), T_i]$}, where $CDF$ varies between 0 and 1 and is called the \emph{Constrained Deadline Factor}. It allows us to generate systems where the deadlines are closer to the period.
 	\end{itemize}
 
-	The number of tasks and the constrained Deadline Factor is shown to have a direct influence on the density of FPDIT. Indeed, Fig~\ref{fig:noFPDIT} show the percentage of systems having no FPDIT for different values of CDF.
+	The number of tasks and the Constrained Deadline Factor is shown to have a direct influence on the density of FPDIT. Indeed, Fig~\ref{fig:noFPDIT} show the percentage of systems having no FPDIT for different values of CDF.
 
 	\begin{figure}[h]
 	\begin{center}
@@ -575,48 +583,35 @@ joel.goossens@ulb.ac.be}
 			First let us recall how an asynchronous system behaves under an optimal
 			scheduler, for example EDF.
 
-			As shown in Fig. \ref{fig:asyncBehavior}, the system begins in the
+			The system begins in the
 			\emph{incomplete period}, where all tasks are not in the system. Then, after
-			$O_{max}$ time units, every tasks is in the system and the \emph{transient
+			$O_{max}$ time units, every task has arrived in the system and the \emph{transient
 			period} begins. Then, after $O_{max} + H$ time units, the system is faced
 			with the same pattern of arrival as in $O_{max}$. However, because in
 			$O_{max} + H$ every task is in the system and in $O_{max}$ some were missing,
-			the state of the system will be different. The \emph{stationary period} then
+			the state of the system may differ. The \emph{stationary period} then
 			begins. At instant $O_{max} + 2H$ it is guaranteed that the system is in the
 			exact same situation it was at instant $O_{max} + H$.
 
-			\begin{figure}[h]
-				\[
-					\begin{array}{r||c|c|c|l}
-									& \text{Incomplete} & \text{Transient}	& \text{Stationary} & \cdots \\
-						\text{Name} & \text{period} 	& \text{period} 	& \text{period}  	& \\ \hline
-						\text{size} & O_{max} 			& H 				& H 				& \cdots \\ \hline
-						t \geqslant & 0 				& O_{max} 			& O_{max} + H 		& \cdots
-					\end{array}
-				\]
-				\begin{center}
-				\caption{Behavior of an asynchronous system under EDF.}
-				\label{fig:asyncBehavior}
-				\end{center}
-			\end{figure}
-
-			For this reason, as shown by \cite{leung1982complexity}, it is sufficient (but pessimistic) to
-			check for
+			% For this reason, as shown by \cite{leung1982complexity}, it is sufficient (but pessimistic) to
+			As shown in \cite{leung1982complexity}, it is sufficient to
+            apply the demand-bound function test in
 			intervals included in the interval $[O_{max}, O_{max} + 2H]$, which has an exponential length
 			in the number of tasks. A better interval is given in \cite{choquet2004minimal} using the
-			notion of cyclic idle times (denoted $t_c$), which are dependent of the execution
-			time and therefore cannot be used directly to characterize the C-Space. Their interval is $[0, t_c + H]$ and is valid for
-			every cyclic idle time $t_c$.
+			notion of cyclic idle times (denoted $t_c$), which are idle times occurring at fixed intervals of
+            length $H$ and whose value depends of the tasks execution
+			time, therefore they cannot be used directly to characterize the C-Space. Their interval is
+            $[0, t_c + H]$ and is valid for every cyclic idle time $t_c$.
 
-			In the following section, we extend the latter interval using the previously defined notion
-			of periodic DIT, a particular case of cyclic idle times which does not depend on the execution
+			In the following section, we show how the latter interval can be used with the previously defined
+            notion of periodic DIT, a particular case of cyclic idle times which does not depend on the execution
 			times.
 
 \subsubsection{Using the first periodic DIT}
 
-The FPDIT, if it exists, must occur in the transient period. Indeed, it cannot occur in the incomplete period by definition ($t_d > O_{max}$) and if it occurred in the $k^{th}$ stationary period, another DIT should have occurred in the transient period at instant $t_d - k H$ (a contradiction).
+The FPDIT, if it exists, must occur after in the transient period. Indeed, $t_d > O_{max}$ by definition, and if it occurred in the $k^{th}$ stationary period, another DIT should have occurred in the transient period at instant $t_d - k H$ (a contradiction).
 
-As the FPDIT happens when all tasks are in the system, we know that the system will arrive in the exact same state one hyperperiod later ($t_d + H$) (A rigorous proof is given in \cite{choquet2004minimal} for any cyclic idle time). We can thus restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$ if the FPDIT exists. This will always be a better interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.
+Despite $t_d$ being in the theoretical transient period, the system will be in the same state at instant $t_d + H$ (A rigorous proof is given in \cite{choquet2004minimal} for any cyclic idle time). We can thus restrict the DBF test to intervals included in the interval $[t_d, t_d + H]$ if the FPDIT exists. This will always be a smaller interval than $[O_{max}, O_{max} + 2H]$ and if the first periodic DIT does not exist (which can be verified as explained in Section \ref{sct:FPDITexist}), the latter interval can be used.
 
 \subsubsection{Redundancy as an integer linear problem}
 
@@ -707,8 +702,7 @@ Consider the following task system
     \end{tabular}
     \end{center}
 
-The FPDIT happens at $t=15$ and we have $H = 15$. The study interval using the FPDIT is thus $[15, 30]$, which contains 11 intervals $[a,d]$ with $a$ being the arrival of a job, $d$ being the deadline of a job, and $15 \leqslant a < d \leqslant 30$. Those intervals are
-$[15, 17]$, $[15, 22]$, $[15, 27]$, $[15, 30]$, $[20, 22]$, $[20, 27]$, $[20, 30]$, $[23, 27]$, $[23, 30]$, $[25, 27]$ and $[25, 30]$. For comparison, the original study interval of $[O_{max}, O_{max} + 2H]$ is $[8, 38]$ which yields 57 intervals.
+The FPDIT happens at $t=15$ and we have $H = 15$. The study interval using the FPDIT is thus $[15, 30]$, which contains 11 intervals $[a,d]$ with $a$ being the arrival of a job, $d$ being the deadline of a job, and $15 \leqslant a < d \leqslant 30$. For comparison, the original study interval of $[O_{max}, O_{max} + 2H]$ is $[8, 38]$ which yields 57 intervals.
 
 For each $[a, d]$, we have a constraint $$\sum_{i=1}^{n} n_i(a, d) \, C_i \leqslant d - a$$ which give a description of the C-space.
 
@@ -721,7 +715,6 @@ We now apply Algorithm \ref{alg:prunRedun} to remove redundancies, leaving us wi
 			\end{array}
 		\right.
 	\end{equation}
-The C-space thus contains 11 points $(C_1, C_2) = (1, 1)$, $(2, 1)$, $(3, 1)$, $(4, 1)$, $(5, 1)$, $(6, 1)$, $(1, 2)$, $(2, 2)$, $(3, 2)$, $(4, 2)$ and $(5, 2)$.
 
 Let us now consider the same system but with a synchronous pattern of arrival ($O_1 = O_2 = 0$). The first DIT happens at time $t_d = 7$. The intervals to consider are thus of the form $[0, t]$ where $t$ is a deadline happening before or at time $t_d$. This yields two intervals ($[0, 2]$ and $[0, 7]$) and the following constraints describing the C-space, none of them being redundant:
 $$
@@ -732,17 +725,16 @@ $$
   \end{array}
 \right.
 $$
-This time, the C-space only contains 8 points: $(1, 1)$, $(2, 1)$, $(3, 1)$, $(4, 1)$, $(5, 1)$, $(1, 2)$, $(2, 2)$, $(3, 2)$.
 
-Fig. \ref{fig:cspaceComp} shows the two C-spaces in the plane. The dark gray region is the C-space of the synchronous system and the light gray region is the surface gain given by the asynchronous system.
+We see that the offsets allow three more points to be in the C-space ($(C_1, C_2) = (4, 2), (5, 2), (6, 1)$).
 
-\begin{figure}[h]
-\begin{center}
-  \includegraphics[width=0.3\textwidth]{figs/cspace_example.png}
-  \caption{C-space of an asynchronous system and its corresponding synchronous system}
-  \label{fig:cspaceComp}
-\end{center}
-\end{figure}
+% \begin{figure}[h]
+% \begin{center}
+%   \includegraphics[width=0.3\textwidth]{figs/cspace_example.png}
+%   \caption{C-space of an asynchronous system and its corresponding synchronous system}
+%   \label{fig:cspaceComp}
+% \end{center}
+% \end{figure}
 
 
 \section{Experimental C-space size gain of asynchronous systems}
