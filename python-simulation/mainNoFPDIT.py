@@ -70,4 +70,6 @@ if __name__ == '__main__':
             noFPDITpcts[taskCnt][constrDeadlineFactor] = (100*firstDitsCnt)/NUMBER_OF_SYSTEMS
 
     with open("noFPDIT_results.pickle", "wb") as output:
+        print("Writing result to memory...")
         pickle.dump((noFPDITpcts, CDFvalues, nValues, NUMBER_OF_SYSTEMS), output, pickle.HIGHEST_PROTOCOL)
+        print("Done.")
