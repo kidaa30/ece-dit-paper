@@ -1,3 +1,4 @@
 /CRstats
 /results
 out*
+*.pickle

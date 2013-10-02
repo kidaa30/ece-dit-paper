@@ -1,7 +1,7 @@
 import random
-import pylab
 import math
 import concurrent.futures
+import pickle
 
 from Model import algorithms
 from Model import Task
@@ -51,11 +51,10 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, tasksCnt, verbose
     return systemArray
 
 if __name__ == '__main__':
-    NUMBER_OF_SYSTEMS = 1000
+    NUMBER_OF_SYSTEMS = 10
     noFPDITpcts = {}
     CDFvalues = [0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
     nValues = [2, 3, 4, 5]
-    symbols = ['D', 'o', 's', '*', 'v', '^']
     for taskCnt in nValues:
         print("n", taskCnt)
         noFPDITpcts[taskCnt] = {}
@@ -70,16 +69,5 @@ if __name__ == '__main__':
                     firstDitsCnt += 1
             noFPDITpcts[taskCnt][constrDeadlineFactor] = (100*firstDitsCnt)/NUMBER_OF_SYSTEMS
 
-    pylab.figure()
-    for i, taskCnt in enumerate(reversed(nValues)):
-        noFPDITpctsPerCDF = []
-        for cdf in CDFvalues:
-            noFPDITpctsPerCDF.append(noFPDITpcts[taskCnt][cdf])
-        pylab.plot(CDFvalues, noFPDITpctsPerCDF, "-" + str(symbols[i]), label=str(taskCnt) + " Tasks")
-    pylab.ylabel("%")
-    pylab.xlabel("CDF")
-    pylab.title("Number of systems with no FPDIT (" + str(NUMBER_OF_SYSTEMS) + " systems/point)")
-    pylab.legend(loc=0)
-    # pylab.axis()
-    # pylab.savefig("./plots/001_" + str(time.time()).replace(".", "") + ".png")
-    pylab.show()
+    with open("noFPDIT_results.pickle", "wb") as output:
+        pickle.dump((noFPDITpcts, CDFvalues, nValues, NUMBER_OF_SYSTEMS), output, pickle.HIGHEST_PROTOCOL)
