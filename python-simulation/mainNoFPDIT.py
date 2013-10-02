@@ -1,11 +1,28 @@
 import random
-import time
 import pylab
+import math
 
 from Model import algorithms
-from Model import cspace
 from Model import Task
 from Model import TaskGenerator
+
+from Helper import myAlgebra
+
+
+def generateSystemArray2(numberOfSystems, constrDeadlineFactor, tasksCnt):
+    systemArray = []
+    for i in range(numberOfSystems):
+        tasks = []
+        T = []
+        for j in range(tasksCnt):
+            T.append(random.randint(5, 20))
+        H = myAlgebra.lcmArray(T)
+        for j in range(tasksCnt):
+            O = random.randint(0, H)
+            D = random.randint(math.floor(H - constrDeadlineFactor * H), H)
+            tasks.append(Task.Task(O, 1, D, T[j]))
+        systemArray.append(Task.TaskSystem(tasks))
+    return systemArray
 
 
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, tasksCnt, verbose=False):
@@ -28,7 +45,7 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, tasksCnt, verbose
     return systemArray
 
 if __name__ == '__main__':
-    NUMBER_OF_SYSTEMS = 10000
+    NUMBER_OF_SYSTEMS = 100
     noFPDITpcts = {}
     CDFvalues = [0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
     nValues = [2, 3, 4, 5, 7, 10]
@@ -38,7 +55,7 @@ if __name__ == '__main__':
         noFPDITpcts[taskCnt] = {}
         for constrDeadlineFactor in CDFvalues:
             print("cdf", constrDeadlineFactor)
-            systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, constrDeadlineFactor, taskCnt)
+            systemArray = generateSystemArray2(NUMBER_OF_SYSTEMS, constrDeadlineFactor, taskCnt)
             firstDitsCnt = 0
             for i, tau in enumerate(systemArray):
                 if algorithms.findFirstDIT(tau) is None:
