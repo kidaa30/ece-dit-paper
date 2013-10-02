@@ -1,6 +1,7 @@
 import random
 import pylab
 import math
+import concurrent.futures
 
 from Model import algorithms
 from Model import Task
@@ -11,17 +12,22 @@ from Helper import myAlgebra
 
 def generateSystemArray2(numberOfSystems, constrDeadlineFactor, tasksCnt):
     systemArray = []
-    for i in range(numberOfSystems):
+    i = 0
+    while i < numberOfSystems:
         tasks = []
-        T = []
+        Tarray = []
         for j in range(tasksCnt):
-            T.append(random.randint(5, 20))
-        H = myAlgebra.lcmArray(T)
+            Tarray.append(random.randint(5, 20))
+        H = myAlgebra.lcmArray(Tarray)
         for j in range(tasksCnt):
+            T = Tarray[j]
             O = random.randint(0, H)
-            D = random.randint(math.floor(H - constrDeadlineFactor * H), H)
-            tasks.append(Task.Task(O, 1, D, T[j]))
-        systemArray.append(Task.TaskSystem(tasks))
+            D = max(1, random.randint(math.floor(T - constrDeadlineFactor * T), T))
+            tasks.append(Task.Task(O, 1, D, T))
+        tau = Task.TaskSystem(tasks)
+        if tau.systemUtilization() <= 1:
+            systemArray.append(Task.TaskSystem(tasks))
+            i += 1
     return systemArray
 
 
@@ -45,10 +51,10 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, tasksCnt, verbose
     return systemArray
 
 if __name__ == '__main__':
-    NUMBER_OF_SYSTEMS = 100
+    NUMBER_OF_SYSTEMS = 1000
     noFPDITpcts = {}
     CDFvalues = [0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
-    nValues = [2, 3, 4, 5, 7, 10]
+    nValues = [2, 3, 4, 5]
     symbols = ['D', 'o', 's', '*', 'v', '^']
     for taskCnt in nValues:
         print("n", taskCnt)
@@ -57,8 +63,10 @@ if __name__ == '__main__':
             print("cdf", constrDeadlineFactor)
             systemArray = generateSystemArray2(NUMBER_OF_SYSTEMS, constrDeadlineFactor, taskCnt)
             firstDitsCnt = 0
-            for i, tau in enumerate(systemArray):
-                if algorithms.findFirstDIT(tau) is None:
+            executor = concurrent.futures.ProcessPoolExecutor()
+            futures = [executor.submit(algorithms.findFirstDIT, tau) for tau in systemArray]
+            for f in futures:
+                if f.result() is None:
                     firstDitsCnt += 1
             noFPDITpcts[taskCnt][constrDeadlineFactor] = (100*firstDitsCnt)/NUMBER_OF_SYSTEMS
 
@@ -70,7 +78,7 @@ if __name__ == '__main__':
         pylab.plot(CDFvalues, noFPDITpctsPerCDF, "-" + str(symbols[i]), label=str(taskCnt) + " Tasks")
     pylab.ylabel("%")
     pylab.xlabel("CDF")
-    pylab.title("Number of systems with no FPDIT (n=" + str(NUMBER_OF_SYSTEMS) + ")")
+    pylab.title("Number of systems with no FPDIT (" + str(NUMBER_OF_SYSTEMS) + " systems/point)")
     pylab.legend(loc=0)
     # pylab.axis()
     # pylab.savefig("./plots/001_" + str(time.time()).replace(".", "") + ".png")
