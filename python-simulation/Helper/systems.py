@@ -271,6 +271,12 @@ tasks.append(Task.Task(0, 1, 6, 6, alpha=2))
 tasks.append(Task.Task(0, 6, 12, 12, alpha=2))
 ImpPTEFTNonOptimal = Task.TaskSystem(tasks)
 
+# DITPaperExample
+tasks = []
+tasks.append(Task.Task(8, 0, 7, 15, alpha=0))
+tasks.append(Task.Task(0, 0, 2, 5, alpha=0))
+DITPaperExample = Task.TaskSystem(tasks)
+
 
 # test
 tasks = []

@@ -1,4 +1,6 @@
 from Model import algorithms
+from Model import TaskGenerator
+from Model import Task
 from Simulator import Simulator
 from Simulator.Scheduler import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
 from Helper import systems
@@ -6,8 +8,8 @@ from Helper import systems
 import subprocess
 import sys
 
-# tau = systems.generateSystemArray(1, 0)[0]
-tau = systems.SmallExample
+# tau = Task.TaskSystem(TaskGenerator.generateTasks(0.7, 3, 33750, 5, 20))
+tau = systems.DITPaperExample
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -24,10 +26,10 @@ stop = Omax + 10 * H
 
 print(("stop", stop))
 
-# scheduler = Scheduler.EDF(tau)
+scheduler = Scheduler.EDF(tau)
 # scheduler = Scheduler.SpotlightEDF(tau)
 # scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
-scheduler = Scheduler.PTEDF(tau)
+# scheduler = Scheduler.PTEDF(tau)
 # scheduler = PALLF.PALLF(tau)
 # scheduler = Scheduler.ArbitraryScheduler(tau, systems.mpanaSchedule)
 # scheduler = LBLScheduler.LBLEDF(tau)

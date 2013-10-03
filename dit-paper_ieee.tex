@@ -629,10 +629,6 @@ s.t.
   A \cdot X &\leq & B \\
   C \cdot X &\leq & d + 1
 \end{array}
-%\begin{array}{rccc}
-%  A & X &\leq & B \\
-%  C & X &\leq & d + 1
-%\end{array}
 \]
 with
 \[
@@ -661,7 +657,7 @@ Such a linear problem can be solved by a branch-and-bound approach \cite{nemhaus
     \STATE \COMMENT{$1^{st}$ pass: test each $cstr$ against previous ones}
     \FOR{$cstr$ \textbf{in} $CSPACE$}
       \IF {$cstr$ is not redundant w.r.t. $S$}
-        \STATE $S.push(cst)rcl$
+        \STATE $S.push(cstr)$
       \ENDIF
     \ENDFOR
     \STATE \COMMENT{$2^{nd}$ pass: test remaining $cstr$ against every other}
