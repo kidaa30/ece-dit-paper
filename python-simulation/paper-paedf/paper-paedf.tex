@@ -85,7 +85,7 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
         \subsubsection{Schedule and feasibility}
 
-        A scheduling policy is said to be \textbf{idling} if it allows instants at which no jobs are executing even if there are released and unfinished jobs present in the system. It is said to be \textbf{preemptive} if it allows the processor to begin computation of a new job when the currently computed job is still unfinished.\\
+        A scheduling policy (or \emph{algorithm}) is said to be \textbf{idling} if it allows instants at which no jobs are executing even if there are released and unfinished jobs present in the system. It is said to be \textbf{preemptive} if it allows the processor to begin computation of a new job when the currently computed job is still unfinished.\\
 
         A system is said to be \textbf{schedulable by a scheduling policy} if it exists a scheduling policy such that every job in the task set completes before its deadline is reached. A system schedulable by at least one scheduling policy is said to be \textbf{feasible}.\\
 
@@ -108,6 +108,7 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
         Meumeu is FTP-optimal (equivalent to ExhaustiveFTP)
 
 \section{Performance of EDF with preemption cost}
+% Rename section to something like "Old results do not old, bitch"
 
     In this section, we show that the EDF scheduling policy, optimal when the preemption costs are negligible, is less adapted to our model with costly preemptions.
 
@@ -136,20 +137,59 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
     \subsection{Anomalies}
 
+        \subsubsection{Longer transitive period}
         Consider the following system
 
         \begin{center}
             \begin{tabular}{|r|c|c|c|c|c|}
                 \hline
                             & $O_i$ & $C_i$ & $D_i$ & $T_i$ & $\alpha_i$ \\ \hline
-                $\tau_1$    & 0     & 3     & 6    & 6     & 2     \\ \hline
-                $\tau_2$    & 1     & 2     & 4    & 4     & 2     \\ \hline
+                $\tau_1$    & 0     & 5     & 10   & 10    & 1     \\ \hline
+                $\tau_2$    & 4     & 1     & 1    & 10    & 1     \\ \hline
+                $\tau_3$    & 6     & 4     & 10   & 10    & 1     \\ \hline
             \end{tabular}
         \end{center}
 
+        When scheduling this system with EDF, we see that at instant $O_{max} + 2 \cdot H$, the system has not reached a periodic behavior yet. This only happens at instant $O_{max} + 4 \cdot H$.\\
+
+        Figure.
+
+        \subsubsection{Deadline miss in transitive, not in periodic}
+
     \subsection{Other properties of constrained deadline systems}
 
-\section{PA-EDF: an amelioration}
+    In this section, we present other results which do not hold under the costly preemption assumption.
+
+        \subsubsection{Idling dominate non-idling}
+
+        Consider the following system
+
+        \begin{center}
+            \begin{tabular}{|r|c|c|c|c|c|}
+                \hline
+                            & $O_i$ & $C_i$ & $D_i$ & $T_i$ & $\alpha_i$ \\ \hline
+                $\tau_1$    & 0     & 3     & 8    & 8     & 2     \\ \hline
+                $\tau_2$    & 0     & 3     & 5    & 8     & 2     \\ \hline
+                $\tau_3$    & 1     & 1     & 1    & 8     & 2     \\ \hline
+            \end{tabular}
+        \end{center}
+
+        And consider the following schedule which shows that it is feasible with an idling scheduling policy.
+
+        [figure]
+
+        However, it is easy to see that no non-idling algorithm can successfully schedule this system: at $t=0$, a non-idling algorithm has to choose between the first job of $\tau_1$ and $\tau_2$ for execution, whichever is chosen will then be preempted by the first job of $\tau_3$ (if not, it will miss its deadline in $t=2$). Then, at $t=2$, there will be $3+2+2=7$ units of computation left to compute before the deadline at $t=8$, the system will thus certainly miss a deadline.
+
+
+        \subsubsection{Dynamic dominate fixed-job}
+
+        \subsubsection{u < 0.69 is not sufficient}
+
+        \subsubsection{Require Claivoyance}
+
+        \subsubsection{Preemption can happen anywhere}
+
+\section{PA-EDF: an extension of EDF for costly preemption}
 
 \nocite{*}
 \bibliographystyle{plain}
