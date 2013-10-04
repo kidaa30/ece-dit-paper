@@ -1,4 +1,4 @@
-from Model.Task import Task, TaskSystem
+from model.Task import Task, TaskSystem
 
 import unittest
 

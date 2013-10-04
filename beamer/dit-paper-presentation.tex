@@ -105,7 +105,7 @@ Systems using Definitive Idle Times}
 
     \end{frame}
 
-	\section{Related works}
+	\section{Previous works}
 
     \begin{frame}
     \tableofcontents[currentsection, hideothersubsections]
@@ -115,7 +115,8 @@ Systems using Definitive Idle Times}
 
     \begin{frame}{Demand-bound function feasibility test}
         \begin{block}{Demand-bound function}
-            The \textbf{demand-bound function (DBF)}
+            The \textbf{demand-bound function (DBF)} \cite{baruah1999generalized,
+        baruah1990algorithms}
             defined for a task set $\tau$ in a time interval $[t_1, t_2]$, denoted $\dbf{t_1, t_2}$, is
             the maximal cumulated execution time of jobs of $\tau$ contained in the
             closed interval $[t_1, t_2]$.
@@ -133,7 +134,7 @@ Systems using Definitive Idle Times}
     \subsection{C-space of synchronous systems}
 
     \begin{frame}{Description using the DBF test}
-    The DBF test gives us a set of constraints
+    The DBF test gives us a set of constraints to describe the C-space
     $$\dbf{t_1, t_2} \leqslant t_2 - t_1 \; \forall t_1 \leq t_2$$
 
     \begin{itemize}
@@ -195,7 +196,7 @@ Systems using Definitive Idle Times}
 
 	\begin{frame}{Definition of the FPDIT}
         \begin{block}{Definitive Idle Time}
-            A \textbf{definitive idle time} (DIT) \cite{lipariaverage} is a time $t$ (if it exists) such that every job released strictly before instant $t$ has its absolute deadline before or at instant $t$.
+            A \textbf{definitive idle time} (DIT) \cite{lipariaverage} is a time $t$ such that every job released strictly before instant $t$ has its absolute deadline before or at instant $t$.
         \end{block}
 
         \begin{block}{First Periodic DIT}
@@ -222,7 +223,7 @@ Systems using Definitive Idle Times}
 	\subsection{Finding the FPDIT value}
 
     \begin{frame}{Finding the FPDIT value - Gauss's Algorithm}
-        For given values of $a_i$, if the periods are pairwise coprime, equation~(\ref{eq:FPDIT}) has one solution modulo $H$ given by:
+        For given values of $a_i$, if the periods are pairwise coprime, the value of a DIT is given by:
 
         \begin{algorithm}[H]
             \caption{Gauss's CRP Algorithm}
@@ -242,7 +243,7 @@ Systems using Definitive Idle Times}
     \end{frame}
 
     \begin{frame}{Non-pairwise co-prime moduli}
-        If the periods are non-pairwise co-prime, the system has a FPDIT if and only if the following condition is respected:
+        If the periods are non-pairwise co-prime, the system has a DIT for given values of $a_i$ if and only if the following condition is respected:
         \[
             a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i,
             T_j)) \; \forall i,j
@@ -534,7 +535,7 @@ Systems using Definitive Idle Times}
 
     \end{frame}
 
-\bibliographystyle{IEEEtran}
+\bibliographystyle{amsalpha}
 \bibliography{dit-paper}
 
 \end{document}
