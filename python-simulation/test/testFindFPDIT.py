@@ -1,9 +1,9 @@
 import unittest
 import random
 
-from Model.Task import Task, TaskSystem
-from Model import algorithms, TaskGenerator
-from Helper import findFPDIT
+from model.Task import Task, TaskSystem
+from model import algorithms, TaskGenerator
+from helper import findFPDIT
 
 class TestFindFPDIT(unittest.TestCase):
     def setUp(self):
@@ -25,4 +25,4 @@ class TestFindFPDIT(unittest.TestCase):
         tasks.append(Task(6, 1, 8, 8, 0))
         tau = TaskSystem(tasks)
 #         self.assertEquals(findFPDIT.findFPDIT(tau), algorithms.findFirstDIT(tau))
-            
+

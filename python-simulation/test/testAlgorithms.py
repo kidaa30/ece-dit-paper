@@ -1,8 +1,8 @@
 import unittest
 import random
 
-from Model import algorithms as algo
-from Model.Task import Task, TaskSystem
+from model import algorithms as algo
+from model.Task import Task, TaskSystem
 
 
 class TestAlgorithms(unittest.TestCase):
@@ -82,7 +82,7 @@ class TestAlgorithms(unittest.TestCase):
         self.assertFalse(algo.dbfTest(tau))
 
     def test_randomYAfindFPDIT(self):
-        from Model import TaskGenerator
+        from model import TaskGenerator
         for i in range(1000):
             Utot = random.randint(25, 100) / 100
             n = random.randint(2, 5)

@@ -1,8 +1,9 @@
-from Model import Task
-from Model import TaskGenerator
-from Model import cspace as cs
-from Model import algorithms
+from model import Task
+from model import TaskGenerator
+from model import cspace as cs
+from model import algorithms
 import random
+from helper import systems
 
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
     systemArray = []
@@ -25,55 +26,54 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, verbose=False):
 
 tasks = []
 #                      0, C, D, T
-tasks.append(Task.Task(0, 1, 5, 7))
-tasks.append(Task.Task(0, 1, 7, 11))
-tasks.append(Task.Task(0, 1, 10, 13))
+tasks.append(Task.Task(0, 1, 6, 8))
+tasks.append(Task.Task(0, 1, 12, 13))
 tau = Task.TaskSystem(tasks)
 print(tau)
 tau_Cspace = cs.Cspace(tau)
-tau_Cspace_noredun = tau_Cspace.removeRedundancy()
+tau_Cspace_noredun = tau_Cspace.removeRedundancy(verbose=True)
 
 print("FINAL CSPACE")
 for cstr in tau_Cspace_noredun:
     print(cstr)
 print(len(tau_Cspace), "=>", len(tau_Cspace_noredun), "constraints left")
 
-tasks = []
-#                      0, C, D, T
-tasks.append(Task.Task(5, 1, 1, 3))
-tasks.append(Task.Task(0, 4, 4, 8))
-tau = Task.TaskSystem(tasks)
-tau_Cspace = cs.Cspace(tau)
-assert cs.testCVector(tau_Cspace, [task.C for task in tau.tasks]) is False
+# tasks = []
+# #                      0, C, D, T
+# tasks.append(Task.Task(5, 1, 1, 3))
+# tasks.append(Task.Task(0, 4, 4, 8))
+# tau = Task.TaskSystem(tasks)
+# tau_Cspace = cs.Cspace(tau)
+# assert cs.testCVector(tau_Cspace, [task.C for task in tau.tasks]) is False
 
-# "TEST2"
+# # "TEST2"
 
-tasks = []
-tasks.append(Task.Task(0, 1, 73, 154))
-tasks.append(Task.Task(0, 1, 381, 825))
-tasks.append(Task.Task(0, 1, 381, 400))
-tau = Task.TaskSystem(tasks)
-tau_Cspace = cs.Cspace(tau, algorithms.findFirstDIT(tau))
-assert cs.testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
-tau_Cspace_noredun = tau_Cspace.removeRedundancy()
-assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
+# tasks = []
+# tasks.append(Task.Task(0, 1, 73, 154))
+# tasks.append(Task.Task(0, 1, 381, 825))
+# tasks.append(Task.Task(0, 1, 381, 400))
+# tau = Task.TaskSystem(tasks)
+# tau_Cspace = cs.Cspace(tau, algorithms.findFirstDIT(tau))
+# assert cs.testCVector(tau_Cspace, [task.C for task in tau.tasks]) is True
+# tau_Cspace_noredun = tau_Cspace.removeRedundancy()
+# assert len(tau_Cspace) > len(tau_Cspace_noredun) == 2, str(tau_Cspace_noredun)
 
-# RANDOM TEST
-NUMBER_OF_SYSTEMS = 10
-systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, 0.5)
-for tau in systemArray:
-    print(tau)
-    print("cspace...")
-    cspace = cs.Cspace(tau)
-    print("found ", len(cspace), "constraints")
-    print("remove redun...")
-    cspace_noredun = cspace.removeRedundancy()
-    print(len(cspace), "=>", len(cspace_noredun), "constraints left")
-    print("")
-    resultCSPACE = cs.testCVector(cspace_noredun, [task.C for task in tau.tasks])
-    resultCSPACENOREDUN = cs.testCVector(cspace, [task.C for task in tau.tasks])
-    resultDBF = algorithms.dbfTest(tau)
-    assert resultCSPACE == resultCSPACENOREDUN == resultDBF, str(resultCSPACE) + str(resultCSPACENOREDUN) + str(resultDBF)
-    print("redundancy (necessary) condition ok")
-    print("synchronous instant", algorithms.findSynchronousInstant(tau))
-    print("cspacesize", cspace_noredun.size(tau))
+# # RANDOM TEST
+# NUMBER_OF_SYSTEMS = 10
+# systemArray = generateSystemArray(NUMBER_OF_SYSTEMS, 0.5)
+# for tau in systemArray:
+#     print(tau)
+#     print("cspace...")
+#     cspace = cs.Cspace(tau)
+#     print("found ", len(cspace), "constraints")
+#     print("remove redun...")
+#     cspace_noredun = cspace.removeRedundancy()
+#     print(len(cspace), "=>", len(cspace_noredun), "constraints left")
+#     print("")
+#     resultCSPACE = cs.testCVector(cspace_noredun, [task.C for task in tau.tasks])
+#     resultCSPACENOREDUN = cs.testCVector(cspace, [task.C for task in tau.tasks])
+#     resultDBF = algorithms.dbfTest(tau)
+#     assert resultCSPACE == resultCSPACENOREDUN == resultDBF, str(resultCSPACE) + str(resultCSPACENOREDUN) + str(resultDBF)
+#     print("redundancy (necessary) condition ok")
+#     print("synchronous instant", algorithms.findSynchronousInstant(tau))
+#     print("cspacesize", cspace_noredun.size(tau))

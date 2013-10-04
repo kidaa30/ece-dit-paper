@@ -1,6 +1,6 @@
 import unittest
 
-from Helper import myAlgebra as mAlg
+from helper import myAlgebra as mAlg
 
 
 class TestMyAlgebra(unittest.TestCase):

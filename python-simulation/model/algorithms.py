@@ -1,8 +1,8 @@
 import itertools
 import math
 
-from Helper import myAlgebra
-from Model import newChineseRemainder
+from helper import myAlgebra
+from model import newChineseRemainder
 from functools import reduce
 
 

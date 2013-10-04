@@ -1,6 +1,6 @@
-from Helper import myAlgebra
-# from Model import Task
-# from Model import TaskGenerator
+from helper import myAlgebra
+# from model import Task
+# from model import TaskGenerator
 
 import math
 import heapq
@@ -196,7 +196,7 @@ def oldCRLoop(systems):
 
 # def benchmarkNewChineseRemainder():
 # #   systems = [Task.TaskSystem(TaskGenerator.generateTasks(1, 3, 554400, 2, 7, False)) for i in range(1000)]
-# 
+#
 #     cProfile.run('benchmark_main()', 'CRstats')
 #     p = pstats.Stats('CRstats')
 #     p.strip_dirs()

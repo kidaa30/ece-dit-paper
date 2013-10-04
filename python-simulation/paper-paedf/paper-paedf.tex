@@ -26,7 +26,7 @@ breaklines=true
 
 \setlength{\parindent}{0pt}
 
-\title{Improving schedulability rate of EDF when taking into account the preemption cost in uniprocessor systems}
+\title{Improving schedulability rate of EDF when taking into account the preemption cost in uniprocessor periodic systems}
 \author{Thomas Chapeaux}
 \date{Summer 2013}
 %opening
@@ -48,31 +48,106 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
 \section{Introduction}
 
-
+...
 
 \section{Model}
 
     \subsection{State of the Art}
 
-        OCDT model with per-task
+        The results presented in this section use the assumption that preemption times are negligible.\\
 
-        Constrained deadline
+        We use an extension of Liu and Layland model presented in \cite{Liu:2000:RS:518501} to formalize real-time systems. This model represents such systems by a set of \textbf{tasks} generating \textbf{jobs}, where a job is a whole entity of computation with a given time of arrival and a given deadline.\\
 
-        EDF is optimal
+        \subsubsection{Tasks and jobs}
+
+        Tasks are used to model recurring jobs. They are denoted as the tuple $\tau_i = (O_i, T_i, D_i, C_i)$, where
+        \begin{itemize}
+            \item $i = \{1,2,...\}$ is an unique identifier for the task.
+            \item $O_i$ is the minimal time at which the first job of the tasks is generated.
+            \item $T_i$ is the minimal time between two job generations.
+            \item $D_i$ is the relative deadline of its job.
+            \item $C_i$ is the execution time of its job.
+        \end{itemize}
+
+        A task $\tau_i$ generates jobs, denoted as the tuple $J_{i,j} = (a_{i, j}, d_{i,j}, c_{i,j})$ where :
+        \begin{itemize}
+            \item $j = \{1,2,...\}$ is an unique identifier for the job within $\tau_i$.
+            \item $a_{i,j} = O_i + (j-1) \cdot T_i$ is the arrival time (or \emph{activation time}) of the job.
+            \item $d_{i,j} = a_{i,j} + D_i$ is an absolute deadline at which the job must be completed.
+            \item $c_{i,j} = C_i$ is the time it takes to complete the job (\emph{execution time}).
+        \end{itemize}
+
+        We also assume a discrete time, meaning that we consider that time passes one unit (sometimes called \emph{clock tick}) at a time. This means that the values listed above must be integers and that jobs will execute for whole units.\\
+
+        In this paper, we only consider \textbf{constrained deadline} systems, where $D_i \leqslant T_i \; \forall i$, and sometimes the particular case of \textbf{implicit deadline} systems, where $D_i = T_i$.\\
+
+        Similarly, we differentiate between \textbf{synchronous system} (where $O_i = O_j \; \forall i,j$) and asynchronous systems (which are not synchronous).
+
+        \subsubsection{Schedule and feasibility}
+
+        A scheduling policy is said to be \textbf{idling} if it allows instants at which no jobs are executing even if there are released and unfinished jobs present in the system. It is said to be \textbf{preemptive} if it allows the processor to begin computation of a new job when the currently computed job is still unfinished.\\
+
+        A system is said to be \textbf{schedulable by a scheduling policy} if it exists a scheduling policy such that every job in the task set completes before its deadline is reached. A system schedulable by at least one scheduling policy is said to be \textbf{feasible}.\\
+
+        The authors of \cite{liu1973scheduling} have shown that the EDF (Earliest Deadline First) scheduling policy, in which jobs are prioritized according to their absolute deadline, is optimal, meaning that any feasible system is schedulable by EDF.\\
+
+        \subsubsection{Feasibility Analysis}
+
+        For implicit task systems, $U_{tot} \leqslant 1$ is a necessary and sufficient condition of feasibility.\\
+
+        For (a)synchronous constrained deadline systems, $[O_{max}, O_{max} + 2 \cdot H]$ (with $O_{max}$ being the maximal task offset and $H$ the LCM of periods) is a feasibility interval for EDF.
 
     \subsection{Preemption Cost}
 
-        Preemption model (add parameters alpha and atomic preemption recovery period)
+        We now consider that preemption costs are not negligible. We thus define a parameter $\alpha$, constant for all tasks of a system, called the preemption cost.\\
 
+        Once a previously preempted job is chosen for computation by the scheduling policy, it enters an uninterruptible preemption recovery period.\\
 
+        [figure]\\
 
         Meumeu is FTP-optimal (equivalent to ExhaustiveFTP)
 
 \section{Performance of EDF with preemption cost}
 
+    In this section, we show that the EDF scheduling policy, optimal when the preemption costs are negligible, is less adapted to our model with costly preemptions.
+
     \subsection{Non-optimality}
 
+        Consider the following task system
+
+        \begin{center}
+            \begin{tabular}{|r|c|c|c|c|c|}
+                \hline
+                            & $O_i$ & $C_i$ & $D_i$ & $T_i$ & $\alpha_i$ \\ \hline
+                $\tau_1$    & 0     & 3     & 6    & 6     & 2     \\ \hline
+                $\tau_2$    & 1     & 2     & 4    & 4     & 2     \\ \hline
+            \end{tabular}
+        \end{center}
+
+        When scheduled by EDF, this job miss a deadline\\
+
+        [figure]\\
+
+        However, there exists a schedule which does not miss any deadline:\\
+
+        [figure]\\
+
+        EDF is thus non-optimal.
+
     \subsection{Anomalies}
+
+        Consider the following system
+
+        \begin{center}
+            \begin{tabular}{|r|c|c|c|c|c|}
+                \hline
+                            & $O_i$ & $C_i$ & $D_i$ & $T_i$ & $\alpha_i$ \\ \hline
+                $\tau_1$    & 0     & 3     & 6    & 6     & 2     \\ \hline
+                $\tau_2$    & 1     & 2     & 4    & 4     & 2     \\ \hline
+            \end{tabular}
+        \end{center}
+
+    \subsection{Other properties of constrained deadline systems}
 
 \section{PA-EDF: an amelioration}
 

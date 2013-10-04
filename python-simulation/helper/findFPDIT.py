@@ -1,4 +1,4 @@
-from Helper import myAlgebra
+from helper import myAlgebra
 
 import math
 import heapq
@@ -39,7 +39,7 @@ def findFPDIT(tau):
     Omax = max([task.O for task in tau.tasks])
     congruenceDict = {}
     primeDict = {}
-    
+
     for task in tau.tasks:
         pFactors = myAlgebra.primeFactors(task.T)
         primalPowers = [pow(t,pFactors.count(t)) for t in set(pFactors)]
@@ -72,7 +72,7 @@ def findFPDIT(tau):
     ppSet = set()
     for t in tgsList:
         ppSet.update(t.pList)
-        
+
     for pp in ppSet:
         for task in tau.tasks:
             taskPList = congruenceDict[task].pList
@@ -82,8 +82,8 @@ def findFPDIT(tau):
                     newTaskPList.append(pp)
                 else:
                     newTaskPList.append(taskp)
-            congruenceDict[task].pList = newTaskPList 
-    	
+            congruenceDict[task].pList = newTaskPList
+
     allResults = multiCRP(congruenceDict)
 
     if not allResults:
@@ -113,8 +113,8 @@ def findFPDIT(tau):
             alreadyTested = idleTuple[1]
 
     return tIdle
-    
-    
+
+
 def multiCRP(congruenceDict):
     tgsList = congruenceDict.values()
     ppSet = set()
@@ -133,7 +133,7 @@ def multiCRP(congruenceDict):
                 invMi = myAlgebra.modinv(Mi, p)
                 tgsSum += (x * Mi * invMi) % H
             tgsSumList[cnt] = tgsSum
-        sumChunks[t] = tgsSumList 
+        sumChunks[t] = tgsSumList
 
 #   calculate the sums from the precomputed terms
     results = [0]
@@ -147,7 +147,7 @@ def multiCRP(congruenceDict):
         results = newResults
 
     return [r % H for r in results]
-    
-    
+
+
 if __name__ == '__main__':
     pass

@@ -1,6 +1,6 @@
 import itertools
 import pdb
-from Helper import myAlgebra
+from helper import myAlgebra
 
 
 class SchedulerDP(object):
@@ -175,7 +175,7 @@ class ExhaustiveFixedPriority(FixedPriority):
         super().__init__(tau, feasiblePriorities)
 
     def exhaustiveSearch(self):
-        from Simulator.Simulator import Simulator
+        from simulator.Simulator import Simulator
         taskArray = self.tau.tasks
         priorities = [i for i in range(0, len(taskArray))]
         self.foundFeasible = False

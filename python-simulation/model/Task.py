@@ -1,7 +1,7 @@
 import math
-from Helper import myAlgebra
-from Model import Job
-from Model import cspace
+from helper import myAlgebra
+from model import Job
+from model import cspace
 
 import array
 import heapq

@@ -3,11 +3,11 @@ import math
 import concurrent.futures
 import pickle
 
-from Model import algorithms
-from Model import Task
-from Model import TaskGenerator
+from model import algorithms
+from model import Task
+from model import TaskGenerator
 
-from Helper import myAlgebra
+from helper import myAlgebra
 
 
 def generateSystemArray2(numberOfSystems, constrDeadlineFactor, tasksCnt):

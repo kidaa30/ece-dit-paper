@@ -1,6 +1,6 @@
 import random
-from Model import Task
-from Model import TaskGenerator
+from model import Task
+from model import TaskGenerator
 
 
 def generateSystemArray(numberOfSystems, constrDeadlineFactor, n=4, preemptionCost=2, verbose=False):
@@ -125,8 +125,8 @@ tasks.append(Task.Task(20, 10, 50, 50, alpha=23))
 LongTransitive = Task.TaskSystem(tasks)
 tasks = []
 tasks.append(Task.Task(0, 5, 10, 10, alpha=1))
-tasks.append(Task.Task(4, 1, 1, 10))
-tasks.append(Task.Task(6, 4, 10, 10))
+tasks.append(Task.Task(4, 1, 1, 10, alpha=1))
+tasks.append(Task.Task(6, 4, 10, 10, alpha=1))
 LongTransitive2 = Task.TaskSystem(tasks)
 
 # FailByTransitive
@@ -280,8 +280,7 @@ DITPaperExample = Task.TaskSystem(tasks)
 
 # test
 tasks = []
-tasks.append(Task.Task(0, 9, 45, 45, alpha=2))
-tasks.append(Task.Task(0, 1, 6, 6, alpha=2))
-tasks.append(Task.Task(0, 6, 12, 12, alpha=2))
+tasks.append(Task.Task(0, 1, 6, 8, alpha=0))
+tasks.append(Task.Task(0, 1, 12, 13, alpha=0))
 
 test = Task.TaskSystem(tasks)

@@ -1,8 +1,8 @@
-from Model import algorithms
-from Model import Task, TaskGenerator
-from Simulator import Simulator
-from Simulator.Scheduler import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
-from Helper import systems
+from model import algorithms
+from model import Task, TaskGenerator
+from simulator import Simulator
+from simulator.Scheduler import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
+from helper import systems
 
 import random
 import pylab

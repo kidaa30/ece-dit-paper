@@ -1,7 +1,7 @@
-from Model import Task
-from Model import TaskGenerator
-from Model import algorithms
-from Model import cspace
+from model import Task
+from model import TaskGenerator
+from model import algorithms
+from model import cspace
 
 import random
 import time

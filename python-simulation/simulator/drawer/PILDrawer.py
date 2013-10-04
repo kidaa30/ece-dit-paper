@@ -1,6 +1,6 @@
-from Simulator.Drawer.Drawer import Drawer
+from simulator.drawer.Drawer import Drawer
 
-from Model import algorithms
+from model import algorithms
 
 from PIL import Image as img
 from PIL import ImageFont
@@ -8,6 +8,7 @@ from PIL import ImageDraw as draw
 
 import random
 import re
+
 
 class PILDrawer(Drawer):
     def __init__(self, simu, stop):

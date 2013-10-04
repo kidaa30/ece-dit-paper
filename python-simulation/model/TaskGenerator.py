@@ -1,6 +1,6 @@
 import math
 import random
-from . import Task
+from model import Task
 from functools import reduce
 
 

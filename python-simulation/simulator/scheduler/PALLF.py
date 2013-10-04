@@ -1,4 +1,4 @@
-from . import Scheduler
+from simulator.scheduler import Scheduler
 
 
 class PALLF(Scheduler.SchedulerDP):

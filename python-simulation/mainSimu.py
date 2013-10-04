@@ -1,15 +1,15 @@
-from Model import algorithms
-from Model import TaskGenerator
-from Model import Task
-from Simulator import Simulator
-from Simulator.Scheduler import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
-from Helper import systems
+from model import algorithms
+from model import TaskGenerator
+from model import Task
+from simulator import Simulator
+from simulator.scheduler import Scheduler, ChooseKeepEDF, PALLF, LBLScheduler
+from helper import systems
 
 import subprocess
 import sys
 
 # tau = Task.TaskSystem(TaskGenerator.generateTasks(0.7, 3, 33750, 5, 20))
-tau = systems.DITPaperExample
+tau = systems.LongTransitive2
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()

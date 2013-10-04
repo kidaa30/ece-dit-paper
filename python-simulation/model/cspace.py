@@ -1,4 +1,4 @@
-from Model import algorithms
+from model import algorithms
 
 import subprocess  # in order to launch GLPSOL
 import itertools

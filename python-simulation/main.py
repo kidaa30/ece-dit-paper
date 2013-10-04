@@ -3,8 +3,8 @@ import random
 
 import pylab  # http://matplotlib.org/
 
-from Task import Task, TaskGenerator
-from Model import algorithms
+from model.Task import Task, TaskGenerator
+from model import algorithms
 from functools import reduce
 
 

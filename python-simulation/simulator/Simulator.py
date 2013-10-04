@@ -1,10 +1,10 @@
 from heapq import heapify, heappop, heappush
 import pdb
 
-from Model.CPU import CPU
-from Model import algorithms
-from Simulator.Drawer import Drawer
-from Simulator.JobConfiguration import JobConfiguration
+from model.CPU import CPU
+from model import algorithms
+from simulator.drawer import Drawer
+from simulator.JobConfiguration import JobConfiguration
 
 
 def heappeek(heap):
@@ -46,7 +46,7 @@ class Simulator(object):  # Global multiprocessing only
         heapify(self.activeJobsHeap)
 
         if drawing:
-            from Simulator.Drawer import PILDrawer
+            from simulator.drawer import PILDrawer
             self.drawer = PILDrawer.PILDrawer(self, stop)
         else:
             self.drawer = Drawer.EmptyDrawer(self, stop)
