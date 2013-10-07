@@ -101,9 +101,15 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
         We now consider that preemption costs are not negligible. We thus define a parameter $\alpha$, constant for all tasks of a system, called the preemption cost.\\
 
-        Once a previously preempted job is chosen for computation by the scheduling policy, it enters an uninterruptible preemption recovery period.\\
+        Once a previously preempted job is chosen for computation by the scheduling policy, it enters an uninterruptible preemption recovery period, as seen in Fig.~\ref{fig:prp}.\\
 
-        [figure]\\
+        \begin{figure}[h]
+        \begin{center}
+            \includegraphics[width=\textwidth]{figs/atomicpreemption_example.png}
+            \caption{Schedule of a system with $\alpha=2$. At t $t=6$, the preemption recovery period is not interrupted even though a job with higher priority is activated}
+            \label{fig:prp}
+        \end{center}
+        \end{figure}
 
         Meumeu is FTP-optimal (equivalent to ExhaustiveFTP)
 
@@ -127,11 +133,23 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
         When scheduled by EDF, this job miss a deadline\\
 
-        [figure]\\
+        \begin{figure}[h]
+        \begin{center}
+            \includegraphics{figs/edfNonOptimal_EDF.png}
+            \caption{A system scheduled by EDF where a deadline is missed}
+            \label{fig:edfnonoptimal_edf}
+        \end{center}
+        \end{figure}
 
         However, there exists a schedule which does not miss any deadline:\\
 
-        [figure]\\
+        \begin{figure}[h]
+        \begin{center}
+            \includegraphics{figs/edfNonOptimal_PALLF.png}
+            \caption{The system of Fig.~\ref{fig:edfnonoptimal_edf} with a different schedule in which no deadline is missed}
+            \label{fig:edfnonoptimal_pallf}
+        \end{center}
+        \end{figure}
 
         EDF is thus non-optimal.
 
