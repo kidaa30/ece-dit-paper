@@ -25,7 +25,7 @@ class Drawer(object):
         raise NotImplementedError("Drawer: attempted to call abstract method")
 
     def terminate(self):
-        """Called right before displaying results, with no other call in between"""
+        """Called at the end of the simulation"""
         raise NotImplementedError("Drawer: attempted to call abstract method")
 
 
@@ -52,3 +52,4 @@ class EmptyDrawer(Drawer):
 
     def terminate(self):
         pass
+
