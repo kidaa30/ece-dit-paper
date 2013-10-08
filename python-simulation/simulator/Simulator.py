@@ -46,8 +46,10 @@ class Simulator(object):  # Global multiprocessing only
         heapify(self.activeJobsHeap)
 
         if drawing:
+            from simulator.drawer import CairoDrawer
             from simulator.drawer import PILDrawer
-            self.drawer = PILDrawer.PILDrawer(self, stop)
+            self.drawer = CairoDrawer.CairoDrawer(self, stop)
+            # self.drawer = PILDrawer.PILDrawer(self, stop)
         else:
             self.drawer = Drawer.EmptyDrawer(self, stop)
 

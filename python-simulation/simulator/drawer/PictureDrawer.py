@@ -7,15 +7,17 @@ class PictureDrawer(Drawer):
     """Abstract Drawer which display a single picture of the execution when it stops"""
     def __init__(self, simu, stop):
         super().__init__(simu, stop)
+        self.colors = [self.randomColor() for j in range(self.simu.m)]
         self.instantWidth = 20
         self.widthMargin = 20
-        self.taskHeight = 50
+        self.taskHeight = 40
         self.heightMargin = 20
         self.width = stop * self.instantWidth + 2 * self.widthMargin
         self.height = len(simu.system.tasks) * self.taskHeight + 2 * self.heightMargin
 
         self.custom_init()
 
+        self.drawRectangle(0, 0, self.width, self.height, self.white(), self.white())
         self.drawGrid(stop)
         self.drawArrivalsAndDeadlines()
 
@@ -23,12 +25,28 @@ class PictureDrawer(Drawer):
         """Used to initialize custom drawing libraries and such"""
         raise NotImplementedError("PictureDrawer: attempted to call abstract method")
 
-    def black():
+    def randomColor(self):
+        """return a random color that can be used by methdos"""
+        raise NotImplementedError("PictureDrawer: attempted to call abstract method")
+
+    def black(self):
         """return a representation of the color black that can be used by methods"""
         raise NotImplementedError("PictureDrawer: attempted to call abstract method")
 
-    def grey(self):
+    def white(self):
         """return a representation of the color black that can be used by methods"""
+        raise NotImplementedError("PictureDrawer: attempted to call abstract method")
+
+    def gray(self):
+        """return a representation of the color gray that can be used by methods"""
+        raise NotImplementedError("PictureDrawer: attempted to call abstract method")
+
+    def red(self):
+        """return a representation of the color red that can be used by methods"""
+        raise NotImplementedError("PictureDrawer: attempted to call abstract method")
+
+    def blue(self):
+        """return a representation of the color blue that can be used by methods"""
         raise NotImplementedError("PictureDrawer: attempted to call abstract method")
 
     def drawLine(self, x1, y1, x2, y2, width, color):
@@ -43,6 +61,14 @@ class PictureDrawer(Drawer):
         """draw an arrow from (x1, y1) to (x2, y2)"""
         raise NotImplementedError("PictureDrawer: attempted to call abstract method")
 
+    def drawText(self, xT, yT, text, color):
+        """Print text at coordinate (xT, yT)"""
+        raise NotImplementedError("PictureDrawer: attempted to call abstract method")
+
+    def outputName(self):
+        """Returns the name of the default output file"""
+        raise NotImplementedError("PictureDrawer: attempted to call abstract method")
+
     def getTaskNbr(self, task):
         taskNbr = None
         for i, eachTask in enumerate(self.simu.system.tasks):
@@ -52,18 +78,24 @@ class PictureDrawer(Drawer):
         return taskNbr
 
     def drawGrid(self, stop):
-        self.drawLine(self.widthMargin, self.height - self.heightMargin, self.widthMargin + self.instantWidth * stop, self.height - self.heightMargin)
+        self.drawLine(self.widthMargin, self.height - self.heightMargin, self.widthMargin + self.instantWidth * stop, self.height - self.heightMargin, width=1, color=self.black())
         # - horizontal lines to separate tasks
         for i, task in enumerate(self.simu.system.tasks):
-            self.drawLine(self.widthMargin, self.height - self.heightMargin - (i + 1) * self.taskHeight, self.widthMargin + self.instantWidth * stop, self.height - self.heightMargin - (i + 1) * self.taskHeight)
+            self.drawLine(
+                self.widthMargin,
+                self.height - self.heightMargin - (i + 1) * self.taskHeight,
+                self.widthMargin + self.instantWidth * stop,
+                self.height - self.heightMargin - (i + 1) * self.taskHeight,
+                width=1,
+                color=self.black())
         # - vertical lines to separate instants
         for i in range(stop):
             x = self.widthMargin + i * self.instantWidth
             y = self.height - self.heightMargin
-            self.drawLine(x, self.heightMargin, x, y, color=self.grey())
+            self.drawLine(x, self.heightMargin, x, y, width=1, color=self.gray())
             # timeline markers
             if i % 5 == 0:
-                self.outDraw.text((x, y), str(i), font=self.fontRoboto, fill="black")
+                self.drawText(x, y + 2, str(i), color=self.black())
         # special timeline markers - Omax + k H
         H = self.simu.system.hyperPeriod()
         y = self.height - self.heightMargin
@@ -72,8 +104,8 @@ class PictureDrawer(Drawer):
             i = 0
             while specialTime and specialTime + i * H < stop:
                 x = self.widthMargin + (specialTime + i * H) * self.instantWidth
-                self.drawLine(x, self.heightMargin, x, y)
-                self.outDraw.text((x, y + 10), specialName + " + " + str(i) + " H", font=self.fontRoboto, fill="black")
+                self.drawLine(x, self.heightMargin, x, y, width=1, color=self.black())
+                self.drawText(x, y + 10, specialName + " + " + str(i) + " H", color=self.black())
                 i += 1
 
     def drawDeadlineMiss(self, t, task):
@@ -81,7 +113,7 @@ class PictureDrawer(Drawer):
         x = self.widthMargin + t * self.instantWidth
         y1 = self.height - self.heightMargin - (taskNbr + 1) * self.taskHeight
         y2 = self.height - self.heightMargin - taskNbr * self.taskHeight
-        self.drawLine(x, y1, x, y2, width=5)
+        self.drawLine(x, y1, x, y2, width=5, color=self.black())
         self.drawnDeadlineMissCount += 1
 
     def getDrawnDeadlineMissCount(self):
@@ -96,7 +128,7 @@ class PictureDrawer(Drawer):
         y1 = self.height - self.heightMargin - (taskNbr + 1) * self.taskHeight
         x2 = self.widthMargin + (t + 1) * self.instantWidth
         y2 = self.height - self.heightMargin - taskNbr * self.taskHeight
-        self.outDraw.rectangle([x1, y1, x2, y2], outline="black", fill=color)
+        self.drawRectangle(x1, y1, x2, y2, outlineColor=self.black(), fillColor=color)
 
     def drawAbort(self, task, t):
         taskNbr = self.getTaskNbr(task)
@@ -116,6 +148,7 @@ class PictureDrawer(Drawer):
                     self.drawOneExecutionUnit(taskNbr, cpuNbr, t, preemp=False)
 
     def terminate(self):
+        # self.drawGrid(self.stop)
         self.drawArrivalsAndDeadlines()
 
     def drawArrivalsAndDeadlines(self):
@@ -124,8 +157,8 @@ class PictureDrawer(Drawer):
                 x1 = self.widthMargin + t * self.instantWidth
                 y1 = self.height - self.heightMargin - taskNbr * self.taskHeight
                 # arrivals
-                self.drawArrow(x1, y1 - (self.taskHeight // 2), x1, y1 - self.taskHeight, "blue")
+                self.drawArrow(x1, y1 - (self.taskHeight // 2), x1, y1 - self.taskHeight, self.blue())
                 # deadlines
                 t += task.D
                 x2 = self.widthMargin + t * self.instantWidth
-                self. drawArrow(x2, y1 - (self.taskHeight) // 2, x2, y1, "red")
+                self. drawArrow(x2, y1 - (self.taskHeight) // 2, x2, y1, self.red())

@@ -95,7 +95,7 @@ tasks.append(Task.Task(4, 1, 1, 11))
 tasks.append(Task.Task(6, 4, 11, 11))
 EDFFailTransitiveNotPeriodic = Task.TaskSystem(tasks)
 
-# DPOnly (preemptTime = 1)
+# DPOnly
 tasks = []
 tasks.append(Task.Task(0, 4, 8, 8, alpha=1))
 tasks.append(Task.Task(0, 1, 5, 8, alpha=1))
