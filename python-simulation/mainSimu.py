@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 # tau = Task.TaskSystem(TaskGenerator.generateTasks(0.7, 3, 33750, 5, 20, constrDeadlineFactor=0))
-tau = systems.MustPreemptAtNoArrival
+tau = systems.EDFNonOptimal
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -26,12 +26,12 @@ stop = Omax + 10 * H
 
 print(("stop", stop))
 
-# scheduler = Scheduler.EDF(tau)
+scheduler = Scheduler.EDF(tau)
 # scheduler = Scheduler.SpotlightEDF(tau)
 # scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
 # scheduler = Scheduler.PTEDF(tau)
 # scheduler = PALLF.PALLF(tau)
-scheduler = Scheduler.ArbitraryScheduler(tau, systems.mpanaSchedule)
+# scheduler = Scheduler.ArbitraryScheduler(tau, systems.mpanaSchedule)
 # scheduler = LBLScheduler.LBLEDF(tau)
 
 # scheduler = Scheduler.FixedPriority(tau, [1, 2, 3])

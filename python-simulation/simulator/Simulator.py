@@ -51,7 +51,7 @@ class Simulator(object):  # Global multiprocessing only
             self.drawer = CairoDrawer.CairoDrawer(self, stop)
             # self.drawer = PILDrawer.PILDrawer(self, stop)
         else:
-            self.drawer = Drawer.EmptyDrawer(self, stop)
+            self.drawer = None
 
     def saveConfiguration(self):
         jobs = self.getCurrentJobs()
@@ -189,7 +189,8 @@ class Simulator(object):  # Global multiprocessing only
                 preemptedJob.preemptionTimeLeft = preemptedJob.alpha()
                 if self.AR:
                     preemptedJob.computation = 0
-                    self.drawer.drawAbort(preemptedJob.task, self.t)
+                    if self.drawer:
+                        self.drawer.drawAbort(preemptedJob.task, self.t)
                 heappush(self.activeJobsHeap, (-1 * preemptedJob.priority, preemptedJob))
 
             if self.verbose:
@@ -233,20 +234,22 @@ class Simulator(object):  # Global multiprocessing only
     def run(self, stopAtDeadlineMiss=True, stopAtStableConfig=True):
         while(self.t < self.stop):
             self.incrementTime()
-            self.drawer.drawInstant(self.t)
+            if self.drawer:
+                self.drawer.drawInstant(self.t)
 
-            if len(self.deadlineMisses) > self.drawer.getDrawnDeadlineMissCount():
-                # new deadline miss
-                assert len(self.deadlineMisses) > 0
-                missT, job = self.deadlineMisses[-1]
-                self.drawer.drawDeadlineMiss(self.t, job.task)
-                if self.verbose:
-                    print("DEADLINE MISS at t=", (missT - 1), "for job", job)
-                if stopAtDeadlineMiss:
-                    break
+            for missT, job in self.deadlineMisses:
+                if missT == self.t:
+                    # new deadline miss
+                    if self.drawer:
+                        self.drawer.drawDeadlineMiss(self.t, job.task)
+                    if self.verbose:
+                        print("DEADLINE MISS at t=", (missT - 1), "for job", job)
+                    if stopAtDeadlineMiss:
+                        break
             if stopAtStableConfig and self.isStable:
                 break
-        self.drawer.terminate()
+        if self.drawer:
+            self.drawer.terminate()
 
     def success(self):
         assert self.t >= 0, "Simulator.success: call run() first"

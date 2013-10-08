@@ -114,10 +114,6 @@ class PictureDrawer(Drawer):
         y1 = self.height - self.heightMargin - (taskNbr + 1) * self.taskHeight
         y2 = self.height - self.heightMargin - taskNbr * self.taskHeight
         self.drawLine(x, y1, x, y2, width=5, color=self.black())
-        self.drawnDeadlineMissCount += 1
-
-    def getDrawnDeadlineMissCount(self):
-        return self.drawnDeadlineMissCount
 
     def drawOneExecutionUnit(self, taskNbr, CPUnbr, t, preemp):
         color = self.colors[CPUnbr]

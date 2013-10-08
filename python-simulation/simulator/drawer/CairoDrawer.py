@@ -44,6 +44,7 @@ class CairoDrawer(PictureDrawer):
 
     def drawRectangle(self, x1, y1, x2, y2, fillColor, outlineColor):
         self.ctx.set_source_rgb(*outlineColor)
+        self.ctx.set_line_width(1)
         width = x2 - x1
         height = y2 - y1
         self.ctx.rectangle(x1, y1, width, height)
