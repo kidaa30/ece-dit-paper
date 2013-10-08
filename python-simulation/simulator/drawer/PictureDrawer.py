@@ -61,6 +61,10 @@ class PictureDrawer(Drawer):
         """draw an arrow from (x1, y1) to (x2, y2)"""
         raise NotImplementedError("PictureDrawer: attempted to call abstract method")
 
+    def drawCircle(self, xC, yC, rad, color):
+        """draw a circle centered at (xC, yC) of radius rad"""
+        raise NotImplementedError("PictureDrawer: attempted to call abstract method")
+
     def drawText(self, xT, yT, text, color):
         """Print text at coordinate (xT, yT)"""
         raise NotImplementedError("PictureDrawer: attempted to call abstract method")
@@ -113,7 +117,7 @@ class PictureDrawer(Drawer):
         x = self.widthMargin + t * self.instantWidth
         y1 = self.height - self.heightMargin - (taskNbr + 1) * self.taskHeight
         y2 = self.height - self.heightMargin - taskNbr * self.taskHeight
-        self.drawLine(x, y1, x, y2, width=5, color=self.black())
+        self.drawCircle(x, (y2 + y1) // 2, 5, self.red())
 
     def drawOneExecutionUnit(self, taskNbr, CPUnbr, t, preemp):
         color = self.colors[CPUnbr]
