@@ -20,7 +20,7 @@ print(("H", H))
 print(("fpdit", fpdit))
 print(("U", tau.systemUtilization()))
 
-stop = Omax + 10 * H
+stop = Omax + 4 * H
 # if fpdit:
 #     stop = fpdit + H
 
@@ -42,7 +42,7 @@ scheduler = Scheduler.EDF(tau)
 # else:
 #   print "No feasible priorities found !"
 
-simu = Simulator.Simulator(tau, stop=1000, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=True)
+simu = Simulator.Simulator(tau, stop=stop, nbrCPUs=1, scheduler=scheduler, abortAndRestart=False, verbose=True)
 
 try:
     simu.run(stopAtDeadlineMiss=True, stopAtStableConfig=True)
