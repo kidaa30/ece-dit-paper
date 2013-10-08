@@ -158,8 +158,8 @@ class CSpaceConstraint(object):  # TODO : make the code use this lovely class
         self.t = t
 
     def __repr__(self):
-        reprStr = "+ ".join([str(a) + "*x" + str(i+1) + '\t' for i, a in enumerate(self.coeffs)])
-        reprStr += " <= " + str(self.t)
+        reprStr = "\t+\t".join([str(a) + "\tx" + str(i+1) for i, a in enumerate(self.coeffs)])
+        reprStr += "\t<=\t" + str(self.t)
         return reprStr
 
     def isRedundant(self, cspace):
