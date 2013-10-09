@@ -30,6 +30,20 @@ class SchedulerDP(object):
         return myAlgebra.nextPeriodic(t, task.T, task.O)
 
 
+class LLF(SchedulerDP):
+    def __init__(self, tau):
+        super().__init__(tau)
+        self.prioOffset = max([task.C for task in tau.tasks]) + 1
+        self.tau = tau
+
+    def priority(self, job, simu):
+        slackTime = max(0, job.deadline - (simu.t + job.computationLeft()))
+        return 1 / (self.prioOffset + slackTime)
+
+    def preemptEqualPriorities(self):
+        return False
+
+
 class PTEDF(SchedulerDP):
     def __init__(self, tau):
         super().__init__(tau)
