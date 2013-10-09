@@ -14,7 +14,7 @@ class PALLF(Scheduler.SchedulerDP):
             return False
 
     def getLaxity(self, job, simu):
-        compLeft = job.task.C - job.computation
+        compLeft = job.computationLeft()
         lax = job.deadline - (simu.t + compLeft)
         return max(0, lax)
 

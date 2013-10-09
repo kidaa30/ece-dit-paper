@@ -234,6 +234,8 @@ class Simulator(object):  # Global multiprocessing only
     def run(self, stopAtDeadlineMiss=True, stopAtStableConfig=True):
         while(self.t < self.stop):
             self.incrementTime()
+            # if self.t % 100 == 0:
+            #     print("t", self.t, "/", self.stop)
             if self.drawer:
                 self.drawer.drawInstant(self.t)
 
