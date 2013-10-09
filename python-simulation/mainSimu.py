@@ -8,8 +8,8 @@ from helper import systems
 import subprocess
 import sys
 
-# tau = Task.TaskSystem(TaskGenerator.generateTasks(0.7, 3, 33750, 5, 20, constrDeadlineFactor=0))
-tau = systems.EDFNonOptimal
+tau = Task.TaskSystem(TaskGenerator.generateTasks(0.7, 3, 33750, 5, 20, constrDeadlineFactor=0))
+# tau = systems.EDFNonOptimal
 
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
@@ -26,7 +26,8 @@ stop = Omax + 4 * H
 
 print(("stop", stop))
 
-scheduler = Scheduler.EDF(tau)
+# scheduler = Scheduler.EDF(tau)
+scheduler = Scheduler.LLF(tau)
 # scheduler = Scheduler.SpotlightEDF(tau)
 # scheduler = ChooseKeepEDF.ChooseKeepEDF(tau)
 # scheduler = Scheduler.PTEDF(tau)
