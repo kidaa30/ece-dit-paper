@@ -42,9 +42,9 @@ def oneTest(utilization):
 
 domin_scores = {}
 scores = {}
-NUMBER_OF_SYSTEMS = 100
+NUMBER_OF_SYSTEMS = 1
 uRange = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-schedulers = [Scheduler.EDF, PALLF.PALLF]
+schedulers = [Scheduler.EDF, Scheduler.PTEDF]
 names = ["EDF", "PA-EDF"]
 
 failures = []
@@ -71,6 +71,8 @@ for f in futures:
                 otherSuccess = otherSuccess or success[otherSched]
             if success[sched] and not otherSuccess:
                 domin_scores[u][sched] += 1
+    if success[schedulers[1]] and not success[schedulers[0]]:
+        failures.append(tau)
 
 
 with open("mainSimuComp_results.pickle", "wb") as output:
