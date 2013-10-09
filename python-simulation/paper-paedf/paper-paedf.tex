@@ -9,7 +9,12 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{theorem}
+\usepackage{algorithm}
+\usepackage[noend]{algorithmic}
 %\usepackage[section]{placeins}
+
+\newtheorem{theorem}{Theorem}
 
 \definecolor{grey}{rgb}{0.9,0.9,0.9}
 
@@ -318,37 +323,116 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
     In previous sections, we have shown that EDF is not optimal when including preemption costs. To the best of our knowledge, there is no known optimal algorithm in that case. This section presents an algorithm which, while not being optimal, is an improvement over the EDF algorithm.
 
-    \subsection{Idling behavior}
+    \subsection{Algorithm}
 
-        While we have shown by example that idling may sometimes be necessary, an efficient scheduling algorithm has to minimize the number of idled units, as each idled unit is a lost unit when considering the execution of the jobs (they can be seen as an increase of the load of the system). For this reason, we propose in this section a general method to determine if an idled unit is beneficial.\\
-
-        Idled units are a direct consequence of the preemption recovery period, which means that each preemption increased the load of the system by $\alpha$ time unit. The intuition is thus that if we idle for a duration $d < \alpha$ to prevent a preemption, the resulting load increase would be smaller, and the idled unit would then be beneficial. The sequel express this intuition in formal terms.\\
-
-        We define the \textbf{earliest preemptive arrival of a job} $epa(j_{i,j}, t)$ as the earliest arrival strictly after $t$ of another job with higher priority. Similarly, the \textbf{minimal termination time } $mtt(j_{i,j}, t)$ of a job is the instant at which the job will end if it was given maximal priority at time $t$. An idled unit is then beneficial at time $t$ if, for each active job $j_{i,j}$ we have
-        \begin{itemize}
-            \item $j_{i,j}$ was not executing at time $t-1$
-            \item it will certainly be preempted: $epa(j_{i,j}, t) < mtt(j_{i,j}, t)$
-            \item this preemption will add more load than idling would: $epa(j_{i,j}, t) - t < \alpha$
-        \end{itemize}
-
-        The main setback of this approach is that it remains to find an accurate method to compute the \emph{epa} values.
-
-    \subsection{Limiting preemptions}
+    \subsubsection{Limiting preemptions}
+    \label{sct:limPreemp}
 
         As we saw, each preemption adds $\alpha$ time units to the load of the system. Limiting the number of preemptions, i.e. detecting and preventing unnecessary preemptions, is thus an efficient behavior of a scheduling algorithm.\\
 
-        A preemption is not necessary at instant $t$ when job $j_{i,j}$ was executing at instant $t-1$ and is not finished if:
-        \begin{itemize}
-            \item every other active job has a laxity equal or smaller than $mtt(j_{i,j}, t)$
-            \item this property holds for every job arriving before the next idle time.
-        \end{itemize}
+        \begin{theorem}
+            \label{the:limPreemp}
+            A preemption is not necessary at instant $t$ when job $j_{i,j}$ was executing at instant $t-1$ if:
+            \begin{itemize}
+                \item every other active job has a laxity equal or smaller than $c_{i,j}^{LEFT}$
+                \item this property holds for every job arriving before the next idle time.
+            \end{itemize}
+            where $c_{i,j}^{LEFT}$ is the remaining execution time of job $j_{i,j}$.
+        \end{theorem}
 
-        The main setback is that it remains to find an accurate method to find idle times in our model.
+        The main setback is that it remains to find an accurate method to find idle times in our model. Also, if the condition is not fulfilled, we cannot know if a preemption would really be beneficial (EXAMPLE?).
 
+    \subsubsection{Idling behavior}
+    \label{sct:idlBehav}
 
+        While we have shown by example that idling may sometimes be necessary, an efficient scheduling algorithm has to minimize the number of idled units, as each idled unit is a lost unit when considering the execution of the jobs (they can be seen as an increase of the load of the system). For this reason, we propose in this section a general method to determine if an idled unit is beneficial.\\
+
+        Idled units are a direct consequence of the preemption recovery period, which means that each preemption increased the load of the system by $\alpha$ time unit. The intuition is thus that if we idle for a duration $d < \alpha$ to prevent a preemption, the resulting load increase would be smaller, and the idled unit would then be beneficial.\\
+
+        Theorem~\ref{the:limPreemp} gave us a method to determine if a preemption was necessary at a given instant. Note that if the condition is not fulfilled and the busy job continues executing, the condition will stay unfulfilled at later instant. We use it to give the following idling condition.
+
+        \begin{theorem}
+            An active job $j_{i,j}$ at idle instant $t$ is eligible for execution if, according to theorem~\ref{the:limPreemp}, a preemption will not be necessary at instant $t + \alpha$ if it is chosen at instant $t$.
+        \end{theorem}
+
+        If every active job is not eligible for execution, it is better to idle.
+
+    \subsubsection{Job priority}
+
+        Our algorithm is a dynamic algorithm which computes a priority $p(j_{i,j}, t)$ for each job at each instant. We consider that if the most prioritary job has a priority inferior to 0, it is better to idle.
+
+        \begin{algorithm}[H]
+            \begin{algorithmic}[1]
+                \IF{$t$ is an idle instant}
+                    \IF{$j_{i,j}$ would be preempted at $t + \alpha$ (see Algo.~\ref{alg:PAEDFpreemp})}
+                        \RETURN $- \infty$
+                    \ELSE
+                        \RETURN $1 / d_{i,j}$
+                    \ENDIF
+                \ELSIF{$j_{i,j}$ is a busy job}
+                    \IF {$j_{i,j}$ must be preempted now (see Algo.~\ref{alg:PAEDFpreemp})}
+                        \RETURN $- \infty$
+                    \ELSE
+                        \RETURN 1
+                    \ENDIF
+                \ENDIF
+                \RETURN $1 / d_{i,j}$
+            \end{algorithmic}
+                \caption{Priority of job $j_{i,j}$ at time $t$ with PA-EDF}
+                \label{alg:prio}
+            \end{algorithm}
+
+        The algorithm follows the conclusion of sections \ref{sct:limPreemp} and \ref{sct:idlBehav}. To determine if a preemption is necessary at instant $t$, it uses Algorithm~\ref{alg:PAEDFpreemp}.
+
+        \begin{algorithm}[H]
+            \begin{algorithmic}[1]
+            \STATE cumulCompLeft $\leftarrow$ compLeft($j$)
+            \FORALL {active jobs $j'$ s.t. $j'.deadline \leqslant j.deadline$}
+                \IF {$j'$ was preempted}
+                    \STATE lax $\leftarrow j'.deadline - t - j'.compLeft$ - $\alpha_j'$
+                \ELSE
+                    \STATE lax $\leftarrow j'.deadline - t - j'.compLeft$
+                \ENDIF
+                \IF {lax $<$ cumulCompLeft}
+                    \RETURN True
+                \ELSE
+                    \STATE cumulCompLeft += compLeft($j'$)
+                \ENDIF
+            \ENDFOR
+            \RETURN False
+            \end{algorithmic}
+                \caption{Should job $j$ be preempted at time $t$?}
+                \label{alg:PAEDFpreemp}
+            \end{algorithm}
+
+        Note that this is not an exact algorithm, but it has an $O(n)$ complexity.\\
+
+    \subsection{Example}
+
+        Fig.~\ref{fig:paedf_example} gives an example of the following system scheduled by PA-EDF
+
+        \begin{center}
+            \begin{tabular}{|r|c|c|c|c|c|}
+                \hline
+                            & $O_i$ & $C_i$ & $D_i$ & $T_i$ & $\alpha_i$ \\ \hline
+                $\tau_3$    & 0     & 26    & 45    & 45    & 2     \\ \hline
+                $\tau_2$    & 2     & 3     & 20    & 20    & 2     \\ \hline
+                $\tau_1$    & 0     & 1     & 12    & 12    & 2     \\ \hline
+            \end{tabular}
+        \end{center}
+
+        \begin{figure}[H]
+        \begin{center}
+            \centerline{\includegraphics[scale=0.6]{figs/PAEDF_example.png}}
+            \caption{Example of a system scheduled by PA-EDF}
+            \label{fig:paedf_example}
+        \end{center}
+        \end{figure}
+
+        Note that at $t=2$, the algorithm anticipates the arrival of $j_{2,1}$ at $t=3$ and thus correctly schedules an idle instant. Between $t=22$ and $t=24$, $j_{3,1}$ continues its execution when EDF would have caused a preemption. At $t=12$, however, the algorithm detects that a preemption is necessary.
 
 \nocite{*}
-\bibliographystyle{plain}
+\bibliographystyle{amsalpha}
 \bibliography{paper-paedf}
 
 
