@@ -6,13 +6,14 @@ from helper import systems
 
 import random
 import pylab
+import pickle
 
 
 domin_scores = {}
 results = {}
-NUMBER_OF_SYSTEMS = 100
+NUMBER_OF_SYSTEMS = 10
 uRange = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-schedulers = [Scheduler.LLF, Scheduler.PTEDF]
+schedulers = [Scheduler.EDF, PALLF.PALLF]
 names = ["EDF", "PA-EDF"]
 
 failures = []
@@ -46,10 +47,10 @@ def oneTest(utilization):
         Omax = max([task.O for task in tau.tasks])
         H = tau.hyperPeriod()
         fpdit = algorithms.findFirstDIT(tau)
-        stop = Omax + 10 * H  # FIXME
+        stop = Omax + 4 * H  # FIXME
         if fpdit:
             stop = fpdit + H
-
+        print("stop", stop)
         for schedClass in schedulers:
             if schedClass is Scheduler.ExhaustiveFixedPriority:
                 sched = schedClass(tau, 1, False)
@@ -82,21 +83,10 @@ def oneTest(utilization):
 for u in uRange:
     oneTest(u)
 
-pylab.figure()
-for i, sched in enumerate(schedulers):
-    dom_pct = [100 * domin_scores[u][sched] / NUMBER_OF_SYSTEMS for u in uRange]
-    result = [len([r for r in results[u][sched] if r is True]) for u in uRange]
-    result_pct = list(map(lambda r: 100 * r / NUMBER_OF_SYSTEMS, result))
-    print("result_pct of ", names[i], result_pct)
-    pylab.plot(uRange, result_pct, "--o", label=names[i])
-
-pylab.ylabel("% schedulable")
-pylab.xlabel("System utilization")
-pylab.title("Schedulability of implicit systems (n = " + str(NUMBER_OF_SYSTEMS) + ")")
-pylab.legend(loc=0)
-pylab.axis([uRange[0] - 0.1, uRange[-1] + 0.1, 0,  100])
-pylab.grid()
-pylab.show()
+with open("mainSimuComp_results.pickle", "wb") as output:
+    print("Writing result to memory...")
+    pickle.dump((domin_scores, results, NUMBER_OF_SYSTEMS, uRange, schedulers, names, failures), output, pickle.HIGHEST_PROTOCOL)
+    print("Done.")
 
 for fail in failures:
     print("FAIL", str(fail))
