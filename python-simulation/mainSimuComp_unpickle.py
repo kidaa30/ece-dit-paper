@@ -5,12 +5,12 @@ import pickle
 
 symbols = ['D', 'o', 's', '*', 'v', '^']
 with open('mainSimuComp_results.pickle', 'rb') as inputR:
-    (domin_scores, results, NUMBER_OF_SYSTEMS, uRange, schedulers, names, failures) = pickle.load(inputR)
+    (domin_scores, scores, NUMBER_OF_SYSTEMS, uRange, schedulers, names, failures) = pickle.load(inputR)
 
 pylab.figure()
 for i, sched in enumerate(schedulers):
     dom_pct = [100 * domin_scores[u][sched] / NUMBER_OF_SYSTEMS for u in uRange]
-    result = [len([r for r in results[u][sched] if r is True]) for u in uRange]
+    result = [scores[u][sched] for u in uRange]
     result_pct = list(map(lambda r: 100 * r / NUMBER_OF_SYSTEMS, result))
     print("result_pct of ", names[i], result_pct)
     pylab.plot(uRange, result_pct, "--o", label=names[i])
