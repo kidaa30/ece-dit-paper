@@ -55,9 +55,9 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
     \subsection{State of the Art}
 
-        The results presented in this section use the assumption that preemption times are negligible.\\
+        The results presented in this section assumes that preemption times are negligible.\\
 
-        We use an extension of Liu and Layland model presented in \cite{Liu:2000:RS:518501} to formalize real-time systems. This model represents such systems by a set of \textbf{tasks} generating \textbf{jobs}, where a job is a whole entity of computation with a given time of arrival and a given deadline.
+        We use an extension of Liu and Layland model presented in \cite{Liu:2000:RS:518501} to formalize real-time systems. This model represents such systems by a set of \textbf{tasks} $\tau = \{\tau_1, \cdots, \tau_n\}$ generating \textbf{jobs}, where a job is an entity of computation with a given arrival time, execution time and deadline.
 
         \subsubsection{Tasks and jobs}
 
@@ -70,7 +70,7 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
             \item $C_i$ is the execution time of its job.
         \end{itemize}
 
-        A task $\tau_i$ generates jobs, denoted as the tuple $J_{i,j} = (a_{i, j}, d_{i,j}, c_{i,j})$ where :
+        A task $\tau_i$ generates jobs, denoted as the tuple $j_{i,j} = (a_{i, j}, d_{i,j}, c_{i,j})$ where :
         \begin{itemize}
             \item $j = \{1,2,...\}$ is an unique identifier for the job within $\tau_i$.
             \item $a_{i,j} = O_i + (j-1) \cdot T_i$ is the arrival time (or \emph{activation time}) of the job.
@@ -82,14 +82,14 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
         In this paper, we only consider \textbf{constrained deadline} systems, where $D_i \leqslant T_i \; \forall i$, and sometimes the particular case of \textbf{implicit deadline} systems, where $D_i = T_i$.\\
 
-        Similarly, we differentiate between \textbf{synchronous system} (where $O_i = O_j \; \forall i,j$) and asynchronous systems (which are not synchronous).\\
+        Similarly, we differentiate between \textbf{synchronous system} (where $O_i = O_j \; \forall i,j$) and asynchronous systems (which are not synchronous). For synchronous systems, we assume without loss of generality that $O_i = 0 \; \forall i$.\\
 
         To summarize, Fig.~\ref{fig:rt_ex} shows an example of real-time system in our model.
 
         \begin{figure}[H]
         \begin{center}
             \includegraphics{figs/RTsystem_example.png}
-            \caption{A task system. Annotations will be removed in later figures}
+            \caption{A task system, with our notation highlighted}
             \label{fig:rt_ex}
         \end{center}
         \end{figure}
@@ -97,7 +97,11 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
         \subsubsection{Schedule and feasibility}
 
-        A scheduling policy (or \emph{algorithm}) is said to be \textbf{idling} if it allows instants at which no jobs are executing even if there are released and unfinished jobs present in the system. It is said to be \textbf{preemptive} if it allows the processor to begin computation of a new job when the currently computed job is still unfinished.\\
+        A scheduling policy (or \emph{algorithm}) is...\\
+
+        A scheduling policy is said to be \textbf{idling} if it allows instants at which no jobs are executing even if there are active (i.e. released and unfinished) jobs present in the system. Such instants are then called \textbf{idled instants}. They are not to be confused with \emph{idle times}, another important concept in feasibility analysis which is not discussed here.\\
+
+        A scheduling policy is said to be \textbf{preemptive} if it allows the processor to begin computation of a new job when the currently computed job is still unfinished.\\
 
         A system is said to be \textbf{schedulable by a scheduling policy} if it exists a scheduling policy such that every job in the task set completes before its deadline is reached. A system schedulable by at least one scheduling policy is said to be \textbf{feasible}.\\
 
@@ -118,7 +122,7 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
         \begin{figure}[H]
         \begin{center}
             \includegraphics[width=\textwidth]{figs/atomicpreemption_example.png}
-            \caption{Schedule of a system with $\alpha=2$. At t $t=6$, the preemption recovery period is not interrupted even though a job with higher priority is activated}
+            \caption{EDF schedule of a system with $\alpha=2$. At t $t=6$, the preemption recovery period is not interrupted even though a job with higher priority is activated}
             \label{fig:prp}
         \end{center}
         \end{figure}
@@ -128,7 +132,7 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 \section{Performance of EDF with preemption cost}
 % Rename section to something like "Old results do not hold, bitch"
 
-    In this section, we show that the EDF scheduling policy, optimal when the preemption costs are negligible, is less adapted to our model with costly preemptions.
+    In this section, we show that the EDF scheduling policy, optimal when the preemption costs are negligible, loses this property in our model with costly preemptions.
 
     \subsection{Non-optimality}
 
@@ -256,6 +260,8 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
         \subsubsection{Require clairvoyance}
 
+        A property of EDF in systems where preemptions costs are negligible is that it does not require knowledge of future arrivals of jobs (or \textbf{clairvoyance}). This allows EDF to also be an optimal scheduler for \emph{sporadic} systems, where the period of a task is the \emph{minimal} time between two consecutive arrival of its jobs. We now show that an optimal scheduler for our model would not have that property.\\
+
         Consider the following the following system
 
         \begin{center}
@@ -312,7 +318,33 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
     In previous sections, we have shown that EDF is not optimal when including preemption costs. To the best of our knowledge, there is no known optimal algorithm in that case. This section presents an algorithm which, while not being optimal, is an improvement over the EDF algorithm.
 
-    \subsection{Idling rule}
+    \subsection{Idling behavior}
+
+        While we have shown by example that idling may sometimes be necessary, an efficient scheduling algorithm has to minimize the number of idled units, as each idled unit is a lost unit when considering the execution of the jobs (they can be seen as an increase of the load of the system). For this reason, we propose in this section a general method to determine if an idled unit is beneficial.\\
+
+        Idled units are a direct consequence of the preemption recovery period, which means that each preemption increased the load of the system by $\alpha$ time unit. The intuition is thus that if we idle for a duration $d < \alpha$ to prevent a preemption, the resulting load increase would be smaller, and the idled unit would then be beneficial. The sequel express this intuition in formal terms.\\
+
+        We define the \textbf{earliest preemptive arrival of a job} $epa(j_{i,j}, t)$ as the earliest arrival strictly after $t$ of another job with higher priority. Similarly, the \textbf{minimal termination time } $mtt(j_{i,j}, t)$ of a job is the instant at which the job will end if it was given maximal priority at time $t$. An idled unit is then beneficial at time $t$ if, for each active job $j_{i,j}$ we have
+        \begin{itemize}
+            \item $j_{i,j}$ was not executing at time $t-1$
+            \item it will certainly be preempted: $epa(j_{i,j}, t) < mtt(j_{i,j}, t)$
+            \item this preemption will add more load than idling would: $epa(j_{i,j}, t) - t < \alpha$
+        \end{itemize}
+
+        The main setback of this approach is that it remains to find an accurate method to compute the \emph{epa} values.
+
+    \subsection{Limiting preemptions}
+
+        As we saw, each preemption adds $\alpha$ time units to the load of the system. Limiting the number of preemptions, i.e. detecting and preventing unnecessary preemptions, is thus an efficient behavior of a scheduling algorithm.\\
+
+        A preemption is not necessary at instant $t$ when job $j_{i,j}$ was executing at instant $t-1$ and is not finished if:
+        \begin{itemize}
+            \item every other active job has a laxity equal or smaller than $mtt(j_{i,j}, t)$
+            \item this property holds for every job arriving before the next idle time.
+        \end{itemize}
+
+        The main setback is that it remains to find an accurate method to find idle times in our model.
+
 
 
 \nocite{*}
