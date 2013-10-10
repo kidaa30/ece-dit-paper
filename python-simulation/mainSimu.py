@@ -11,6 +11,11 @@ import sys
 tau = Task.TaskSystem(TaskGenerator.generateTasks(0.7, 3, 33750, 5, 20, constrDeadlineFactor=0))
 # tau = systems.EDFNonOptimal
 
+if len(sys.argv) > 1:
+    with open(sys.argv[1]) as f:
+        tau = Task.TaskSystem.fromFile(f)
+
+
 Omax = max([task.O for task in tau.tasks])
 H = tau.hyperPeriod()
 fpdit = algorithms.findFirstDIT(tau)

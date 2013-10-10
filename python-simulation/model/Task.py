@@ -7,6 +7,8 @@ import array
 import heapq
 import copy
 
+import re
+
 
 class Task(object):
     def __init__(self, O, C, D, T, alpha=0):
@@ -16,8 +18,15 @@ class Task(object):
         self.T = T
         self.alpha = alpha
 
+    @staticmethod
+    def fromText(taskStr):
+        reRes = re.search(r"((?P<O>[0-9]+), (?P<C>[0-9]+), (?P<D>[0-9]+), (?P<T>[0-9]+), (?P<a>[0-9]+))", str(taskStr), re.DOTALL)
+        assert reRes, "Task.fromText: Incorrect task string --> " + taskStr
+        (O, C, D, T, alpha) = tuple((int(reRes.group(c)) for c in "OCDTa"))
+        return Task(O, C, D, T, alpha=alpha)
+
     def __repr__(self):
-        reprStr =  ""
+        reprStr = ""
         reprStr += "("
         reprStr += str(self.O)
         reprStr += ", "
@@ -44,7 +53,7 @@ class Task(object):
         return Job.Job(self, arrival)
 
     def __lt__(self, other):
-	    return id(self) < id(other)
+        return id(self) < id(other)
 
 
 class TaskSystem(object):
@@ -52,6 +61,21 @@ class TaskSystem(object):
         self.tasks = tasks
         self.hyperperiod = None
         #self.hyperT = self.hyperPeriod()
+
+    @staticmethod
+    def fromText(systemStr):
+        tasks = []
+        for taskStr in systemStr.split("\n"):
+            if len(taskStr) > 0 and taskStr[0] is not '#':
+                tasks.append(Task.fromText(taskStr))
+        return TaskSystem(tasks)
+
+    @staticmethod
+    def fromFile(f):
+        string = ""
+        for line in f:
+            string += line
+        return TaskSystem.fromText(string)
 
     def hyperPeriod(self):
         if not self.hyperperiod:

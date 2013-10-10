@@ -3,13 +3,20 @@ from model import Task
 from model import cspace as cs
 from model import algorithms
 
+import sys
+
+tau = None
 
 # tasks = []
 # tasks.append(Task.Task(O, C, D, T))
 # tasks.append(Task.Task(O, C, D, T))
 # tau = Task.TaskSystem(tasks)
 
-tau = systems.Meumeu
+# tau = systems.Meumeu
+
+if len(sys.argv) > 1:
+    with open(sys.argv[1]) as f:
+        tau = Task.TaskSystem.fromFile(f)
 
 print(tau)
 print("cspace...")
