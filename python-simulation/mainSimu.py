@@ -63,4 +63,4 @@ finally:
     if "linux" in sys.platform:
         subprocess.Popen(['eog', simu.drawer.outputName()])
     elif "win" in sys.platform:
-        simu.drawer.outImg.show()
+        subprocess.Popen(['rundll32', '"C:\Program Files\Windows Photo Viewer\PhotoViewer.dll"', '"C:\\00012.tif"'])
