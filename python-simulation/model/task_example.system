@@ -1,9 +1,9 @@
 # This is a comment
 
-# Blank lines are also ignores
+# Blank lines are also ignored
 
 # Task format: (O, C, D, T, alpha)
-# Do not forget spaces after comas!
+# Do not forget the space after each comas!
 (1, 2, 3, 4, 0)
 (3, 2, 6, 10, 0)
 (0, 1, 4, 10, 0)
