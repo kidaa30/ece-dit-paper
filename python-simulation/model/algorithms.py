@@ -35,6 +35,24 @@ def YAfindFPDIT(tau):
     return None
 
 
+def LIPARIfindFPDIT(tau):
+    omax = tau.omax()
+    H = tau.hyperPeriod()
+    arrivals = {}
+    deadlines = {}
+    for task in tau.tasks:
+        arrivals[task] = task.O
+        deadlines[task] = task.O + task.D
+    aMin = 0
+    while(aMin <= omax + H):
+        d_next, task_d_next = min([(task.D, task) for task in tau.tasks])
+        arrivals[task_d_next] += task_d_next.T
+        aMin = min([arrivals[task] for task in tau.tasks])
+        if aMin >= d_next:
+            return d_next
+    return None
+
+
 def findFirstPeriodicDIT(tau):
     # Requires to solve several system of modular equations
 
