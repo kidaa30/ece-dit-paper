@@ -32,7 +32,7 @@ breaklines=true
 
 \setlength{\parindent}{0pt}
 
-\title{Improving schedulability rate of EDF when taking into account the preemption cost in uniprocessor periodic systems}
+\title{Improving success ratio of EDF when taking into account the preemption cost in uniprocessor periodic systems}
 \author{Thomas Chapeaux}
 \date{Summer 2013}
 %opening
@@ -82,12 +82,12 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
             \item $d_{i,j} = a_{i,j} + D_i$ is an absolute deadline at which the job must be completed.
             \item $c_{i,j} = C_i$ is the time it takes to complete the job (\emph{execution time}).
         \end{itemize}
-
+h
         We also assume a discrete time, meaning that we consider that time passes one unit (sometimes called \emph{clock tick}) at a time. This means that the values listed above must be integers and that jobs will execute for whole units.\\
 
         In this paper, we only consider \textbf{constrained deadline} systems, where $D_i \leqslant T_i \; \forall i$, and sometimes the particular case of \textbf{implicit deadline} systems, where $D_i = T_i$.\\
 
-        Similarly, we differentiate between \textbf{synchronous system} (where $O_i = O_j \; \forall i,j$) and asynchronous systems (which are not synchronous). For synchronous systems, we assume without loss of generality that $O_i = 0 \; \forall i$.\\
+        Similarly, we differentiate between \textbf{synchronous system} (where $O_i = O_j \; \forall i,j$) and asynchronous systems (general case of unconstrained offset). For synchronous systems, we assume without loss of generality that $O_i = 0 \; \forall i$.\\
 
         To summarize, Fig.~\ref{fig:rt_ex} shows an example of real-time system in our model.
 
@@ -112,13 +112,17 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
         The authors of \cite{liu1973scheduling} have shown that the EDF (Earliest Deadline First) scheduling policy, in which jobs are prioritized according to their absolute deadline, is optimal, meaning that any feasible system is schedulable by EDF.
 
-        \subsubsection{Feasibility Analysis}
+        \subsubsection{Feasibility Analysis with no preemption cost}
+
+        % TODO: add reference to cyclic idles times
 
         For implicit task systems, $U_{tot} \leqslant 1$ is a necessary and sufficient condition of feasibility.\\
 
         For (a)synchronous constrained deadline systems, $[O_{max}, O_{max} + 2 \cdot H]$ (with $O_{max}$ being the maximal task offset and $H$ the LCM of periods) is a feasibility interval for EDF.
 
     \subsection{Preemption Cost}
+
+        % TODO : présenter différents modèles et justifier celui qu'on utilise
 
         We now consider that preemption costs are not negligible. We thus define a parameter $\alpha$, constant for all tasks of a system, called the preemption cost.\\
 
@@ -139,7 +143,7 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
     In this section, we show that the EDF scheduling policy, optimal when the preemption costs are negligible, loses this property in our model with costly preemptions.
 
-    \subsection{Non-optimality}
+    \subsection{Non-optimality of EDF}
 
         Consider the following task system
 
@@ -174,7 +178,9 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
         EDF is thus non-optimal.
 
-    \subsection{Anomalies}
+    \subsection{Scheduling anomalies w.r.t. the state of the art}
+
+        % TODO: Introduction
 
         \subsubsection{Longer transitive period}
         Consider the following system
@@ -199,9 +205,11 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
         \end{center}
         \end{figure}
 
-        \subsubsection{Deadline miss in transitive, not in periodic}
+        \subsubsection{Deadline miss in transient, not in permanent}
 
     \subsection{Other properties of constrained deadline systems}
+
+    % TODO: présenter les résultats sous forme de Lemmes
 
     In this section, we present other results which do not hold under the costly preemption assumption.
 
@@ -235,6 +243,7 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
 
         \subsubsection{Dynamic dominate fixed-job}
+        % TODO: expliquer dynamic et fixed-priority job in the introduction
 
         Consider the following system
 
@@ -319,7 +328,11 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
 
         Indeed, if the preemption of $j_{1,1}$ happens at $t=1$, $j_{3,1}$ will finish its execution at $t=1$ and the instant $t=3$ will be used for a preemption recovery period which will be immediately followed by another preemption, leading to a deadline miss at $t=6$. Similarly, if $j_{1,1}$ continues its execution without preemption, either $j_{2,1}$ or $j_{3,1}$ will have to miss its deadline at $t=4$. The proposed schedule is thus the only valid and require a priority update at $t=2$.
 
-\section{PA-EDF: an extension of EDF for costly preemption}
+\section{PA-EDF: an extension of EDF with preemption cost}
+
+    %TODO : comparer avec les approches de limited preemptions (Marko Bertogna)
+    %TODO : Introduire la notion d'alpha-horizon
+    %TODO : essayer un algorithme "exhaustif" sur base de cet horizon
 
     In previous sections, we have shown that EDF is not optimal when including preemption costs. To the best of our knowledge, there is no known optimal algorithm in that case. This section presents an algorithm which, while not being optimal, is an improvement over the EDF algorithm.
 
