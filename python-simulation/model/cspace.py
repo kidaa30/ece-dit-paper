@@ -35,7 +35,7 @@ class Cspace(object):
             # for each arrival and each deadline, create an equation
             self.constraints = []
             for a, d in tau.dbf_intervals(lowerLimit, upperLimit):
-                constraint = CSpaceConstraint([algorithms.completedJobCount(t, a, d) for t in tau.tasks], d - a)
+                constraint = CSpaceConstraint([algorithms.completedJobCount(t, a, d) for t in tau.tasks], a, d)
                 self.constraints.append(constraint)
 
     def __getitem__(self, key):
@@ -152,14 +152,17 @@ def testCVector(cspace, cvector):
     return True
 
 
-class CSpaceConstraint(object):  # TODO : make the code use this lovely class
-    def __init__(self, coeffs, t):
+class CSpaceConstraint(object):
+    def __init__(self, coeffs, a, d):
         self.coeffs = coeffs
-        self.t = t
+        self.a = a
+        self.d = d
+        self.t = d - a
 
     def __repr__(self):
         reprStr = "\t+\t".join([str(a) + "\tx" + str(i+1) for i, a in enumerate(self.coeffs)])
         reprStr += "\t<=\t" + str(self.t)
+        reprStr += "\t[" + str(self.a) + ", " + str(self.d) + "]"
         return reprStr
 
     def isRedundant(self, cspace):
