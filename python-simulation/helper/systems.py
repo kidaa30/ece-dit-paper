@@ -3,7 +3,7 @@ from model import Task
 from model import TaskGenerator
 
 
-def generateSystemArray(numberOfSystems, constrDeadlineFactor, n=4, preemptionCost=2, verbose=False):
+def generateSystemArray(numberOfSystems, constrDeadlineFactor, synchronous=False, n=4, preemptionCost=2, verbose=False):
 	systemArray = []
 	for i in range(numberOfSystems):
 		Umin = 0.55
@@ -13,7 +13,7 @@ def generateSystemArray(numberOfSystems, constrDeadlineFactor, n=4, preemptionCo
 		# maxHyperT = -1
 		Tmin = 3
 		Tmax = 50
-		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, preemptionCost=preemptionCost, synchronous=False, constrDeadlineFactor=constrDeadlineFactor)
+		tasks = TaskGenerator.generateTasks(Utot, n, maxHyperT, Tmin, Tmax, preemptionCost=preemptionCost, synchronous=synchronous, constrDeadlineFactor=constrDeadlineFactor)
 		if (verbose and numberOfSystems <= 10):
 			print(("Generated task system # ", i))
 			for task in tasks:
@@ -280,7 +280,7 @@ DITPaperExample = Task.TaskSystem(tasks)
 
 # test
 tasks = []
-tasks.append(Task.Task(0, 1, 6, 8, alpha=0))
-tasks.append(Task.Task(0, 1, 12, 13, alpha=0))
+tasks.append(Task.Task(2, 1, 3, 4, alpha=0))
+tasks.append(Task.Task(0, 1, 3, 4, alpha=0))
 
 test = Task.TaskSystem(tasks)
