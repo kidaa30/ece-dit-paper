@@ -21,7 +21,7 @@ class Task(object):
     @staticmethod
     def fromText(taskStr):
         reRes = re.search(r"((?P<O>[0-9]+), (?P<C>[0-9]+), (?P<D>[0-9]+), (?P<T>[0-9]+), (?P<a>[0-9]+))", str(taskStr), re.DOTALL)
-        assert reRes, "Task.fromText: Incorrect task string --> " + taskStr
+        assert reRes, "Task.fromText -- Incorrect task string:\t" + taskStr
         (O, C, D, T, alpha) = tuple((int(reRes.group(c)) for c in "OCDTa"))
         return Task(O, C, D, T, alpha=alpha)
 
@@ -63,18 +63,17 @@ class TaskSystem(object):
         #self.hyperT = self.hyperPeriod()
 
     @staticmethod
-    def fromText(systemStr):
+    def fromText(systemLines):
         tasks = []
-        for taskStr in systemStr.split("\n"):
+        for taskStr in systemLines:
+            taskStr = taskStr.strip()
             if len(taskStr) > 0 and taskStr[0] is not '#':
                 tasks.append(Task.fromText(taskStr))
         return TaskSystem(tasks)
 
     @staticmethod
     def fromFile(f):
-        string = ""
-        for line in f:
-            string += line
+        string = f.readlines()
         return TaskSystem.fromText(string)
 
     def hyperPeriod(self):
