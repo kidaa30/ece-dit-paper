@@ -232,26 +232,28 @@ class Simulator(object):  # Global multiprocessing only
                     print("\t(preempt)", cpu.job.preemptionTimeLeft, "left")
 
     def run(self, stopAtDeadlineMiss=True, stopAtStableConfig=True):
-        while(self.t < self.stop):
-            self.incrementTime()
-            # if self.t % 100 == 0:
-            #     print("t", self.t, "/", self.stop)
-            if self.drawer:
-                self.drawer.drawInstant(self.t)
+        try:
+            while(self.t < self.stop):
+                self.incrementTime()
+                # if self.t % 100 == 0:
+                #     print("t", self.t, "/", self.stop)
+                if self.drawer:
+                    self.drawer.drawInstant(self.t)
 
-            for missT, job in self.deadlineMisses:
-                if missT == self.t:
-                    # new deadline miss
-                    if self.drawer:
-                        self.drawer.drawDeadlineMiss(self.t, job.task)
-                    if self.verbose:
-                        print("DEADLINE MISS at t=", (missT - 1), "for job", job)
-                    if stopAtDeadlineMiss:
-                        break
-            if stopAtStableConfig and self.isStable:
-                break
-        if self.drawer:
-            self.drawer.terminate()
+                for missT, job in self.deadlineMisses:
+                    if missT == self.t:
+                        # new deadline miss
+                        if self.drawer:
+                            self.drawer.drawDeadlineMiss(self.t, job.task)
+                        if self.verbose:
+                            print("DEADLINE MISS at t=", (missT - 1), "for job", job)
+                        if stopAtDeadlineMiss:
+                            break
+                if stopAtStableConfig and self.isStable:
+                    break
+        finally:
+            if self.drawer:
+                self.drawer.terminate()
 
     def success(self):
         assert self.t >= 0, "Simulator.success: call run() first"
