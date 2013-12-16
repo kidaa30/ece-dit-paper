@@ -6,15 +6,17 @@
 \usepackage{url}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{float}
-\usepackage{theorem}
+% \usepackage{theorem}
 \usepackage{algorithm}
 \usepackage[noend]{algorithmic}
 %\usepackage[section]{placeins}
 
 \newtheorem{theorem}{Theorem}
+\newtheorem{lemme}{Lemme}
 
 \definecolor{grey}{rgb}{0.9,0.9,0.9}
 
@@ -32,7 +34,7 @@ breaklines=true
 
 \setlength{\parindent}{0pt}
 
-\title{Improving success ratio of EDF when taking into account the preemption cost in uniprocessor periodic systems}
+\title{Improving success ratio of EDF when taking into account preemption costs in uniprocessor periodic systems}
 \author{Thomas Chapeaux}
 \date{Summer 2013}
 %opening
@@ -82,7 +84,7 @@ In preemptive scheduling techniques of real-time systems, a task can be interrup
             \item $d_{i,j} = a_{i,j} + D_i$ is an absolute deadline at which the job must be completed.
             \item $c_{i,j} = C_i$ is the time it takes to complete the job (\emph{execution time}).
         \end{itemize}
-h
+
         We also assume a discrete time, meaning that we consider that time passes one unit (sometimes called \emph{clock tick}) at a time. This means that the values listed above must be integers and that jobs will execute for whole units.\\
 
         In this paper, we only consider \textbf{constrained deadline} systems, where $D_i \leqslant T_i \; \forall i$, and sometimes the particular case of \textbf{implicit deadline} systems, where $D_i = T_i$.\\
@@ -104,11 +106,11 @@ h
 
         A scheduling policy (or \emph{algorithm}) is...\\
 
-        A scheduling policy is said to be \textbf{idling} if it allows instants at which no jobs are executing even if there are active (i.e. released and unfinished) jobs present in the system. Such instants are then called \textbf{idled instants}. They are not to be confused with \emph{idle times}, another important concept in feasibility analysis which is not discussed here.\\
+        A scheduling policy is said to be \textbf{idling} if it is not work-conserving, i.e. it allows instants at which no jobs are executing even when there are active jobs (i.e. released and unfinished) in the system. Such instants are then called \textbf{idled instants}. They are not to be confused with \emph{idle times}, another important concept in feasibility analysis which is not discussed here.\\
 
         A scheduling policy is said to be \textbf{preemptive} if it allows the processor to begin computation of a new job when the currently computed job is still unfinished.\\
 
-        A system is said to be \textbf{schedulable by a scheduling policy} if it exists a scheduling policy such that every job in the task set completes before its deadline is reached. A system schedulable by at least one scheduling policy is said to be \textbf{feasible}.\\
+        A system is said to be \textbf{schedulable} if it exists a scheduling policy such that every job in the task set completes before its deadline is reached. A system schedulable by at least one scheduling policy is said to be \textbf{feasible}.\\
 
         The authors of \cite{liu1973scheduling} have shown that the EDF (Earliest Deadline First) scheduling policy, in which jobs are prioritized according to their absolute deadline, is optimal, meaning that any feasible system is schedulable by EDF.
 
@@ -118,7 +120,7 @@ h
 
         For implicit task systems, $U_{tot} \leqslant 1$ is a necessary and sufficient condition of feasibility.\\
 
-        For (a)synchronous constrained deadline systems, $[O_{max}, O_{max} + 2 \cdot H]$ (with $O_{max}$ being the maximal task offset and $H$ the LCM of periods) is a feasibility interval for EDF.
+        For (a)synchronous constrained deadline systems, $U_{tot}$ is still a necesary condition, but is not sufficient. When that condition is fulfilled, $[O_{max}, O_{max} + 2 \cdot H]$ (with $O_{max}$ being the maximal task offset and $H$ the LCM of periods) is a feasibility interval for EDF.
 
     \subsection{Preemption Cost}
 
@@ -195,7 +197,7 @@ h
             \end{tabular}
         \end{center}
 
-        When scheduling this system with EDF, we see that at instant $O_{max} + 2 \cdot H$, the system has not reached a periodic behavior yet. This only happens at instant $O_{max} + 4 \cdot H$, as seen on Fig.~\ref{fig:edf_longtransitive}.\\
+        When scheduling this system with EDF, we see that at instant $O_{max} + 2 \cdot H$, the system has not reached a periodic behavior yet even if $U_{tot} \leqslant 1$. Indeed, the periodic behavior begins at instant $O_{max} + 4 \cdot H$, as seen on Fig.~\ref{fig:edf_longtransitive}.\\
 
         \begin{figure}[H]
         \begin{center}
@@ -213,8 +215,15 @@ h
 
     In this section, we present other results which do not hold under the costly preemption assumption.
 
-        \subsubsection{Idling dominate non-idling}
+        \subsubsection{Idling strictly dominates non-idling}
 
+        Non-idling (or work-conserving) algorithms are a special case of idling algorithms. In the free preemption model, EDF was a non-idling optimal algorithm, which proved that the idling algorithms did not offer any advantage with regards to schedulability.
+
+        \begin{lemme}
+        With the costly preemption assumption, there are constrained deadline systems schedulable by an idling algorithm and not schedulable by any non-idling algorithm.
+        \end{lemme}
+
+        \begin{proof}
         Consider the following system
 
         \begin{center}
@@ -241,6 +250,7 @@ h
 
         Which means that at $t=2$, there will either be \mbox{$(c_{1,1} - 1) +c_{2,1} + \alpha = 7$} or \mbox{$c_{1,1} + (c_{2,1} -1) + \alpha = 7$} units of computation left to compute (including preemptions recovery) before the deadline at $t=8$, the system will thus certainly miss a deadline.
 
+        \end{proof}
 
         \subsubsection{Dynamic dominate fixed-job}
         % TODO: expliquer dynamic et fixed-priority job in the introduction
