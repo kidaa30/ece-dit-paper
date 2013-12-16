@@ -7,12 +7,12 @@ import sys
 
 tau = None
 
-# tasks = []
-# tasks.append(Task.Task(O, C, D, T))
-# tasks.append(Task.Task(O, C, D, T))
-# tau = Task.TaskSystem(tasks)
+tasks = []
+tasks.append(Task.Task(8, 1, 7, 15))
+tasks.append(Task.Task(0, 1, 2, 5))
+tau = Task.TaskSystem(tasks)
 
-# tau = systems.Meumeu
+# tau = systems.generateSystemArray(1, 1, synchronous=True)[0]
 
 if len(sys.argv) > 1:
     with open(sys.argv[1]) as f:
@@ -22,8 +22,11 @@ print(tau)
 print("cspace...")
 cspace = cs.Cspace(tau)
 print("found ", len(cspace), "constraints")
+for cstr in cspace:
+    print(cstr)
+print("")
 print("remove redun...")
-cspace_noredun = cspace.removeRedundancy()
+cspace_noredun = cspace.removeRedundancy(verbose=True)
 print(len(cspace), "=>", len(cspace_noredun), "constraints left")
 for cstr in cspace_noredun:
     print(cstr)
