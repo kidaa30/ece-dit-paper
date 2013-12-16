@@ -44,12 +44,12 @@ Systems using Definitive Idle Times}
 
 	\begin{frame}{Model}
   \begin{block}{Real-Time Systems}
-  Systems with real-time constraints. (e.g. ABS, VOD, etc)
+  Systems with timeliness constraints. (e.g. ABS, VOD, etc)
   \end{block}
   \textbf{Model:} $\tau$ set of $n$ tasks $\tau_i = (O_i, C_i, D_i, T_i)$ generating jobs $J_{i,j}$
       \begin{itemize}
       \item $O_i$ : arrival of the first job
-      \item $C_i$ : execution time
+      \item $C_i$ : worst-case execution time (WCET)
       \item $D_i$ : relative deadline
       \item $T_i$ : time between two job arrivals
     \end{itemize}
@@ -84,11 +84,11 @@ Systems using Definitive Idle Times}
         A task set is said to be \textbf{feasible} if there exists a schedule such that every job in the task set completes before its deadline is reached.
         \end{block}
 
-        \begin{block}{Feasibility by a scheduling policy}
-        A task set is said to be \textbf{schedulable by a given scheduling policy} if every job in the task set completes before its deadline is reached when using this scheduling policy.
-        \end{block}
+        % \begin{block}{Feasibility by a scheduling policy}
+        % A task set is said to be \textbf{schedulable by a given scheduling policy} if every job in the task set completes before its deadline is reached when using this scheduling policy.
+        % \end{block}
 
-        In the uniprocessor case, the EDF (Earliest Deadline First) scheduling policy is optimal, any feasible task set is EDF-schedulable.
+        In the uniprocessor case, the EDF (Earliest Deadline First) scheduling policy is optimal, any feasible task set is correctly scheduled by EDF.
 	\end{frame}
 
     \subsection{C-space}
@@ -99,8 +99,8 @@ Systems using Definitive Idle Times}
         \end{block}
 
         \begin{itemize}
-            \item A region of $\mathbb{N}_0^n$ such as the C-space is described by a set of parametric linear constraints
-            \item An efficient description allows us to quickly  whether a system whose $O_i$, $T_i$ and $D_i$ values are known will be feasible on a given platform (which gives the $C_i$).
+            \item A region of $\mathbb{N}_0^n$ such as the C-space is described by a set of parametric linear constraints on the $C_i$.
+            \item An efficient description allows us to decide whether a system whose $O_i$, $T_i$ and $D_i$ values are known will be feasible on a given platform (which gives the $C_i$).
         \end{itemize}
 
     \end{frame}
@@ -117,13 +117,12 @@ Systems using Definitive Idle Times}
         \begin{block}{Demand-bound function}
             The \textbf{demand-bound function (DBF)} \cite{baruah1999generalized,
         baruah1990algorithms}
-            defined for a task set $\tau$ in a time interval $[t_1, t_2]$, denoted $\dbf{t_1, t_2}$, is
+            of a task set $\tau$, denoted $\dbf{t_1, t_2}$, is
             the maximal cumulated execution time of jobs of $\tau$ contained in the
             closed interval $[t_1, t_2]$.
         \end{block}
         $$\dbf{t_1, t_2} = \sum_{i=1}^{n} n_i(t_1, t_2) \, C_i$$
-        where $n_i(t_1, t_2)$ is the number of jobs of task $\tau_i$ whose arrival times
-        and deadlines are both in the closed interval $[t_1, t_2]$.
+        where $n_i(t_1, t_2)$ is the number of jobs of $\tau_i$ in the interval $[t_1, t_2]$.
 
         ~\\
 
@@ -138,12 +137,12 @@ Systems using Definitive Idle Times}
     $$\dbf{t_1, t_2} \leqslant t_2 - t_1 \; \forall t_1 \leq t_2$$
 
     \begin{itemize}
-        \item Every constraint is linear in the $C_i$ values
-        \item Every constraint is necessary
-        \item Their conjunction is sufficient
+        \item Every constraint is linear in the $C_i$ values.
+        \item We have an infinite number of constraints!
+        \item Every constraint is a necessary condition of feasibility.
+        \item Their conjunction is a sufficient condition of feasibility.
         % \pause
-        \item But we have an infinite number of constraints!
-        \item $\Rightarrow$ Removing redundancy
+        \item $\Rightarrow$ We must find a way of removing redundancies in the constraints.
     \end{itemize}
     \end{frame}
 
@@ -180,7 +179,7 @@ Systems using Definitive Idle Times}
 	In the article, we
     \begin{itemize}
         \item Introduce the notion of \textbf{first periodic DIT (FPDIT)} as a generalization of the notion of DIT
-        \item Provide an algorithm to find an efficient description of the C-space for any periodic system
+        \item Provide an algorithm to find an efficient description of the C-space for any periodic constrained deadline systems
         \item Quantify the feasibility gain of random offsets in terms of C-space volume ratio.
     \end{itemize}
 
@@ -223,7 +222,7 @@ Systems using Definitive Idle Times}
 	\subsection{Finding the FPDIT value}
 
     \begin{frame}{Finding the FPDIT value - Gauss's Algorithm}
-        For given values of $a_i$, if the periods are pairwise coprime, the value of a DIT is given by:
+        For given values of $a_i$, if the periods are pairwise coprime, the value of a DIT is given by :
 
         \begin{algorithm}[H]
             \caption{Gauss's CRP Algorithm}
@@ -248,22 +247,26 @@ Systems using Definitive Idle Times}
             a_i + O_i \equiv a_j + O_j \; (\operatorname{mod} \; \operatorname{gcd}(T_i,
             T_j)) \; \forall i,j
         \]
+		The CRP is then solved by constructing an equivalent system with pairwise co-prime moduli.\\
 
-        Then each equation $t_d \equiv x \; (\operatorname{mod} \; p)$ with $p = p_1^{b_1} \cdots p_k^{b_k}$ (where each $p_i$ is prime), can be replaced by the system:
+		~\\
 
-       \[
-            \begin{array}{l}
-                \left\{
-                    \begin{array}{l}
-                         t_d \equiv x \; (mod \; p_1^{b_1}) \\
-                         \cdots \\
-                         t_d \equiv x \; (mod \; p_k^{b_k})
-                    \end{array}
-                \right.
-            \end{array}
-        \]
+		In the asynchronous case, it is thus possible to have systems where no FPDIT exists.
+        %Then each equation $t_d \equiv x \; (\operatorname{mod} \; p)$ with $p = p_1^{b_1} \cdots p_k^{b_k}$ (where each $p_i$ is prime), can be replaced by the system:
 
-        Equations with the same $p_i$ can be replaced by only the one of highest $b_i$. The new system now has pairwise co-prime moduli.
+       %\[
+       %     \begin{array}{l}
+       %         \left\{
+       %             \begin{array}{l}
+       %                  t_d \equiv x \; (mod \; p_1^{b_1}) \\
+       %                  \cdots \\
+       %                  t_d \equiv x \; (mod \; p_k^{b_k})
+       %             \end{array}
+       %         \right.
+       %     \end{array}
+       % \]
+
+        %Equations with the same $p_i$ can be replaced by only the one of highest $b_i$. The new system now has pairwise co-prime moduli.
 
     \end{frame}
 
@@ -303,89 +306,14 @@ Systems using Definitive Idle Times}
 
         As in the synchronous case,
         \begin{itemize}
-            \item Every constraint is necessary
-            \item Their conjunction is sufficient
+            \item Every constraint is a necessary condition.
+            \item Their conjunction is a sufficient condition.
             \item Most of them are redundant.
         \end{itemize}
         However the method used to remove redundancies will be different.
 	\end{frame}
 
     \subsection{Removing redundancies}
-
-    \begin{frame}{Redundancy as an ILP (I)}
-
-    We can define the redundancy of a linear constraint $C \cdot X \leqslant d$ with regards to a set of $k$ linear constraints $A \cdot X \leqslant B$ as the following Integer Linear Problem (ILP):
-
-    \begin{columns}[c]
-        \column{0.1\textwidth}
-        \column{0.3\textwidth}
-
-        \begin{block}{Redundancy ILP}
-
-        \begin{center}
-        $z = \max \left( C \cdot X \right)$
-
-        s.t.
-
-        $
-        \begin{array}{rcc}
-          A \cdot X &\leq & B \\
-          C \cdot X &\leq & d + 1
-        \end{array}
-        $
-        \end{center}
-
-        \end{block}
-
-        \column{0.1\textwidth}
-
-        \column{0.5\textwidth}
-
-        \begin{center}with\end{center}
-        \[
-          \begin{array}{ccc}
-            A & : & [n,k] \text{ matrix}\\
-            B \; \text{and} \; C & : & [n,1] \text{ matrix}\\
-            X & : & [1,n] \text{ matrix}\\
-            d & : & \text{integer}
-          \end{array}
-        \]
-    \end{columns}
-        \begin{itemize}
-            \item If $z = d + 1$, the constraint is redundant
-            % \item Can be solved with a branch-and-bound approach
-            \item Complexity (one test): exponential in the size of the set
-            \item Each constraint of the set must be tested
-        \end{itemize}
-
-    \end{frame}
-
-    \begin{frame}{Redundancy as an ILP (II)}
-
-        \begin{algorithm}[H]
-            \caption{Removing redundant constraints}
-            \label{alg:pruneCspace}
-          \begin{algorithmic}[1]
-            \STATE $CSPACE$ : set of constraints
-            \STATE $S \leftarrow \emptyset$
-            \STATE \COMMENT{$1^{st}$ pass: test each $cstr$ against previous ones}
-            \FOR{$cstr$ \textbf{in} $CSPACE$}
-              \IF {$cstr$ is not redundant w.r.t. $S$}
-                \STATE $S.push(cstr)$
-              \ENDIF
-            \ENDFOR
-            \STATE \COMMENT{$2^{nd}$ pass: test remaining $cstr$ against every other}
-            \FOR{$cstr$ \textbf{in} $S$}
-              \STATE $cstr$ = $S.pop()$
-              \IF {$cstr$ is not redundant w.r.t. $S$}
-                \STATE $S.push(cstr)$
-              \ENDIF
-            \ENDFOR
-            \RETURN{S}
-            \end{algorithmic}
-        \end{algorithm}
-
-    \end{frame}
 
     \begin{frame}{Feasibility study interval}
 
@@ -422,6 +350,95 @@ Systems using Definitive Idle Times}
 
     \end{frame}
 
+    \begin{frame}{Redundancy as an ILP (I)}
+
+    We can define the redundancy of a linear constraint $DBF' \cdot C \leqslant t_2 - t_1$ with regards to the set of $k$ linear constraints $DBF \cdot C \leqslant T$ as the following Integer Linear Problem (ILP):
+
+    \begin{columns}[c]
+        \column{0.5\textwidth}
+
+        \begin{block}{Redundancy ILP}
+
+        % \begin{center}
+        $z = \max \left( DBF' \cdot C \right)$
+
+        s.t. $DBF  \cdot C \leq T$
+
+        %$
+        % \begin{array}{ccccc}
+        % DBF  & \cdot & C &\leq & T \\
+        % DBF' & \cdot & C &\leq & t_2 - t_1 + 1
+        % \end{array}
+        %$
+        % \end{center}
+
+        \end{block}
+
+        \column{0.4\textwidth}
+
+        % \begin{center}with\end{center}
+        \[
+          \begin{array}{ccc}
+            DBF & : & [n,k] \text{ matrix}\\
+            DBF' \; \text{and} \; T & : & [n,1] \text{ matrices}\\
+            C & : & [1,n] \text{ matrix}\\
+            t_2 \; \text{and} \; t_1 & : & \text{integers}
+          \end{array}
+        \]
+    \end{columns}
+        \begin{itemize}
+            \item If $z \leqslant t_2 - t_1$, the constraint is redundant
+            % \item Can be solved with a branch-and-bound approach
+            \item Complexity (one test): exponential in the size of the set
+            \item Each constraint of the set must be tested
+        \end{itemize}
+
+    \end{frame}
+
+    \begin{frame}{Redundancy as an ILP (II)}
+
+        \begin{algorithm}[H]
+            \caption{Removing redundant constraints}
+            \label{alg:pruneCspace}
+          \begin{algorithmic}[1]
+            \STATE $CSPACE$ : set of constraints
+            \STATE $S \leftarrow \emptyset$
+            \STATE \COMMENT{$1^{st}$ pass: test each $cstr$ against previous ones}
+            \FOR{$cstr$ \textbf{in} $CSPACE$}
+              \IF {$cstr$ is not redundant w.r.t. $S$}
+                \STATE $S.push(cstr)$
+              \ENDIF
+            \ENDFOR
+            \STATE \COMMENT{$2^{nd}$ pass: test remaining $cstr$ against every other}
+            \FOR{$cstr$ \textbf{in} $S$}
+              \STATE $cstr$ = $S.pop()$
+              \IF {$cstr$ is not redundant w.r.t. $S$}
+                \STATE $S.push(cstr)$
+              \ENDIF
+            \ENDFOR
+            \RETURN{S}
+            \end{algorithmic}
+        \end{algorithm}
+    \end{frame}
+
+	\begin{frame}{Redundancy removal summary}
+
+		To summarize, a finite number of constraints is given by applying the DBF test to intervals:
+		\begin{itemize}
+			\item beginning at a job arrival,
+			\item ending at a job deadline,
+			\item strictly contained in
+			\begin{itemize}
+				\item $[t_d, t_d + H]$ if there exists a FPDIT at $t_d$
+				\item $[O_{max}, O_{max} + 2 \cdot H]$ otherwise
+			\end{itemize}
+		\end{itemize}
+
+		Remaining redundancies are removed with a general ILP approach.
+
+	\end{frame}
+
+
     \subsection{Example}
 
     \begin{frame}{Example (I)}
@@ -449,7 +466,7 @@ Systems using Definitive Idle Times}
 
     \begin{frame}{Example (II)}
 
-    We remove the remaining redundancies with the ILP:
+    We remove the remaining redundancies with the ILP approach:
     $$
         \left\{
             \begin{array}{cccccc}
@@ -528,7 +545,7 @@ Systems using Definitive Idle Times}
     \begin{frame}{Future Works}
 
     \begin{itemize}
-        \item Further ways of reducing redundancy before applying the simplex
+        \item Further ways of reducing redundancy before applying the ILP approach
         \item Other metrics to quantify the quality of the C-space
         \item Extension to multiprocessor scheduling
     \end{itemize}
