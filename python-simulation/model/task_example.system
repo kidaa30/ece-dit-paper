@@ -1,6 +1,6 @@
-# This is a comment
-
-# Blank lines are also ignored
+# Example system
+# Line starting with '#' are ignored
+# Blank lines are ignored
 
 # Task format: (O, C, D, T, alpha)
 # Do not forget the space after each comas!
