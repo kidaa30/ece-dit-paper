@@ -13,7 +13,7 @@ Dependencies
 Usage
 -----
 
-Systems can be described in a text file. An example is provided in /model/task_example.system
+Systems can be described in a text file. An example is provided in /systems/task_example.system
 
 To launch the simulator on a given system:
 python3 mainSimu.py path/of/input_file
