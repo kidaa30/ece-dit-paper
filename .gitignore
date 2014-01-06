@@ -51,7 +51,4 @@ python-simulation/plots/results
 .project
 .texlipse
 .pydevproject
-python-simulation/redundant_temp.dat
-python-simulation/Simulator.sublime-workspace
-python-simulation/out*
 LG/*
