@@ -9,6 +9,7 @@
             [
                 "*.pyc",
                 "*.pyo",
+                "*.pickle",
                 "__init__.py",
                 "*.tmp",
                 ".pydevproject",
