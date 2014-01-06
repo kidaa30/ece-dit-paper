@@ -52,7 +52,6 @@ python-simulation/plots/results
 .texlipse
 .pydevproject
 python-simulation/redundant_temp.dat
-python-simulation/beamer-pallf/*
 python-simulation/Simulator.sublime-workspace
 python-simulation/out*
 LG/*
